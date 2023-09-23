@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: 'mongo:latest'
+    ports:
+      - '27017:27017'
+    environment:
+      - MONGO_INITDB_DATABASE=database
+      - MONGODB_DATA_DIR=/data/db
+      - MONDODB_LOG_DIR=/dev/null
+    volumes:
+      - 'mongo:/data/db'
+    networks:
+      - monetizzer-api_network
+
+  api:
+    build:
+      context: '.'
+      dockerfile: Dockerfile.dev
+    container_name: monetizzer_api
+    command: yarn start:dev
+    depends_on:
+      - mongodb
+    ports:
+      - 3000:3000
+    env_file:
+      - .env.docker
+    volumes:
+      - ./:/app/
+    networks:
+      - monetizzer-api_network
+
+volumes:
+  mongo:
+
+networks:
+  monetizzer-api_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: '172.16.0.0/24'
+          gateway: 172.16.0.254
