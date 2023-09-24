@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { EmailAdapter, SendInput } from '../email';
 
 @Injectable()
-export class SESService implements EmailAdapter {
+export class SESAdapter implements EmailAdapter {
   client: SESClient;
 
   constructor() {
