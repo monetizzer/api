@@ -14,7 +14,6 @@ export interface MagicLinkCodeEntity {
 
 export type UpsertInput = {
   accountId: string;
-  code: string;
 };
 
 export interface GetInput {
