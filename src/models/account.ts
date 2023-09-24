@@ -10,6 +10,10 @@ export interface AccountEntity {
     refreshToken: string;
     expiresAt: string;
   };
+  lastTermsAccepted?: {
+    semVer: string;
+    acceptedAt: Date;
+  };
   createdAt: Date;
 }
 
@@ -105,6 +109,10 @@ export interface IamInput {
   accountId: string;
 }
 
+export interface AcceptInput {
+  semVer: string;
+}
+
 export interface IamOutput {
   accountId: string;
   isAdmin: boolean;
@@ -120,6 +128,8 @@ export interface AccountUseCase {
   sendMagicLink: (i: SendMagicLinkInput) => Promise<void>;
 
   createFromMagicLink: (i: CreateFromMagicLinkInput) => Promise<AuthOutput>;
+
+  acceptTerms: (i: AcceptInput) => Promise<void>;
 
   iam: (i: IamInput) => Promise<IamOutput>;
 }
