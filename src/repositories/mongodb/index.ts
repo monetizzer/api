@@ -2,7 +2,7 @@ import type { DynamicModule } from '@nestjs/common';
 import { Inject, Module } from '@nestjs/common';
 import { MongoDBCoreModule } from './core';
 import { MONGODB_CONNECTION_NAME } from './core';
-import { MongoClient } from 'mongodb';
+import { Collection, MongoClient } from 'mongodb';
 
 @Module({})
 export class MongoDBModule {
@@ -35,3 +35,5 @@ export class MongoDBModule {
 
 export const InjectRepository = (tableName: string) =>
   Inject(MongoDBModule.getRepositoryToken(tableName));
+
+export type Repository<T> = Collection<T>;
