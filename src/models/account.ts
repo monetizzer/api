@@ -5,6 +5,10 @@ export interface AccountEntity {
   discordId?: string;
   discord?: {
     username: string;
+    dmChannelId: string;
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: string;
   };
   createdAt: Date;
 }
@@ -26,6 +30,10 @@ export type CreateInput =
       discordId: string;
       discord: {
         username: string;
+        dmChannelId: string;
+        accessToken: string;
+        refreshToken: string;
+        expiresAt: string;
       };
     };
 
@@ -33,6 +41,10 @@ export type UpdateDiscordInput = {
   discordId: string;
   discord: {
     username: string;
+    dmChannelId: string;
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: string;
   };
 };
 
