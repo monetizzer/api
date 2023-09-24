@@ -1,6 +1,6 @@
 export interface AccountEntity {
   accountId: string;
-  admin: boolean;
+  isAdmin?: boolean;
   email: string;
   discordId?: string;
   discord?: {
@@ -92,6 +92,10 @@ export interface CreateFromDiscordInput {
   code: string;
 }
 
+export interface SendMagicLinkInput {
+  email: string;
+}
+
 export interface CreateFromMagicLinkInput {
   accountId: string;
   code: string;
@@ -112,6 +116,8 @@ export interface IamOutput {
 
 export interface AccountUseCase {
   createFromDiscordOauth: (i: CreateFromDiscordInput) => Promise<AuthOutput>;
+
+  sendMagicLink: (i: SendMagicLinkInput) => Promise<void>;
 
   createFromMagicLink: (i: CreateFromMagicLinkInput) => Promise<AuthOutput>;
 
