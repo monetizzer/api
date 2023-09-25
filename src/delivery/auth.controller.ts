@@ -1,6 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AccountService } from 'src/usecases/account/account.service';
-import { CreateFromDiscordOauthDto, CreateFromMagicLinkDto } from './dtos/auth';
+import {
+  AcceptTermsDto,
+  CreateFromDiscordOauthDto,
+  CreateFromMagicLinkDto,
+} from './dtos/auth';
+import { AuthGuard } from './guards/auth.guard';
+import { AccountId } from './decorators/accountid';
 
 @Controller('auth')
 export class AuthController {
@@ -20,5 +26,19 @@ export class AuthController {
     body: CreateFromMagicLinkDto,
   ) {
     return this.accountService.createFromMagicLink(body);
+  }
+
+  @Post('/terms/accept')
+  @UseGuards(AuthGuard(['USER']))
+  acceptTerms(
+    @Body()
+    body: AcceptTermsDto,
+    @AccountId()
+    accountId: string,
+  ) {
+    return this.accountService.acceptTerms({
+      ...body,
+      accountId,
+    });
   }
 }

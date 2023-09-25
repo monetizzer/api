@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import sortSemVer from 'semver/functions/sort';
 import { InjectRepository, Repository } from '..';
 import { GetInput, TermsEntity, TermsRepository } from 'src/models/terms';
+import { SemVerAdapter } from 'src/adapters/implementations/semver.service';
 
 interface TermsTable extends Omit<TermsEntity, 'semVer'> {
   _id: string;
@@ -12,6 +12,7 @@ export class TermsRepositoryService implements TermsRepository {
   constructor(
     @InjectRepository('terms')
     private readonly termsRepository: Repository<TermsTable>,
+    private readonly versionAdapter: SemVerAdapter,
   ) {}
 
   async get({ semVer }: GetInput): Promise<void | TermsEntity> {
@@ -47,7 +48,7 @@ export class TermsRepositoryService implements TermsRepository {
 
     const versions = terms.map((t) => t._id);
 
-    const [latestSemVer] = sortSemVer(versions);
+    const latestSemVer = this.versionAdapter.latest({ versions });
 
     const latestTerms = terms.find((t) => t._id === latestSemVer);
 

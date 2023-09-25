@@ -8,6 +8,7 @@ import {
   GetManyByDiscordInput,
   GetByEmailInput,
   UpdateDiscordInput,
+  UpdateTermsInput,
 } from 'src/models/account';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { Filter } from 'mongodb';
@@ -54,6 +55,22 @@ export class AccountRepositoryService implements AccountRepository {
       },
       {
         $set: i,
+      },
+    );
+  }
+
+  async updateTerms({ accountId, ...i }: UpdateTermsInput): Promise<void> {
+    await this.accountRepository.updateOne(
+      {
+        _id: accountId,
+      },
+      {
+        $set: {
+          lastTermsAccepted: {
+            ...i.lastTermsAccepted,
+            acceptedAt: new Date(),
+          },
+        },
       },
     );
   }
