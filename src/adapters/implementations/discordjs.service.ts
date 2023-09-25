@@ -1,6 +1,3 @@
-import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v10';
-
 import type {
   AnyComponent,
   ButtonStyle,
@@ -9,6 +6,7 @@ import type {
   SendMessageInput,
 } from '../discord.js';
 import { Injectable } from '@nestjs/common';
+import fetch, { Response } from 'node-fetch';
 
 interface ExchangeCodeAPIOutput {
   access_token: string;
@@ -42,8 +40,8 @@ interface GetUserDmChannelIdAPIOutput {
 }
 
 @Injectable()
-export class DiscordJSService implements DiscordAdapter {
-  protected discordjs: REST;
+export class DiscordJSAdapter implements DiscordAdapter {
+  private discordApi: (route: string, init: RequestInit) => Promise<Response>;
 
   private readonly buttonStyles: Record<ButtonStyle, number> = {
     primary: 1,
@@ -54,9 +52,8 @@ export class DiscordJSService implements DiscordAdapter {
   };
 
   public constructor() {
-    this.discordjs = new REST({
-      version: '10',
-    }).setToken(process.env['DISCORD_BOT_TOKEN']!);
+    this.discordApi = (route: string, init: RequestInit) =>
+      fetch(`https://discord.com/api/v10${route}`, init as any);
   }
 
   public async sendMessage({
@@ -78,27 +75,39 @@ export class DiscordJSService implements DiscordAdapter {
       );
     }
 
-    await this.discordjs.post(Routes.channelMessages(channelId), {
-      body: {
+    await this.discordApi(`/channels/${channelId}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({
         content,
         embeds: embedsFormatted,
         components: componentsFormatted,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bot ${process.env['DISCORD_BOT_TOKEN']!}`,
       },
     });
   }
 
   public async exchangeCode(code: string) {
-    const result = (await this.discordjs.post(Routes.oauth2TokenExchange(), {
-      body: {
-        client_id: process.env['DISCORD_BOT_CLIENT_ID']!,
-        client_secret: process.env['DISCORD_BOT_CLIENT_SECRET']!,
-        code,
-        redirect_uri: process.env['DISCORD_REDIRECT_URI']!,
-      },
+    const body = new URLSearchParams();
+    body.append('client_id', process.env['DISCORD_BOT_CLIENT_ID']!);
+    body.append('client_secret', process.env['DISCORD_BOT_CLIENT_SECRET']!);
+    body.append('grant_type', 'authorization_code');
+    body.append('code', code);
+    body.append('redirect_uri', process.env['DISCORD_REDIRECT_URI']!);
+
+    const result = await this.discordApi('/oauth2/token', {
+      method: 'POST',
+      body,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
       },
-    })) as ExchangeCodeAPIOutput;
+    })
+      .then((r) => r.json())
+      .then((r) => r as ExchangeCodeAPIOutput);
 
     return {
       accessToken: result.access_token,
@@ -110,27 +119,37 @@ export class DiscordJSService implements DiscordAdapter {
   }
 
   public async getUserData(discordId: string) {
-    const result = (await this.discordjs.get(
-      Routes.user(discordId),
-      {},
-    )) as GetUserDataAPIOutput;
+    const result = await this.discordApi(`/users/${discordId}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bot ${process.env['DISCORD_BOT_TOKEN']!}`,
+      },
+    })
+      .then((r) => r.json())
+      .then((r) => r as GetUserDataAPIOutput);
 
     return {
       id: result.id,
-      tag: `${result.username}#${result.discriminator}`,
+      username: this.getUsername(result.username, result.discriminator),
     };
   }
 
   public async getAuthenticatedUserData(accessToken: string) {
-    const result = (await this.discordjs.get(Routes.user(), {
+    const result = await this.discordApi(`/users/@me`, {
+      method: 'GET',
       headers: {
+        Accept: 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
-    })) as GetUserDataAPIOutput;
+    })
+      .then((r) => r.json())
+      .then((r) => r as GetUserDataAPIOutput);
 
     return {
       id: result.id,
-      tag: `${result.username}#${result.discriminator}`,
+      email: result.email,
+      username: this.getUsername(result.username, result.discriminator),
       verified: result.verified,
       avatarUrl: result.avatar
         ? this.getAvatarUrl(result.id, result.avatar)
@@ -142,16 +161,31 @@ export class DiscordJSService implements DiscordAdapter {
   }
 
   public async getUserDmChannelId(discordId: string) {
-    const dmChannel = (await this.discordjs.post(Routes.userChannels(), {
-      body: {
+    const result = await this.discordApi(`/users/@me/channels`, {
+      method: 'POST',
+      body: JSON.stringify({
         recipient_id: discordId,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bot ${process.env['DISCORD_BOT_TOKEN']!}`,
       },
-    })) as GetUserDmChannelIdAPIOutput;
+    })
+      .then((r) => r.json())
+      .then((r) => r as GetUserDmChannelIdAPIOutput);
 
-    return dmChannel.id;
+    return result.id;
   }
 
   // Private
+
+  private getUsername(username: string, discriminator: string) {
+    if (discriminator === '0') {
+      return username;
+    }
+
+    return `${username}#${discriminator}`;
+  }
 
   private getAvatarUrl(discordId: string, hash: string) {
     return `https://cdn.discordapp.com/avatars/${discordId}/${hash}?size=4096`;
