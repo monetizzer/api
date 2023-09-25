@@ -4,10 +4,11 @@ import { AccountRepositoryModule } from 'src/repositories/mongodb/account/accoun
 import { JWTAdapter } from 'src/adapters/implementations/jwt.service';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { AuthController } from 'src/delivery/auth.controller';
+import { MagicLinkCodeRepositoryModule } from 'src/repositories/mongodb/magic-lick-codes/magic-link-code-repository.module';
 
 @Module({
   controllers: [AuthController],
-  imports: [AccountRepositoryModule],
+  imports: [AccountRepositoryModule, MagicLinkCodeRepositoryModule],
   providers: [AccountService, DiscordJSAdapter, JWTAdapter],
 })
 export class AccountModule {}

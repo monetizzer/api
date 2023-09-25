@@ -4,9 +4,11 @@ import {
   AccountEntity,
   AuthOutput,
   CreateFromDiscordInput,
+  CreateFromMagicLinkInput,
 } from 'src/models/account';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { JWTAdapter } from 'src/adapters/implementations/jwt.service';
+import { MagicLinkCodeRepositoryService } from 'src/repositories/mongodb/magic-lick-codes/magic-link-code-repository.service';
 
 @Injectable()
 // export class AccountService implements AccountUseCase {
@@ -16,6 +18,8 @@ export class AccountService {
   constructor(
     @Inject(AccountRepositoryService)
     private readonly accountRepository: AccountRepositoryService,
+    @Inject(MagicLinkCodeRepositoryService)
+    private readonly magicLinkCodeRepository: MagicLinkCodeRepositoryService,
     private readonly discordAdapter: DiscordJSAdapter,
     private readonly tokenAdapter: JWTAdapter,
   ) {}
@@ -119,6 +123,38 @@ export class AccountService {
 
     const accessToken = this.tokenAdapter.gen({
       accountId: account.accountId,
+      isAdmin: account.isAdmin,
+    });
+
+    return {
+      accessToken,
+    };
+  }
+
+  async createFromMagicLink({
+    accountId,
+    code,
+  }: CreateFromMagicLinkInput): Promise<AuthOutput> {
+    const magicLinkCode = await this.magicLinkCodeRepository.get({
+      accountId,
+      code,
+    });
+
+    if (!magicLinkCode) {
+      throw new HttpException('Invalid code', HttpStatus.NOT_FOUND);
+    }
+
+    const user = await this.accountRepository.getByAccountId({
+      accountId,
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const accessToken = this.tokenAdapter.gen({
+      accountId,
+      isAdmin: user.isAdmin,
     });
 
     return {

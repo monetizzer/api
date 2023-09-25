@@ -19,7 +19,7 @@ export function IsDiscordCode(validationOptions: ValidationOptions = {}) {
       validator: {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         validate(value: any, _args: ValidationArguments) {
-          return typeof value === 'string' && /^[a-zA-Z0-9]+$/i.test(value);
+          return typeof value === 'string' && /^[a-z0-9]+$/i.test(value);
         },
       },
     });
