@@ -6,6 +6,8 @@ import {
   AuthOutput,
   CreateFromDiscordInput,
   CreateFromMagicLinkInput,
+  IamInput,
+  IamOutput,
 } from 'src/models/account';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { JWTAdapter } from 'src/adapters/implementations/jwt.service';
@@ -200,5 +202,26 @@ export class AccountService {
         semVer,
       },
     });
+  }
+
+  async iam(i: IamInput): Promise<IamOutput> {
+    const account = await this.accountRepository.getByAccountId(i);
+
+    if (!account) {
+      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
+    }
+
+    return {
+      accountId: account.accountId,
+      isAdmin: account.isAdmin,
+      ...(account.discord
+        ? {
+            discord: {
+              id: account.discordId,
+              username: account.discord.username,
+            },
+          }
+        : {}),
+    };
   }
 }
