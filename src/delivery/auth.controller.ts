@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AccountService } from 'src/usecases/account/account.service';
 import {
   AcceptTermsDto,
@@ -38,6 +38,17 @@ export class AuthController {
   ) {
     return this.accountService.acceptTerms({
       ...body,
+      accountId,
+    });
+  }
+
+  @Get('/iam')
+  @UseGuards(AuthGuard(['USER']))
+  iam(
+    @AccountId()
+    accountId: string,
+  ) {
+    return this.accountService.iam({
       accountId,
     });
   }
