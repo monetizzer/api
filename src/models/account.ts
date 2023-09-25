@@ -9,7 +9,7 @@ export interface AccountEntity {
     dmChannelId: string;
     accessToken: string;
     refreshToken: string;
-    expiresAt: string;
+    expiresAt: Date;
   };
   lastTermsAccepted?: {
     semVer: string;
@@ -38,7 +38,7 @@ export type CreateInput =
         dmChannelId: string;
         accessToken: string;
         refreshToken: string;
-        expiresAt: string;
+        expiresAt: Date;
       };
     };
 
@@ -50,7 +50,7 @@ export type UpdateDiscordInput = {
     dmChannelId: string;
     accessToken: string;
     refreshToken: string;
-    expiresAt: string;
+    expiresAt: Date;
   };
 };
 
@@ -90,8 +90,8 @@ export interface AccountRepository {
 
 export interface AuthOutput {
   accessToken: string;
-  refreshToken: string;
-  expiresAt: string;
+  // refreshToken: string; We will not use this for now
+  // expiresAt: string;
 }
 
 export interface CreateFromDiscordInput {

@@ -66,13 +66,13 @@ export interface ExchangeCodeOutput {
 
 export interface GetUserDataOutput {
   id: string;
-  tag: string;
+  username: string;
 }
 
 export interface GetAuthenticatedUserDataOutput {
   id: string;
   verified: boolean;
-  tag: string;
+  username: string;
   avatarUrl?: string;
   bannerUrl?: string;
 }

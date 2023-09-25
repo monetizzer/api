@@ -52,7 +52,9 @@ export class AccountRepositoryService implements AccountRepository {
       {
         _id: accountId,
       },
-      i,
+      {
+        $set: i,
+      },
     );
   }
 
@@ -124,6 +126,9 @@ export class AccountRepositoryService implements AccountRepository {
   private genUsername() {
     const amountOfNumbers = 8;
 
-    return `user${Math.random() * Math.pow(10, amountOfNumbers)}`;
+    return `user${parseInt(
+      `${Math.random() * Math.pow(10, amountOfNumbers)}`,
+      10,
+    )}`;
   }
 }
