@@ -33,7 +33,7 @@ export class TermsRepositoryService implements TermsRepository {
   async getLatest(): Promise<TermsEntity> {
     const termsCursor = await this.termsRepository.find(
       {
-        live: true,
+        liveAt: { $exists: true },
       },
       {
         limit: 10,
