@@ -54,6 +54,13 @@ export type UpdateDiscordInput = {
   };
 };
 
+export type UpdateTermsInput = {
+  accountId: string;
+  lastTermsAccepted: {
+    semVer: string;
+  };
+};
+
 export interface GetByAccountIdInput {
   accountId: string;
 }
@@ -71,6 +78,8 @@ export interface AccountRepository {
   create: (i: CreateInput) => Promise<AccountEntity>;
 
   updateDiscord: (i: UpdateDiscordInput) => Promise<void>;
+
+  updateTerms: (i: UpdateTermsInput) => Promise<void>;
 
   getByAccountId: (i: GetByAccountIdInput) => Promise<AccountEntity | void>;
 
@@ -112,6 +121,7 @@ export interface IamInput {
 }
 
 export interface AcceptInput {
+  accountId: string;
   semVer: string;
 }
 

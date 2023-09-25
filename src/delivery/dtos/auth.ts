@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsSemVer } from 'class-validator';
 import { IsDiscordCode } from '../validators/discord';
 import { IsID, IsMagicLinkCode } from '../validators/internal';
 
@@ -16,4 +16,10 @@ export class CreateFromMagicLinkDto {
   @IsNotEmpty()
   @IsMagicLinkCode()
   code: string;
+}
+
+export class AcceptTermsDto {
+  @IsNotEmpty()
+  @IsSemVer()
+  semVer: string;
 }

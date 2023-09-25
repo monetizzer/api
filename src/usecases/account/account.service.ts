@@ -1,6 +1,7 @@
 import { AccountRepositoryService } from 'src/repositories/mongodb/account/account-repository.service';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import {
+  AcceptInput,
   AccountEntity,
   AuthOutput,
   CreateFromDiscordInput,
@@ -9,6 +10,8 @@ import {
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { JWTAdapter } from 'src/adapters/implementations/jwt.service';
 import { MagicLinkCodeRepositoryService } from 'src/repositories/mongodb/magic-lick-codes/magic-link-code-repository.service';
+import { TermsRepositoryService } from 'src/repositories/mongodb/terms/terms-repository.service';
+import { SemVerAdapter } from 'src/adapters/implementations/semver.service';
 
 @Injectable()
 // export class AccountService implements AccountUseCase {
@@ -20,8 +23,11 @@ export class AccountService {
     private readonly accountRepository: AccountRepositoryService,
     @Inject(MagicLinkCodeRepositoryService)
     private readonly magicLinkCodeRepository: MagicLinkCodeRepositoryService,
+    @Inject(TermsRepositoryService)
+    private readonly termsRepository: TermsRepositoryService,
     private readonly discordAdapter: DiscordJSAdapter,
     private readonly tokenAdapter: JWTAdapter,
+    private readonly versionAdapter: SemVerAdapter,
   ) {}
 
   async createFromDiscordOauth({
@@ -160,5 +166,39 @@ export class AccountService {
     return {
       accessToken,
     };
+  }
+
+  async acceptTerms({ semVer, accountId }: AcceptInput): Promise<void> {
+    const terms = await this.termsRepository.get({
+      semVer,
+    });
+
+    if (!terms) {
+      throw new HttpException('Invalid terms version', HttpStatus.NOT_FOUND);
+    }
+
+    const user = await this.accountRepository.getByAccountId({
+      accountId,
+    });
+
+    if (!user) {
+      throw new HttpException('Invalid user', HttpStatus.FORBIDDEN);
+    }
+
+    const isNewVersion = this.versionAdapter.isGt({
+      toValidate: semVer,
+      compareWith: user.lastTermsAccepted?.semVer,
+    });
+
+    if (!isNewVersion) {
+      throw new HttpException('Version is to old', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.accountRepository.updateTerms({
+      accountId,
+      lastTermsAccepted: {
+        semVer,
+      },
+    });
   }
 }
