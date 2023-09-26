@@ -110,12 +110,36 @@ export interface DocumentRepository {
  *
  */
 
+export interface CreatePartialInput {
+  type: DocumentTypeEnum;
+  documentNumber: string;
+  fullName: string;
+  birthDate: string;
+}
+
+export interface CreateCompleteInput {
+  type: DocumentTypeEnum;
+  documentNumber: string;
+  fullName: string;
+  birthDate: string;
+  phone: string;
+  address: DocumentAddress;
+  documentPicture: Buffer;
+  selfieWithDocument: Buffer;
+}
+
+export interface ReviewInput {
+  accountId: string;
+  approve: boolean;
+  message?: string;
+}
+
 export interface DocumentUseCase {
-  createPartial: (i: any) => Promise<void>;
+  createPartial: (i: CreatePartialInput) => Promise<void>;
 
-  createComplete: (i: any) => Promise<void>;
+  createComplete: (i: CreateCompleteInput) => Promise<void>;
 
-  getToReview: (i: any) => Promise<void>;
+  getToReview: () => Promise<Array<DocumentEntity>>;
 
-  review: (i: any) => Promise<void>;
+  review: (i: ReviewInput) => Promise<void>;
 }
