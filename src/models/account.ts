@@ -42,6 +42,11 @@ export type CreateInput =
       };
     };
 
+export interface UpdateUsernameInput {
+  accountId: string;
+  username: string;
+}
+
 export type UpdateDiscordInput = {
   accountId: string;
   discordId: string;
@@ -65,6 +70,10 @@ export interface GetByAccountIdInput {
   accountId: string;
 }
 
+export interface GetByUsernameInput {
+  username: string;
+}
+
 export interface GetByEmailInput {
   email: string;
 }
@@ -77,11 +86,15 @@ export interface GetManyByDiscordInput {
 export interface AccountRepository {
   create: (i: CreateInput) => Promise<AccountEntity>;
 
+  updateUsername: (i: UpdateUsernameInput) => Promise<void>;
+
   updateDiscord: (i: UpdateDiscordInput) => Promise<void>;
 
   updateTerms: (i: UpdateTermsInput) => Promise<void>;
 
   getByAccountId: (i: GetByAccountIdInput) => Promise<AccountEntity | void>;
+
+  getByUsername: (i: GetByUsernameInput) => Promise<AccountEntity | void>;
 
   getByEmail: (i: GetByEmailInput) => Promise<AccountEntity | void>;
 
