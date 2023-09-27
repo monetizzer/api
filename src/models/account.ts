@@ -145,6 +145,10 @@ export interface IamOutput {
     id: string;
     username: string;
   };
+  store?: {
+    id: string;
+    color?: string;
+  };
 }
 
 export interface AccountUseCase {

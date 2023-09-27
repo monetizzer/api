@@ -14,6 +14,7 @@ import { JWTAdapter } from 'src/adapters/implementations/jwt.service';
 import { MagicLinkCodeRepositoryService } from 'src/repositories/mongodb/magic-lick-codes/magic-link-code-repository.service';
 import { TermsRepositoryService } from 'src/repositories/mongodb/terms/terms-repository.service';
 import { SemVerAdapter } from 'src/adapters/implementations/semver.service';
+import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
 
 @Injectable()
 // export class AccountService implements AccountUseCase {
@@ -27,6 +28,8 @@ export class AccountService {
     private readonly magicLinkCodeRepository: MagicLinkCodeRepositoryService,
     @Inject(TermsRepositoryService)
     private readonly termsRepository: TermsRepositoryService,
+    @Inject(StoreRepositoryService)
+    private readonly storeRepository: StoreRepositoryService,
     private readonly discordAdapter: DiscordJSAdapter,
     private readonly tokenAdapter: JWTAdapter,
     private readonly versionAdapter: SemVerAdapter,
@@ -211,6 +214,8 @@ export class AccountService {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
 
+    const store = await this.storeRepository.getByAccountId(i);
+
     return {
       accountId: account.accountId,
       isAdmin: account.isAdmin,
@@ -219,6 +224,14 @@ export class AccountService {
             discord: {
               id: account.discordId,
               username: account.discord.username,
+            },
+          }
+        : {}),
+      ...(store
+        ? {
+            store: {
+              id: store.storeId,
+              color: store.color,
             },
           }
         : {}),
