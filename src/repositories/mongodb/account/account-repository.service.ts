@@ -9,6 +9,8 @@ import {
   GetByEmailInput,
   UpdateDiscordInput,
   UpdateTermsInput,
+  UpdateUsernameInput,
+  GetByUsernameInput,
 } from 'src/models/account';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { Filter } from 'mongodb';
@@ -75,6 +77,22 @@ export class AccountRepositoryService implements AccountRepository {
     );
   }
 
+  async updateUsername({
+    accountId,
+    username,
+  }: UpdateUsernameInput): Promise<void> {
+    await this.accountRepository.updateOne(
+      {
+        _id: accountId,
+      },
+      {
+        $set: {
+          username,
+        },
+      },
+    );
+  }
+
   async getByAccountId({
     accountId,
   }: GetByAccountIdInput): Promise<void | AccountEntity> {
@@ -94,7 +112,7 @@ export class AccountRepositoryService implements AccountRepository {
 
   async getByEmail({ email }: GetByEmailInput): Promise<void | AccountEntity> {
     const account = await this.accountRepository.findOne({
-      email: email,
+      email,
     });
 
     if (!account) return;
@@ -139,6 +157,25 @@ export class AccountRepositoryService implements AccountRepository {
       };
     });
   }
+
+  async getByUsername({
+    username,
+  }: GetByUsernameInput): Promise<void | AccountEntity> {
+    const account = await this.accountRepository.findOne({
+      username,
+    });
+
+    if (!account) return;
+
+    const { _id, ...accountData } = account;
+
+    return {
+      ...accountData,
+      accountId: _id,
+    };
+  }
+
+  // Private
 
   private genUsername() {
     const amountOfNumbers = 8;

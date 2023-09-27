@@ -1,10 +1,11 @@
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
-import { DocumentValidationStatus } from 'src/types/enums/document-validation-status';
+import { DocumentStatusEnum } from 'src/types/enums/document-status';
 
 interface DocumentHistoryItem {
   timestamp: Date;
-  status: DocumentValidationStatus;
-  type: DocumentTypeEnum;
+  status: DocumentStatusEnum;
+  type?: DocumentTypeEnum;
+  documentNumber?: string;
   message?: string;
   reviewerId?: string;
 }
@@ -20,7 +21,7 @@ interface DocumentAddress {
 
 export interface DocumentEntity {
   accountId: string;
-  status: DocumentValidationStatus;
+  status: DocumentStatusEnum;
   type: DocumentTypeEnum;
   documentNumber: string;
   history: Array<DocumentHistoryItem>;
@@ -40,14 +41,6 @@ export interface DocumentEntity {
  *
  */
 
-export interface UpsertPartialInput {
-  accountId: string;
-  type: DocumentTypeEnum;
-  documentNumber: string;
-  fullName: string;
-  birthDate: string;
-}
-
 export interface IsApprovedInput {
   type: DocumentTypeEnum;
   documentNumber: string;
@@ -59,13 +52,14 @@ export interface ApprovePartialInput {
 
 export interface UpdateStatusInput {
   accountId: string;
-  status: DocumentValidationStatus;
+  status: DocumentStatusEnum;
   message?: string;
   reviewerId?: string;
 }
 
 export interface UpsertCompleteInput {
   accountId: string;
+  status: DocumentStatusEnum;
   type: DocumentTypeEnum;
   documentNumber: string;
   fullName: string;
@@ -83,17 +77,19 @@ export interface GetByAccountIdInput {
 export interface GetManyInput {
   type?: DocumentTypeEnum;
   documentNumber?: string;
-  status?: Array<DocumentValidationStatus>;
+  status?: Array<DocumentStatusEnum>;
 }
 
 export interface DocumentRepository {
-  upsertPartial: (i: UpsertPartialInput) => Promise<void>;
-
   // Checks if we already have an COMPLETE document with that same
   // number and type that is approved
   isApproved: (i: IsApprovedInput) => Promise<boolean>;
 
   updateStatus: (i: UpdateStatusInput) => Promise<void>;
+
+  // We're gonna leave this to later, because we don't really know
+  // what are the partial documents that we are required to ask
+  // upsertPartial: (i: UpsertPartialInput) => Promise<void>;
 
   upsertComplete: (i: UpsertCompleteInput) => Promise<void>;
 

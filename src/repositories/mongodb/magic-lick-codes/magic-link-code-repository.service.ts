@@ -5,7 +5,7 @@ import {
   MagicLinkCodeEntity,
   MagicLinkCodeRepository,
   UpsertInput,
-} from 'src/models/magic-link-codes';
+} from 'src/models/magic-link-code';
 import { UIDSecretAdapter } from 'src/adapters/implementations/uid-secret.service';
 
 interface MagicLinkCodeTable extends Omit<MagicLinkCodeEntity, 'accountId'> {
