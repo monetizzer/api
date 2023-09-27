@@ -1,4 +1,4 @@
-export enum DocumentValidationStatus {
+export enum DocumentStatusEnum {
   '00' = '00',
   'V0' = 'V0',
   'R0' = 'R0',
