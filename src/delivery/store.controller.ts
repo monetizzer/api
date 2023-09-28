@@ -1,8 +1,8 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
 import { StoreService } from 'src/usecases/store/store.service';
 import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
-import { CreateDto } from './dtos/store';
+import { CreateDto, UpdateDto } from './dtos/store';
 
 @Controller('stores')
 export class StoreController {
@@ -17,5 +17,16 @@ export class StoreController {
     accountId: string,
   ) {
     return this.storeService.create({ accountId, ...body });
+  }
+
+  @Patch('/')
+  @UseGuards(AuthGuard(['USER']))
+  update(
+    @Body()
+    body: UpdateDto,
+    @AccountId()
+    accountId: string,
+  ) {
+    return this.storeService.update({ accountId, ...body });
   }
 }
