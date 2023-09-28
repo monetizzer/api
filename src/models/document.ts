@@ -133,6 +133,14 @@ export interface ReviewInput {
   message?: string;
 }
 
+export interface StatusInput {
+  accountId: string;
+}
+
+export interface StatusOutput {
+  status: DocumentStatusEnum;
+}
+
 export interface DocumentUseCase {
   // createPartial: (i: CreatePartialInput) => Promise<void>;
 
@@ -141,4 +149,6 @@ export interface DocumentUseCase {
   getToReview: () => Promise<Array<DocumentEntity>>;
 
   review: (i: ReviewInput) => Promise<void>;
+
+  status: (i: StatusInput) => Promise<StatusOutput>;
 }

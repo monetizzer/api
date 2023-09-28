@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { DocumentService } from 'src/usecases/document/document.service';
 import { AccountId } from './decorators/accountid';
 import { AuthGuard } from './guards/auth.guard';
@@ -17,5 +17,14 @@ export class DocumentController {
     accountId: string,
   ) {
     return this.documentService.createComplete({ accountId, ...body });
+  }
+
+  @Get('status')
+  @UseGuards(AuthGuard(['USER']))
+  status(
+    @AccountId()
+    accountId: string,
+  ) {
+    return this.documentService.status({ accountId });
   }
 }
