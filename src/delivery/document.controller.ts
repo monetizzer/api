@@ -3,6 +3,7 @@ import { DocumentService } from 'src/usecases/document/document.service';
 import { AccountId } from './decorators/accountid';
 import { AuthGuard } from './guards/auth.guard';
 import { CreateCompleteDto } from './dtos/document';
+import { AdminGuard } from './guards/admin.guard';
 
 @Controller('documents')
 export class DocumentController {
@@ -26,5 +27,11 @@ export class DocumentController {
     accountId: string,
   ) {
     return this.documentService.status({ accountId });
+  }
+
+  @Get('review')
+  @UseGuards(AdminGuard)
+  getToReview() {
+    return this.documentService.getToReview();
   }
 }

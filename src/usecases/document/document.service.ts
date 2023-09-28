@@ -3,6 +3,7 @@ import { DiscordAdapter } from 'src/adapters/discord';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import {
   CreateCompleteInput,
+  DocumentEntity,
   DocumentUseCase,
   StatusInput,
   StatusOutput,
@@ -145,5 +146,13 @@ export class DocumentService implements DocumentUseCase {
     return {
       status: document.status || DocumentStatusEnum['00'],
     };
+  }
+
+  async getToReview(): Promise<DocumentEntity[]> {
+    const documents = await this.documentRepository.getMany({
+      status: [DocumentStatusEnum.VV],
+    });
+
+    return documents;
   }
 }
