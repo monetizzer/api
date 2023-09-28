@@ -45,6 +45,6 @@ export interface SendNotificationInput {
   data?: Record<string, string>;
 }
 
-export interface TermsUseCase {
+export interface NotificationUseCase {
   sendNotification: (i: SendNotificationInput) => Promise<void>;
 }

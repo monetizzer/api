@@ -3,6 +3,7 @@ import { MongoDBModule } from './repositories/mongodb';
 import { AccountModule } from './usecases/account/account.module';
 import { TermsModule } from './usecases/terms/terms.module';
 import { DocumentModule } from './usecases/document/document.module';
+import { NotificationModule } from './usecases/notification/notification.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { DocumentModule } from './usecases/document/document.module';
     AccountModule,
     TermsModule,
     DocumentModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}
