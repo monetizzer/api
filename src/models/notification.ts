@@ -26,7 +26,7 @@ export interface SaveInput {
   data?: Record<string, string>;
 }
 
-export interface TermsRepository {
+export interface NotificationRepository {
   save: (i: SaveInput) => Promise<void>;
 }
 
