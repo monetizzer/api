@@ -15,5 +15,5 @@ export interface GetInput {
 export interface FileAdapter {
   save: (i: SaveInput) => Promise<string>;
 
-  getStream: (i: GetInput) => Promise<Readable>;
+  getReadStream: (i: GetInput) => Promise<Readable>;
 }

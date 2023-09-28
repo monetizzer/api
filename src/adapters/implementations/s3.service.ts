@@ -44,16 +44,16 @@ export class S3Adapter implements FileAdapter {
     return path;
   }
 
-  async getStream({ folder, filePath }: GetInput): Promise<Readable> {
+  async getReadStream({ folder, filePath }: GetInput): Promise<Readable> {
     if (process.env['NODE_ENV'] === 'production') {
-      const x = await this.client.send(
+      const file = await this.client.send(
         new GetObjectCommand({
           Bucket: folder,
           Key: filePath,
         }),
       );
 
-      return x.Body! as Readable;
+      return file.Body! as Readable;
     } else {
       return createReadStream(join(__dirname, 'tmp', 'assets', filePath));
     }

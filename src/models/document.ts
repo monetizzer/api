@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
 
@@ -142,6 +143,12 @@ export interface StatusOutput {
   status: DocumentStatusEnum;
 }
 
+export interface GetImageInput {
+  folder: string;
+  type: string;
+  name: string;
+}
+
 export interface DocumentUseCase {
   // createPartial: (i: CreatePartialInput) => Promise<void>;
 
@@ -152,4 +159,6 @@ export interface DocumentUseCase {
   review: (i: ReviewInput) => Promise<void>;
 
   status: (i: StatusInput) => Promise<StatusOutput>;
+
+  getImage: (i: GetImageInput) => Promise<Readable>;
 }
