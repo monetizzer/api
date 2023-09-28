@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { DocumentService } from 'src/usecases/document/document.service';
 import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
@@ -33,6 +33,23 @@ export class DocumentController {
   @UseGuards(AdminGuard)
   getToReview() {
     return this.documentService.getToReview();
+  }
+
+  @Get(':folder/:type/:name')
+  @UseGuards(AdminGuard)
+  getImage(
+    @Param('folder')
+    folder: string,
+    @Param('type')
+    type: string,
+    @Param('name')
+    name: string,
+  ) {
+    return this.documentService.getImage({
+      folder,
+      type,
+      name,
+    });
   }
 
   @Post('review')

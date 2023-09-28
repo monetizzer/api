@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { DiscordAdapter } from 'src/adapters/discord';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
@@ -5,6 +6,7 @@ import {
   CreateCompleteInput,
   DocumentEntity,
   DocumentUseCase,
+  GetImageInput,
   ReviewInput,
   StatusInput,
   StatusOutput,
@@ -226,5 +228,16 @@ export class DocumentService implements DocumentUseCase {
           'Entre em nossa plataforma agora para continuar de onde você parou!',
       }),
     ]);
+  }
+
+  async getImage({ folder, type, name }: GetImageInput): Promise<Readable> {
+    return this.fileAdapter
+      .getReadStream({
+        folder,
+        filePath: `${type}/${name}`,
+      })
+      .catch(() => {
+        throw new HttpException('File not found', HttpStatus.NOT_FOUND);
+      });
   }
 }
