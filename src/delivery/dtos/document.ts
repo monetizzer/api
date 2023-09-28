@@ -1,6 +1,16 @@
-import { IsDefined, IsEnum, IsObject, IsString, Max } from 'class-validator';
+import {
+  IsBoolean,
+  IsDefined,
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  Max,
+} from 'class-validator';
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
 import { IsDateYYYYMMDD } from '../validators/date-yyyy-mm-dd';
+import { IsID } from '../validators/internal';
 
 class DocumentAddressDto {
   @IsString()
@@ -57,4 +67,19 @@ export class CreateCompleteDto {
 
   @IsDefined()
   selfieWithDocument: Buffer;
+}
+
+export class ReviewDto {
+  @IsString()
+  @IsID()
+  accountId: string;
+
+  @IsBoolean()
+  approve: boolean;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @Max(1000)
+  message?: string;
 }

@@ -129,6 +129,7 @@ export interface CreateCompleteInput {
 
 export interface ReviewInput {
   accountId: string;
+  reviewerId: string;
   approve: boolean;
   message?: string;
 }
