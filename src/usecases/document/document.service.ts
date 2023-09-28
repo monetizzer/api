@@ -1,7 +1,12 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { DiscordAdapter } from 'src/adapters/discord';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
-import { CreateCompleteInput } from 'src/models/document';
+import {
+  CreateCompleteInput,
+  DocumentUseCase,
+  StatusInput,
+  StatusOutput,
+} from 'src/models/document';
 import { DocumentRepositoryService } from 'src/repositories/mongodb/document/document-repository.service';
 import {
   DocumentStatusEnum,
@@ -9,8 +14,7 @@ import {
 } from 'src/types/enums/document-status';
 
 @Injectable()
-export class DocumentService {
-  // export class DocumentService implements DocumentUseCase {
+export class DocumentService implements DocumentUseCase {
   constructor(
     @Inject(DocumentRepositoryService)
     private readonly documentRepository: DocumentRepositoryService,
@@ -133,5 +137,13 @@ export class DocumentService {
         ],
       ],
     });
+  }
+
+  async status(i: StatusInput): Promise<StatusOutput> {
+    const document = await this.documentRepository.getByAccountId(i);
+
+    return {
+      status: document.status || DocumentStatusEnum['00'],
+    };
   }
 }
