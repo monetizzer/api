@@ -18,7 +18,7 @@ export interface GetInput {
 }
 
 export interface TermsRepository {
-  get: (i: GetInput) => Promise<TermsEntity | void>;
+  get: (i: GetInput) => Promise<TermsEntity | undefined>;
 
   getLatest: () => Promise<TermsEntity>;
 }

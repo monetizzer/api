@@ -95,7 +95,7 @@ export class AccountRepositoryService implements AccountRepository {
 
   async getByAccountId({
     accountId,
-  }: GetByAccountIdInput): Promise<void | AccountEntity> {
+  }: GetByAccountIdInput): Promise<undefined | AccountEntity> {
     const account = await this.accountRepository.findOne({
       _id: accountId,
     });
@@ -110,7 +110,9 @@ export class AccountRepositoryService implements AccountRepository {
     };
   }
 
-  async getByEmail({ email }: GetByEmailInput): Promise<void | AccountEntity> {
+  async getByEmail({
+    email,
+  }: GetByEmailInput): Promise<undefined | AccountEntity> {
     const account = await this.accountRepository.findOne({
       email,
     });
@@ -160,7 +162,7 @@ export class AccountRepositoryService implements AccountRepository {
 
   async getByUsername({
     username,
-  }: GetByUsernameInput): Promise<void | AccountEntity> {
+  }: GetByUsernameInput): Promise<undefined | AccountEntity> {
     const account = await this.accountRepository.findOne({
       username,
     });

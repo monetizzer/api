@@ -26,7 +26,7 @@ export class StoreRepositoryService implements StoreRepository {
 
   async getByStoreId({
     storeId,
-  }: GetByStoreIdInput): Promise<void | StoreEntity> {
+  }: GetByStoreIdInput): Promise<undefined | StoreEntity> {
     const store = await this.storeRepository.findOne({
       _id: storeId,
     });
@@ -43,7 +43,7 @@ export class StoreRepositoryService implements StoreRepository {
 
   async getByAccountId({
     accountId,
-  }: GetByAccountIdInput): Promise<void | StoreEntity> {
+  }: GetByAccountIdInput): Promise<undefined | StoreEntity> {
     const store = await this.storeRepository.findOne({
       accountId,
     });
@@ -60,7 +60,7 @@ export class StoreRepositoryService implements StoreRepository {
 
   async getByUsername({
     username,
-  }: GetByUsernameInput): Promise<void | StoreEntity> {
+  }: GetByUsernameInput): Promise<undefined | StoreEntity> {
     const store = await this.storeRepository.findOne({
       username,
     });

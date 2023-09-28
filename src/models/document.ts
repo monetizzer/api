@@ -93,7 +93,9 @@ export interface DocumentRepository {
 
   upsertComplete: (i: UpsertCompleteInput) => Promise<void>;
 
-  getByAccountId: (i: GetByAccountIdInput) => Promise<DocumentEntity | void>;
+  getByAccountId: (
+    i: GetByAccountIdInput,
+  ) => Promise<DocumentEntity | undefined>;
 
   getMany: (i: GetManyInput) => Promise<Array<DocumentEntity>>;
 }
@@ -114,6 +116,7 @@ export interface CreatePartialInput {
 }
 
 export interface CreateCompleteInput {
+  accountId: string;
   type: DocumentTypeEnum;
   documentNumber: string;
   fullName: string;
@@ -131,7 +134,7 @@ export interface ReviewInput {
 }
 
 export interface DocumentUseCase {
-  createPartial: (i: CreatePartialInput) => Promise<void>;
+  // createPartial: (i: CreatePartialInput) => Promise<void>;
 
   createComplete: (i: CreateCompleteInput) => Promise<void>;
 

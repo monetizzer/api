@@ -92,11 +92,13 @@ export interface AccountRepository {
 
   updateTerms: (i: UpdateTermsInput) => Promise<void>;
 
-  getByAccountId: (i: GetByAccountIdInput) => Promise<AccountEntity | void>;
+  getByAccountId: (
+    i: GetByAccountIdInput,
+  ) => Promise<AccountEntity | undefined>;
 
-  getByUsername: (i: GetByUsernameInput) => Promise<AccountEntity | void>;
+  getByUsername: (i: GetByUsernameInput) => Promise<AccountEntity | undefined>;
 
-  getByEmail: (i: GetByEmailInput) => Promise<AccountEntity | void>;
+  getByEmail: (i: GetByEmailInput) => Promise<AccountEntity | undefined>;
 
   // Get by discord information (id or email)
   getManyByDiscord: (i: GetManyByDiscordInput) => Promise<Array<AccountEntity>>;

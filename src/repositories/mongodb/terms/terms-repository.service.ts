@@ -15,7 +15,7 @@ export class TermsRepositoryService implements TermsRepository {
     private readonly versionAdapter: SemVerAdapter,
   ) {}
 
-  async get({ semVer }: GetInput): Promise<void | TermsEntity> {
+  async get({ semVer }: GetInput): Promise<undefined | TermsEntity> {
     const terms = await this.termsRepository.findOne({
       _id: semVer,
     });

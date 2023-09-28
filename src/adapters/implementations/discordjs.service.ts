@@ -1,6 +1,7 @@
 import type {
   AnyComponent,
   ButtonStyle,
+  Channels,
   DiscordAdapter,
   Embed,
   SendMessageInput,
@@ -41,7 +42,9 @@ interface GetUserDmChannelIdAPIOutput {
 
 @Injectable()
 export class DiscordJSAdapter implements DiscordAdapter {
-  private discordApi: (route: string, init: RequestInit) => Promise<Response>;
+  channels: Record<Channels, string> = {
+    DOCUMENTS: '',
+  };
 
   private readonly buttonStyles: Record<ButtonStyle, number> = {
     primary: 1,
@@ -50,6 +53,8 @@ export class DiscordJSAdapter implements DiscordAdapter {
     danger: 4,
     link: 5,
   };
+
+  private discordApi: (route: string, init: RequestInit) => Promise<Response>;
 
   public constructor() {
     this.discordApi = (route: string, init: RequestInit) =>

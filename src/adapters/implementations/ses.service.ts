@@ -4,7 +4,7 @@ import { EmailAdapter, SendInput } from '../email';
 
 @Injectable()
 export class SESAdapter implements EmailAdapter {
-  client: SESClient;
+  private client: SESClient;
 
   constructor() {
     this.client = new SESClient();

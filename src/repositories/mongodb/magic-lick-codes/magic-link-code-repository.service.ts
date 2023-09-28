@@ -50,7 +50,7 @@ export class MagicLinkCodeRepositoryService implements MagicLinkCodeRepository {
   async get({
     accountId,
     code,
-  }: GetInput): Promise<void | MagicLinkCodeEntity> {
+  }: GetInput): Promise<undefined | MagicLinkCodeEntity> {
     const magicLinkCode = await this.magicLinkCodeRepository.findOne({
       _id: accountId,
       code: code as unknown,

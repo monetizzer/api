@@ -38,7 +38,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 
   async getByAccountId({
     accountId,
-  }: GetByAccountIdInput): Promise<void | DocumentEntity> {
+  }: GetByAccountIdInput): Promise<undefined | DocumentEntity> {
     const document = await this.documentRepository.findOne({
       _id: accountId,
     });
