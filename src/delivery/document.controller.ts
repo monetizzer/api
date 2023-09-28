@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { DocumentService } from 'src/usecases/document/document.service';
-import { AccountId } from './decorators/accountid';
+import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
 import { CreateCompleteDto, ReviewDto } from './dtos/document';
 import { AdminGuard } from './guards/admin.guard';

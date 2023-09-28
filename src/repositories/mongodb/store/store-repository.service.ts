@@ -79,8 +79,9 @@ export class StoreRepositoryService implements StoreRepository {
     const storeId = this.idAdapter.gen();
 
     await this.storeRepository.insertOne({
-      _id: storeId,
       ...i,
+      _id: storeId,
+      createdAt: new Date(),
     });
 
     return {

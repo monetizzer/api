@@ -1,0 +1,21 @@
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { StoreService } from 'src/usecases/store/store.service';
+import { AccountId } from './decorators/account-id';
+import { AuthGuard } from './guards/auth.guard';
+import { CreateDto } from './dtos/store';
+
+@Controller('stores')
+export class StoreController {
+  constructor(private readonly storeService: StoreService) {}
+
+  @Post('/')
+  @UseGuards(AuthGuard(['USER']))
+  create(
+    @Body()
+    body: CreateDto,
+    @AccountId()
+    accountId: string,
+  ) {
+    return this.storeService.create({ accountId, ...body });
+  }
+}

@@ -6,7 +6,7 @@ import {
   CreateFromMagicLinkDto,
 } from './dtos/auth';
 import { AuthGuard } from './guards/auth.guard';
-import { AccountId } from './decorators/accountid';
+import { AccountId } from './decorators/account-id';
 
 @Controller('auth')
 export class AuthController {

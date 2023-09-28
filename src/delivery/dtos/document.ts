@@ -9,7 +9,7 @@ import {
   Max,
 } from 'class-validator';
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
-import { IsDateYYYYMMDD } from '../validators/date-yyyy-mm-dd';
+import { IsDateYYYYMMDD } from '../validators/date';
 import { IsID } from '../validators/internal';
 
 class DocumentAddressDto {

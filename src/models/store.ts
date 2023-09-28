@@ -38,7 +38,6 @@ export interface CreateInput {
   color?: string;
   bannerUrl?: string;
   avatarUrl?: string;
-  createdAt: Date;
 }
 
 export interface CreateOutput {
@@ -83,7 +82,6 @@ export interface CreateStoreInput {
   color?: string;
   banner?: Buffer;
   avatar?: Buffer;
-  createdAt: Date;
 }
 
 export interface UpdateStoreInput {
