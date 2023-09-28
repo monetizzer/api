@@ -16,6 +16,8 @@ import { TermsRepositoryService } from 'src/repositories/mongodb/terms/terms-rep
 import { SemVerAdapter } from 'src/adapters/implementations/semver.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
 import { PlatformEnum } from 'src/types/enums/platform';
+import { DocumentRepositoryService } from 'src/repositories/mongodb/document/document-repository.service';
+import { DocumentStatusEnum } from 'src/types/enums/document-status';
 
 @Injectable()
 // export class AccountService implements AccountUseCase {
@@ -31,6 +33,8 @@ export class AccountService {
     private readonly termsRepository: TermsRepositoryService,
     @Inject(StoreRepositoryService)
     private readonly storeRepository: StoreRepositoryService,
+    @Inject(DocumentRepositoryService)
+    private readonly documentRepository: DocumentRepositoryService,
     private readonly discordAdapter: DiscordJSAdapter,
     private readonly tokenAdapter: JWTAdapter,
     private readonly versionAdapter: SemVerAdapter,
@@ -210,17 +214,20 @@ export class AccountService {
   }
 
   async iam(i: IamInput): Promise<IamOutput> {
-    const account = await this.accountRepository.getByAccountId(i);
+    const [account, store, document] = await Promise.all([
+      this.accountRepository.getByAccountId(i),
+      this.storeRepository.getByAccountId(i),
+      this.documentRepository.getByAccountId(i),
+    ]);
 
     if (!account) {
       throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
 
-    const store = await this.storeRepository.getByAccountId(i);
-
     return {
       accountId: account.accountId,
       isAdmin: account.isAdmin,
+      dvs: document?.status || DocumentStatusEnum['00'],
       ...(account.discord
         ? {
             discord: {

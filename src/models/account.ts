@@ -1,3 +1,4 @@
+import { DocumentStatusEnum } from 'src/types/enums/document-status';
 import { PlatformEnum } from 'src/types/enums/platform';
 
 export interface AccountEntity {
@@ -148,6 +149,7 @@ export interface AcceptInput {
 export interface IamOutput {
   accountId: string;
   isAdmin: boolean;
+  dvs: DocumentStatusEnum;
   discord?: {
     id: string;
     username: string;
