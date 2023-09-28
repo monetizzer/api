@@ -5,6 +5,7 @@ import {
   CreateCompleteInput,
   DocumentEntity,
   DocumentUseCase,
+  ReviewInput,
   StatusInput,
   StatusOutput,
 } from 'src/models/document';
@@ -154,5 +155,67 @@ export class DocumentService implements DocumentUseCase {
     });
 
     return documents;
+  }
+
+  async review({
+    accountId,
+    reviewerId,
+    approve,
+    message,
+  }: ReviewInput): Promise<void> {
+    if (!approve && !message) {
+      throw new HttpException(
+        'Message is required if document is rejected',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const document = await this.documentRepository.getByAccountId({
+      accountId,
+    });
+
+    let status: DocumentStatusEnum;
+
+    if (!approve) {
+      if (document?.status.startsWith('A')) {
+        status = DocumentStatusEnum.AR;
+      } else {
+        status = DocumentStatusEnum.RR;
+      }
+    } else {
+      status = DocumentStatusEnum.AA;
+    }
+
+    await Promise.all([
+      this.documentRepository.updateStatus({
+        accountId,
+        status,
+        reviewerId,
+        message,
+      }),
+      this.discordAdapter.sendMessage({
+        channelId: this.discordAdapter.channels.DOCUMENTS,
+        content: '@everyone',
+        embeds: [
+          {
+            title: `Novo documento ${approve ? 'aprovado' : 'reprovado'}.`,
+            fields: [
+              {
+                name: 'AccountId',
+                value: accountId,
+                inline: true,
+              },
+              {
+                name: 'ReviewerId',
+                value: reviewerId,
+                inline: true,
+              },
+            ],
+            color: approve ? '#e81212' : '#12e820',
+            timestamp: new Date(),
+          },
+        ],
+      }),
+    ]);
   }
 }
