@@ -15,6 +15,7 @@ import { MagicLinkCodeRepositoryService } from 'src/repositories/mongodb/magic-l
 import { TermsRepositoryService } from 'src/repositories/mongodb/terms/terms-repository.service';
 import { SemVerAdapter } from 'src/adapters/implementations/semver.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
+import { PlatformEnum } from 'src/types/enums/platform';
 
 @Injectable()
 // export class AccountService implements AccountUseCase {
@@ -124,6 +125,7 @@ export class AccountService {
 
       account = await this.accountRepository.create({
         email: discordData.email,
+        notifyThrough: PlatformEnum.DISCORD,
         discord: {
           username: discordData.username,
           dmChannelId,

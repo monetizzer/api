@@ -1,8 +1,11 @@
+import { PlatformEnum } from 'src/types/enums/platform';
+
 export interface AccountEntity {
   accountId: string;
   isAdmin?: boolean;
   email: string;
   username: string;
+  notifyThrough: PlatformEnum;
   discordId?: string;
   discord?: {
     username: string;
@@ -29,9 +32,11 @@ export interface AccountEntity {
 export type CreateInput =
   | {
       email: string;
+      notifyThrough: PlatformEnum;
     }
   | {
       email: string;
+      notifyThrough: PlatformEnum;
       discordId: string;
       discord: {
         username: string;
