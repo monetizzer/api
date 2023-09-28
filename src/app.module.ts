@@ -2,8 +2,14 @@ import { Module } from '@nestjs/common';
 import { MongoDBModule } from './repositories/mongodb';
 import { AccountModule } from './usecases/account/account.module';
 import { TermsModule } from './usecases/terms/terms.module';
+import { DocumentModule } from './usecases/document/document.module';
 
 @Module({
-  imports: [MongoDBModule.forRoot(), AccountModule, TermsModule],
+  imports: [
+    MongoDBModule.forRoot(),
+    AccountModule,
+    TermsModule,
+    DocumentModule,
+  ],
 })
 export class AppModule {}

@@ -11,7 +11,7 @@ import { Readable } from 'stream';
 
 @Injectable()
 export class S3Adapter implements FileAdapter {
-  client: S3Client;
+  private client: S3Client;
 
   constructor() {
     if (process.env['NODE_ENV'] === 'production') {

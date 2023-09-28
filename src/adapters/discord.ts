@@ -31,7 +31,7 @@ export type ButtonStyle =
 export interface BaseComponent {
   style: ButtonStyle;
   label: string;
-  emoji: string;
+  emoji?: string;
 }
 
 export interface ButtonComponent extends BaseComponent {
@@ -77,7 +77,11 @@ export interface GetAuthenticatedUserDataOutput {
   bannerUrl?: string;
 }
 
+export type Channels = 'DOCUMENTS';
+
 export interface DiscordAdapter {
+  channels: Record<Channels, string>;
+
   sendMessage: (i: SendMessageInput) => Promise<void>;
 
   exchangeCode: (code: string) => Promise<ExchangeCodeOutput>;

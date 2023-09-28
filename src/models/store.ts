@@ -56,11 +56,11 @@ export interface UpdateInput {
 }
 
 export interface StoreRepository {
-  getByStoreId: (i: GetByStoreIdInput) => Promise<StoreEntity | void>;
+  getByStoreId: (i: GetByStoreIdInput) => Promise<StoreEntity | undefined>;
 
-  getByAccountId: (i: GetByAccountIdInput) => Promise<StoreEntity | void>;
+  getByAccountId: (i: GetByAccountIdInput) => Promise<StoreEntity | undefined>;
 
-  getByUsername: (i: GetByUsernameInput) => Promise<StoreEntity | void>;
+  getByUsername: (i: GetByUsernameInput) => Promise<StoreEntity | undefined>;
 
   create: (i: CreateInput) => Promise<CreateOutput>;
 

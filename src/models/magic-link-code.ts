@@ -24,5 +24,5 @@ export interface GetInput {
 export interface MagicLinkCodeRepository {
   upsert: (i: UpsertInput) => Promise<MagicLinkCodeEntity>;
 
-  get: (i: GetInput) => Promise<MagicLinkCodeEntity | void>;
+  get: (i: GetInput) => Promise<MagicLinkCodeEntity | undefined>;
 }
