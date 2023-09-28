@@ -3,6 +3,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import {
   AcceptInput,
   AccountEntity,
+  AccountUseCase,
   AuthOutput,
   CreateFromDiscordInput,
   CreateFromMagicLinkInput,
@@ -22,7 +23,13 @@ import { DocumentStatusEnum } from 'src/types/enums/document-status';
 @Injectable()
 // export class AccountService implements AccountUseCase {
 export class AccountService {
-  requiredDiscordScopes = ['email'];
+  private readonly requiredDiscordScopes = [
+    'identify',
+    'email',
+    'guilds',
+    'guilds.join',
+    'guilds.members.read',
+  ];
 
   constructor(
     @Inject(AccountRepositoryService)
