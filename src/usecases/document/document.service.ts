@@ -14,12 +14,15 @@ import {
   DocumentStatusEnum,
   canChangeStatus,
 } from 'src/types/enums/document-status';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class DocumentService implements DocumentUseCase {
   constructor(
     @Inject(DocumentRepositoryService)
     private readonly documentRepository: DocumentRepositoryService,
+    @Inject(NotificationService)
+    private readonly notificationUsecase: NotificationService,
     private readonly fileAdapter: S3Adapter,
     private readonly discordAdapter: DiscordAdapter,
   ) {}
@@ -215,6 +218,12 @@ export class DocumentService implements DocumentUseCase {
             timestamp: new Date(),
           },
         ],
+      }),
+      this.notificationUsecase.sendNotification({
+        accountId,
+        title: 'Parabés, seus documentos foram aprovados!',
+        description:
+          'Entre em nossa plataforma agora para continuar de onde você parou!',
       }),
     ]);
   }
