@@ -4,6 +4,7 @@ import {
   AcceptTermsDto,
   CreateFromDiscordOauthDto,
   CreateFromMagicLinkDto,
+  SendMagicLinkDto,
 } from './dtos/auth';
 import { AuthGuard } from './guards/auth.guard';
 import { AccountId } from './decorators/account-id';
@@ -18,6 +19,14 @@ export class AuthController {
     body: CreateFromDiscordOauthDto,
   ) {
     return this.accountService.createFromDiscordOauth(body);
+  }
+
+  @Post('/auth/magic-link/gen-email')
+  sendMagicLink(
+    @Body()
+    body: SendMagicLinkDto,
+  ) {
+    return this.accountService.sendMagicLink(body);
   }
 
   @Post('/auth/magic-link')

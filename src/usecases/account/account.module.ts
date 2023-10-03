@@ -9,6 +9,7 @@ import { TermsRepositoryModule } from 'src/repositories/mongodb/terms/terms-repo
 import { SemVerAdapter } from 'src/adapters/implementations/semver.service';
 import { StoreRepositoryModule } from 'src/repositories/mongodb/store/store-repository.module';
 import { DocumentRepositoryModule } from 'src/repositories/mongodb/document/document-repository.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   controllers: [AuthController],
@@ -18,6 +19,7 @@ import { DocumentRepositoryModule } from 'src/repositories/mongodb/document/docu
     TermsRepositoryModule,
     StoreRepositoryModule,
     DocumentRepositoryModule,
+    NotificationModule,
   ],
   providers: [AccountService, DiscordJSAdapter, JWTAdapter, SemVerAdapter],
 })

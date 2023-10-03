@@ -1,4 +1,5 @@
 import { PlatformEnum } from 'src/types/enums/platform';
+import { AccountEntity } from './account';
 
 export interface NotificationEntity {
   notificationId: string;
@@ -43,6 +44,7 @@ export interface SendNotificationInput {
   title: string;
   description: string;
   data?: Record<string, string>;
+  account?: AccountEntity;
 }
 
 export interface NotificationUseCase {

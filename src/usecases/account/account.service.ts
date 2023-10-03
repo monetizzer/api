@@ -9,6 +9,7 @@ import {
   CreateFromMagicLinkInput,
   IamInput,
   IamOutput,
+  SendMagicLinkInput,
 } from 'src/models/account';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { JWTAdapter } from 'src/adapters/implementations/jwt.service';
@@ -19,10 +20,10 @@ import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-rep
 import { PlatformEnum } from 'src/types/enums/platform';
 import { DocumentRepositoryService } from 'src/repositories/mongodb/document/document-repository.service';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
-// export class AccountService implements AccountUseCase {
-export class AccountService {
+export class AccountService implements AccountUseCase {
   private readonly requiredDiscordScopes = [
     'identify',
     'email',
@@ -42,6 +43,8 @@ export class AccountService {
     private readonly storeRepository: StoreRepositoryService,
     @Inject(DocumentRepositoryService)
     private readonly documentRepository: DocumentRepositoryService,
+    @Inject(NotificationService)
+    private readonly notificationUsecase: NotificationService,
     private readonly discordAdapter: DiscordJSAdapter,
     private readonly tokenAdapter: JWTAdapter,
     private readonly versionAdapter: SemVerAdapter,
@@ -153,6 +156,27 @@ export class AccountService {
     return {
       accessToken,
     };
+  }
+
+  async sendMagicLink({ email }: SendMagicLinkInput): Promise<void> {
+    let account = await this.accountRepository.getByEmail({ email });
+
+    if (!account) {
+      account = await this.accountRepository.create({
+        email,
+        notifyThrough: PlatformEnum.EMAIL,
+      });
+    }
+
+    const { code } = await this.magicLinkCodeRepository.upsert({
+      accountId: account.accountId,
+    });
+
+    await this.notificationUsecase.sendNotification({
+      accountId: account.accountId,
+      title: 'Seu link de login chegou!',
+      description: `${process.env['FRONT_URL']}/auth/email?accountId=${account.accountId}&code=${code}`,
+    });
   }
 
   async createFromMagicLink({
