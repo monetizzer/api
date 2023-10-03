@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsSemVer } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsSemVer } from 'class-validator';
 import { IsDiscordCode } from '../validators/discord';
 import { IsID, IsMagicLinkCode } from '../validators/internal';
 
@@ -6,6 +6,11 @@ export class CreateFromDiscordOauthDto {
   @IsNotEmpty()
   @IsDiscordCode()
   code: string;
+}
+
+export class SendMagicLinkDto {
+  @IsEmail()
+  email: string;
 }
 
 export class CreateFromMagicLinkDto {

@@ -25,8 +25,10 @@ export class NotificationService implements NotificationUseCase {
     title,
     description,
     data,
+    account: maybeAccount,
   }: SendNotificationInput): Promise<void> {
-    const account = await this.accountRepository.getByAccountId({ accountId });
+    const account = await (maybeAccount ||
+      this.accountRepository.getByAccountId({ accountId }));
 
     if (!account) return;
 

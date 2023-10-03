@@ -122,8 +122,8 @@ export class DocumentService implements DocumentUseCase {
       address,
       documentNumber,
       type,
-      documentPicturePath: `${process.env['PRIVATE_BUCKET_URL']}${documentPicturePath}`,
-      selfieWithDocumentPath: `${process.env['PRIVATE_BUCKET_URL']}${selfieWithDocumentPath}`,
+      documentPicturePath: `${process.env['API_URL']}/documents${documentPicturePath}`,
+      selfieWithDocumentPath: `${process.env['API_URL']}/documents${selfieWithDocumentPath}`,
     });
 
     await this.discordAdapter.sendMessage({
@@ -138,7 +138,7 @@ export class DocumentService implements DocumentUseCase {
         [
           {
             style: 'link',
-            url: `${process.env['BACKLOG_URL']}/documents`,
+            url: `${process.env['BACKOFFICE_URL']}/documents`,
             label: 'Ver documentos',
           },
         ],
