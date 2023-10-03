@@ -123,8 +123,8 @@ export class DocumentRepositoryService implements DocumentRepository {
 		birthDate,
 		phone,
 		address,
-		documentPicturePath,
-		selfieWithDocumentPath,
+		documentPictureUrl,
+		selfieWithDocumentUrl,
 	}: UpsertCompleteInput): Promise<void> {
 		await this.documentRepository.updateOne(
 			{
@@ -139,8 +139,8 @@ export class DocumentRepositoryService implements DocumentRepository {
 					birthDate,
 					phone,
 					address,
-					documentPicturePath,
-					selfieWithDocumentPath,
+					documentPictureUrl,
+					selfieWithDocumentUrl,
 				},
 				$push: {
 					history: {

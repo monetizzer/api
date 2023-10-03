@@ -5,35 +5,36 @@ import {
 	IsObject,
 	IsOptional,
 	IsString,
-	Max,
+	MaxLength,
 } from 'class-validator';
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
 import { IsDateYYYYMMDD } from '../validators/date';
 import { IsID } from '../validators/internal';
+import { Transform } from 'class-transformer';
 
 class DocumentAddressDto {
 	@IsString()
-	@Max(150)
+	@MaxLength(150)
 	line1: string;
 
 	@IsString()
-	@Max(150)
+	@MaxLength(150)
 	line2: string;
 
 	@IsString()
-	@Max(50)
+	@MaxLength(50)
 	postalCode: string;
 
 	@IsString()
-	@Max(50)
+	@MaxLength(50)
 	city: string;
 
 	@IsString()
-	@Max(50)
+	@MaxLength(50)
 	state: string;
 
 	@IsString()
-	@Max(50)
+	@MaxLength(50)
 	country: string;
 }
 
@@ -43,11 +44,11 @@ export class CreateCompleteDto {
 	type: DocumentTypeEnum;
 
 	@IsString()
-	@Max(150)
+	@MaxLength(150)
 	documentNumber: string;
 
 	@IsString()
-	@Max(150)
+	@MaxLength(150)
 	fullName: string;
 
 	@IsString()
@@ -55,10 +56,11 @@ export class CreateCompleteDto {
 	birthDate: string;
 
 	@IsString()
-	@Max(50)
+	@MaxLength(50)
 	phone: string;
 
 	@IsObject()
+	@Transform(({ value }) => JSON.parse(value))
 	address: DocumentAddressDto;
 }
 
@@ -73,6 +75,6 @@ export class ReviewDto {
 	@IsOptional()
 	@IsString()
 	@IsNotEmpty()
-	@Max(1000)
+	@MaxLength(1000)
 	message?: string;
 }

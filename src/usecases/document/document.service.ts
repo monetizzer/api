@@ -122,8 +122,8 @@ export class DocumentService implements DocumentUseCase {
 			address,
 			documentNumber,
 			type,
-			documentPicturePath: `${process.env['API_URL']}/documents${documentPicturePath}`,
-			selfieWithDocumentPath: `${process.env['API_URL']}/documents${selfieWithDocumentPath}`,
+			documentPictureUrl: `${process.env['API_URL']}/${documentPicturePath}`,
+			selfieWithDocumentUrl: `${process.env['API_URL']}/${selfieWithDocumentPath}`,
 		});
 
 		await this.discordAdapter.sendMessage({
@@ -230,10 +230,10 @@ export class DocumentService implements DocumentUseCase {
 		]);
 	}
 
-	async getImage({ folder, type, name }: GetImageInput): Promise<Readable> {
+	async getImage({ type, name }: GetImageInput): Promise<Readable> {
 		return this.fileAdapter
 			.getReadStream({
-				folder,
+				folder: 'documents',
 				filePath: `${type}/${name}`,
 			})
 			.catch(() => {

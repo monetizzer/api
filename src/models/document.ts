@@ -67,8 +67,8 @@ export interface UpsertCompleteInput {
 	birthDate: string;
 	phone: string;
 	address: DocumentAddress;
-	documentPicturePath: string;
-	selfieWithDocumentPath: string;
+	documentPictureUrl: string;
+	selfieWithDocumentUrl: string;
 }
 
 export interface GetByAccountIdInput {
@@ -144,7 +144,6 @@ export interface StatusOutput {
 }
 
 export interface GetImageInput {
-	folder: string;
 	type: string;
 	name: string;
 }
