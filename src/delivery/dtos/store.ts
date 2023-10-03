@@ -1,4 +1,4 @@
-import { IsOptional, IsString, Max } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { IsHEXColor, IsID, IsUsername } from '../validators/internal';
 
 export class CreateDto {
@@ -7,11 +7,11 @@ export class CreateDto {
 	username: string;
 
 	@IsString()
-	@Max(25)
+	@MaxLength(25)
 	name: string;
 
 	@IsString()
-	@Max(500)
+	@MaxLength(500)
 	description: string;
 
 	@IsOptional()
@@ -31,12 +31,12 @@ export class UpdateDto {
 
 	@IsOptional()
 	@IsString()
-	@Max(25)
+	@MaxLength(25)
 	name: string;
 
 	@IsOptional()
 	@IsString()
-	@Max(500)
+	@MaxLength(500)
 	description: string;
 
 	@IsOptional()

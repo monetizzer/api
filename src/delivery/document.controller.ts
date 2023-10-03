@@ -6,6 +6,7 @@ import {
 	HttpStatus,
 	Param,
 	Post,
+	Res,
 	UploadedFiles,
 	UseGuards,
 	UseInterceptors,
@@ -16,6 +17,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { CreateCompleteDto, ReviewDto } from './dtos/document';
 import { AdminGuard } from './guards/admin.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 @Controller('documents')
 export class DocumentController {
@@ -94,21 +96,21 @@ export class DocumentController {
 		return this.documentService.getToReview();
 	}
 
-	@Get(':folder/:type/:name')
+	@Get(':type/:name')
 	@UseGuards(AdminGuard)
-	getImage(
-		@Param('folder')
-		folder: string,
+	async getImage(
 		@Param('type')
 		type: string,
 		@Param('name')
 		name: string,
+		@Res() res: Response,
 	) {
-		return this.documentService.getImage({
-			folder,
+		const file = await this.documentService.getImage({
 			type,
 			name,
 		});
+
+		file.pipe(res);
 	}
 
 	@Post('review')

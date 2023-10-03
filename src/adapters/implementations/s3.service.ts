@@ -5,7 +5,7 @@ import {
 	PutObjectCommand,
 	S3Client,
 } from '@aws-sdk/client-s3';
-import { createReadStream, writeFileSync } from 'fs';
+import { createReadStream, mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { Readable } from 'stream';
 
@@ -22,8 +22,6 @@ export class S3Adapter implements FileAdapter {
 	}
 
 	async save({ folder, filePath, file, metadata }: SaveInput) {
-		let path: string;
-
 		if (process.env['NODE_ENV'] === 'production') {
 			await this.client.send(
 				new PutObjectCommand({
@@ -34,14 +32,27 @@ export class S3Adapter implements FileAdapter {
 				}),
 			);
 
-			path = `${folder}/${filePath}`;
-		} else {
-			path = join(__dirname, 'tmp', 'assets', filePath);
-
-			writeFileSync(path, file);
+			return `${folder}${filePath}`;
 		}
 
-		return path;
+		const fileName = filePath.split('/').pop()!;
+		const foldersToCreatePath = join(
+			__dirname,
+			'..',
+			'..',
+			'tmp',
+			'assets',
+			folder,
+			filePath.replace(`/${fileName}`, ''),
+		);
+		mkdirSync(foldersToCreatePath, {
+			recursive: true,
+		});
+		const path = join(__dirname, '..', '..', 'tmp', 'assets', folder, filePath);
+
+		writeFileSync(path, file, { flag: 'w' });
+
+		return `${folder}${filePath}`;
 	}
 
 	async getReadStream({ folder, filePath }: GetInput): Promise<Readable> {
@@ -55,7 +66,9 @@ export class S3Adapter implements FileAdapter {
 
 			return file.Body! as Readable;
 		} else {
-			return createReadStream(join(__dirname, 'tmp', 'assets', filePath));
+			return createReadStream(
+				join(__dirname, '..', '..', 'tmp', 'assets', folder, filePath),
+			);
 		}
 	}
 }

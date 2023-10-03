@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 
 export interface SaveInput {
 	folder: string;
-	filePath: string;
+	filePath: `/${string}`;
 	file: Buffer;
 	metadata?: Record<string, string>;
 }
