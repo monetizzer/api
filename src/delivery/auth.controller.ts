@@ -8,11 +8,11 @@ import {
 import { AuthGuard } from './guards/auth.guard';
 import { AccountId } from './decorators/account-id';
 
-@Controller('auth')
+@Controller('')
 export class AuthController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Post('/discord')
+  @Post('/auth/discord')
   createFromDiscordOauth(
     @Body()
     body: CreateFromDiscordOauthDto,
@@ -20,7 +20,7 @@ export class AuthController {
     return this.accountService.createFromDiscordOauth(body);
   }
 
-  @Post('/magic-link')
+  @Post('/auth/magic-link')
   createFromMagicLink(
     @Body()
     body: CreateFromMagicLinkDto,
@@ -42,7 +42,7 @@ export class AuthController {
     });
   }
 
-  @Get('/iam')
+  @Get('/accounts/iam')
   @UseGuards(AuthGuard(['USER']))
   iam(
     @AccountId()
