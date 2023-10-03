@@ -3,8 +3,8 @@ import { DocumentRepositoryService } from './document-repository.service';
 import { MongoDBModule } from '..';
 
 @Module({
-  imports: [MongoDBModule.forFeature(['documents'])],
-  providers: [DocumentRepositoryService],
-  exports: [DocumentRepositoryService],
+	imports: [MongoDBModule.forFeature(['documents'])],
+	providers: [DocumentRepositoryService],
+	exports: [DocumentRepositoryService],
 })
 export class DocumentRepositoryModule {}

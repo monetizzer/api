@@ -1,14 +1,14 @@
 export interface LatestInput {
-  versions: Array<string>;
+	versions: Array<string>;
 }
 
 export interface IsLatestInput {
-  toValidate: string | undefined;
-  compareWith: string | undefined;
+	toValidate: string | undefined;
+	compareWith: string | undefined;
 }
 
 export interface VersionAdapter {
-  latest: (i: LatestInput) => string;
+	latest: (i: LatestInput) => string;
 
-  isGt: (i: IsLatestInput) => boolean;
+	isGt: (i: IsLatestInput) => boolean;
 }

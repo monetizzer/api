@@ -4,8 +4,8 @@ import { TermsController } from '../../delivery/terms.controller';
 import { TermsRepositoryModule } from 'src/repositories/mongodb/terms/terms-repository.module';
 
 @Module({
-  controllers: [TermsController],
-  imports: [TermsRepositoryModule],
-  providers: [TermsService],
+	controllers: [TermsController],
+	imports: [TermsRepositoryModule],
+	providers: [TermsService],
 })
 export class TermsModule {}

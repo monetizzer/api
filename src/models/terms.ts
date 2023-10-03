@@ -1,8 +1,8 @@
 export interface TermsEntity {
-  semVer: string;
-  terms: string;
-  liveAt?: Date;
-  createdAt: Date;
+	semVer: string;
+	terms: string;
+	liveAt?: Date;
+	createdAt: Date;
 }
 
 /**
@@ -14,13 +14,13 @@ export interface TermsEntity {
  */
 
 export interface GetInput {
-  semVer: string;
+	semVer: string;
 }
 
 export interface TermsRepository {
-  get: (i: GetInput) => Promise<TermsEntity | undefined>;
+	get: (i: GetInput) => Promise<TermsEntity | undefined>;
 
-  getLatest: () => Promise<TermsEntity>;
+	getLatest: () => Promise<TermsEntity>;
 }
 
 /**
@@ -32,15 +32,15 @@ export interface TermsRepository {
  */
 
 export interface LatestInput {
-  semVer?: boolean;
+	semVer?: boolean;
 }
 
 export interface LatestOutput {
-  semVer: string;
-  terms?: string;
-  liveAt?: Date;
+	semVer: string;
+	terms?: string;
+	liveAt?: Date;
 }
 
 export interface TermsUseCase {
-  latest: (i: LatestInput) => Promise<LatestOutput>;
+	latest: (i: LatestInput) => Promise<LatestOutput>;
 }

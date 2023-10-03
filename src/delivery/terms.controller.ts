@@ -4,13 +4,13 @@ import { LatestDto } from './dtos/terms';
 
 @Controller('terms')
 export class TermsController {
-  constructor(private readonly termsService: TermsService) {}
+	constructor(private readonly termsService: TermsService) {}
 
-  @Get('/latest')
-  latest(
-    @Param()
-    params: LatestDto,
-  ) {
-    return this.termsService.latest(params);
-  }
+	@Get('/latest')
+	latest(
+		@Param()
+		params: LatestDto,
+	) {
+		return this.termsService.latest(params);
+	}
 }

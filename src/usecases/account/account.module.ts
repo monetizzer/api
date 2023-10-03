@@ -12,15 +12,15 @@ import { DocumentRepositoryModule } from 'src/repositories/mongodb/document/docu
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  controllers: [AuthController],
-  imports: [
-    AccountRepositoryModule,
-    MagicLinkCodeRepositoryModule,
-    TermsRepositoryModule,
-    StoreRepositoryModule,
-    DocumentRepositoryModule,
-    NotificationModule,
-  ],
-  providers: [AccountService, DiscordJSAdapter, JWTAdapter, SemVerAdapter],
+	controllers: [AuthController],
+	imports: [
+		AccountRepositoryModule,
+		MagicLinkCodeRepositoryModule,
+		TermsRepositoryModule,
+		StoreRepositoryModule,
+		DocumentRepositoryModule,
+		NotificationModule,
+	],
+	providers: [AccountService, DiscordJSAdapter, JWTAdapter, SemVerAdapter],
 })
 export class AccountModule {}

@@ -4,8 +4,8 @@ import { MongoDBModule } from '..';
 import { UIDSecretAdapter } from 'src/adapters/implementations/uid-secret.service';
 
 @Module({
-  imports: [MongoDBModule.forFeature(['magic_link_codes'])],
-  providers: [MagicLinkCodeRepositoryService, UIDSecretAdapter],
-  exports: [MagicLinkCodeRepositoryService],
+	imports: [MongoDBModule.forFeature(['magic_link_codes'])],
+	providers: [MagicLinkCodeRepositoryService, UIDSecretAdapter],
+	exports: [MagicLinkCodeRepositoryService],
 })
 export class MagicLinkCodeRepositoryModule {}

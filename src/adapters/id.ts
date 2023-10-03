@@ -1,3 +1,3 @@
 export interface IdAdapter {
-  gen: () => string;
+	gen: () => string;
 }

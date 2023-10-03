@@ -1,7 +1,7 @@
 export interface MagicLinkCodeEntity {
-  accountId: string;
-  code: boolean;
-  createdAt: Date;
+	accountId: string;
+	code: boolean;
+	createdAt: Date;
 }
 
 /**
@@ -13,16 +13,16 @@ export interface MagicLinkCodeEntity {
  */
 
 export type UpsertInput = {
-  accountId: string;
+	accountId: string;
 };
 
 export interface GetInput {
-  accountId: string;
-  code: string;
+	accountId: string;
+	code: string;
 }
 
 export interface MagicLinkCodeRepository {
-  upsert: (i: UpsertInput) => Promise<MagicLinkCodeEntity>;
+	upsert: (i: UpsertInput) => Promise<MagicLinkCodeEntity>;
 
-  get: (i: GetInput) => Promise<MagicLinkCodeEntity | undefined>;
+	get: (i: GetInput) => Promise<MagicLinkCodeEntity | undefined>;
 }

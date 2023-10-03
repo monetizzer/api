@@ -3,28 +3,28 @@ import { IsDiscordCode } from '../validators/discord';
 import { IsID, IsMagicLinkCode } from '../validators/internal';
 
 export class CreateFromDiscordOauthDto {
-  @IsNotEmpty()
-  @IsDiscordCode()
-  code: string;
+	@IsNotEmpty()
+	@IsDiscordCode()
+	code: string;
 }
 
 export class SendMagicLinkDto {
-  @IsEmail()
-  email: string;
+	@IsEmail()
+	email: string;
 }
 
 export class CreateFromMagicLinkDto {
-  @IsNotEmpty()
-  @IsID()
-  accountId: string;
+	@IsNotEmpty()
+	@IsID()
+	accountId: string;
 
-  @IsNotEmpty()
-  @IsMagicLinkCode()
-  code: string;
+	@IsNotEmpty()
+	@IsMagicLinkCode()
+	code: string;
 }
 
 export class AcceptTermsDto {
-  @IsNotEmpty()
-  @IsSemVer()
-  semVer: string;
+	@IsNotEmpty()
+	@IsSemVer()
+	semVer: string;
 }

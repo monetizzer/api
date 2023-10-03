@@ -1,13 +1,13 @@
 export interface StoreEntity {
-  storeId: string;
-  accountId: string;
-  username: string;
-  name: string;
-  description: string;
-  color?: string;
-  bannerUrl?: string;
-  avatarUrl?: string;
-  createdAt: Date;
+	storeId: string;
+	accountId: string;
+	username: string;
+	name: string;
+	description: string;
+	color?: string;
+	bannerUrl?: string;
+	avatarUrl?: string;
+	createdAt: Date;
 }
 
 /**
@@ -19,51 +19,51 @@ export interface StoreEntity {
  */
 
 export interface GetByStoreIdInput {
-  storeId: string;
+	storeId: string;
 }
 
 export interface GetByAccountIdInput {
-  accountId: string;
+	accountId: string;
 }
 
 export interface GetByUsernameInput {
-  username: string;
+	username: string;
 }
 
 export interface CreateInput {
-  accountId: string;
-  username: string;
-  name: string;
-  description: string;
-  color?: string;
-  bannerUrl?: string;
-  avatarUrl?: string;
+	accountId: string;
+	username: string;
+	name: string;
+	description: string;
+	color?: string;
+	bannerUrl?: string;
+	avatarUrl?: string;
 }
 
 export interface CreateOutput {
-  storeId: string;
+	storeId: string;
 }
 
 export interface UpdateInput {
-  storeId: string;
-  username?: string;
-  name?: string;
-  description?: string;
-  color?: string;
-  bannerUrl?: string;
-  avatarUrl?: string;
+	storeId: string;
+	username?: string;
+	name?: string;
+	description?: string;
+	color?: string;
+	bannerUrl?: string;
+	avatarUrl?: string;
 }
 
 export interface StoreRepository {
-  getByStoreId: (i: GetByStoreIdInput) => Promise<StoreEntity | undefined>;
+	getByStoreId: (i: GetByStoreIdInput) => Promise<StoreEntity | undefined>;
 
-  getByAccountId: (i: GetByAccountIdInput) => Promise<StoreEntity | undefined>;
+	getByAccountId: (i: GetByAccountIdInput) => Promise<StoreEntity | undefined>;
 
-  getByUsername: (i: GetByUsernameInput) => Promise<StoreEntity | undefined>;
+	getByUsername: (i: GetByUsernameInput) => Promise<StoreEntity | undefined>;
 
-  create: (i: CreateInput) => Promise<CreateOutput>;
+	create: (i: CreateInput) => Promise<CreateOutput>;
 
-  update: (i: UpdateInput) => Promise<void>;
+	update: (i: UpdateInput) => Promise<void>;
 }
 
 /**
@@ -75,28 +75,28 @@ export interface StoreRepository {
  */
 
 export interface CreateStoreInput {
-  accountId: string;
-  username: string;
-  name: string;
-  description: string;
-  color?: string;
-  banner?: Buffer;
-  avatar?: Buffer;
+	accountId: string;
+	username: string;
+	name: string;
+	description: string;
+	color?: string;
+	banner?: Buffer;
+	avatar?: Buffer;
 }
 
 export interface UpdateStoreInput {
-  storeId: string;
-  accountId: string;
-  username?: string;
-  name?: string;
-  description?: string;
-  color?: string;
-  banner?: Buffer;
-  avatar?: Buffer;
+	storeId: string;
+	accountId: string;
+	username?: string;
+	name?: string;
+	description?: string;
+	color?: string;
+	banner?: Buffer;
+	avatar?: Buffer;
 }
 
 export interface StoreUseCase {
-  create: (i: CreateStoreInput) => Promise<void>;
+	create: (i: CreateStoreInput) => Promise<void>;
 
-  update: (i: UpdateStoreInput) => Promise<void>;
+	update: (i: UpdateStoreInput) => Promise<void>;
 }

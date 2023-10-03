@@ -7,13 +7,13 @@ import { NotificationModule } from './usecases/notification/notification.module'
 import { StoreModule } from './usecases/store/store.module';
 
 @Module({
-  imports: [
-    MongoDBModule.forRoot(),
-    AccountModule,
-    TermsModule,
-    DocumentModule,
-    NotificationModule,
-    StoreModule,
-  ],
+	imports: [
+		MongoDBModule.forRoot(),
+		AccountModule,
+		TermsModule,
+		DocumentModule,
+		NotificationModule,
+		StoreModule,
+	],
 })
 export class AppModule {}

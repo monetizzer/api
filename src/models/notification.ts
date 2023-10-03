@@ -2,13 +2,13 @@ import { PlatformEnum } from 'src/types/enums/platform';
 import { AccountEntity } from './account';
 
 export interface NotificationEntity {
-  notificationId: string;
-  accountId: string;
-  platform: PlatformEnum;
-  title: string;
-  description: string;
-  data?: Record<string, string>;
-  createdAt: Date;
+	notificationId: string;
+	accountId: string;
+	platform: PlatformEnum;
+	title: string;
+	description: string;
+	data?: Record<string, string>;
+	createdAt: Date;
 }
 
 /**
@@ -20,15 +20,15 @@ export interface NotificationEntity {
  */
 
 export interface SaveInput {
-  accountId: string;
-  platform: PlatformEnum;
-  title: string;
-  description: string;
-  data?: Record<string, string>;
+	accountId: string;
+	platform: PlatformEnum;
+	title: string;
+	description: string;
+	data?: Record<string, string>;
 }
 
 export interface NotificationRepository {
-  save: (i: SaveInput) => Promise<void>;
+	save: (i: SaveInput) => Promise<void>;
 }
 
 /**
@@ -40,13 +40,13 @@ export interface NotificationRepository {
  */
 
 export interface SendNotificationInput {
-  accountId: string;
-  title: string;
-  description: string;
-  data?: Record<string, string>;
-  account?: AccountEntity;
+	accountId: string;
+	title: string;
+	description: string;
+	data?: Record<string, string>;
+	account?: AccountEntity;
 }
 
 export interface NotificationUseCase {
-  sendNotification: (i: SendNotificationInput) => Promise<void>;
+	sendNotification: (i: SendNotificationInput) => Promise<void>;
 }

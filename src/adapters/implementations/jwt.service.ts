@@ -4,13 +4,13 @@ import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class JWTAdapter implements TokenAdapter {
-  gen({ accountId, isAdmin }: GenInput): string {
-    return sign(
-      {
-        sub: accountId,
-        isAdmin,
-      },
-      process.env['JWT_SECRET'],
-    );
-  }
+	gen({ accountId, isAdmin }: GenInput): string {
+		return sign(
+			{
+				sub: accountId,
+				isAdmin,
+			},
+			process.env['JWT_SECRET'],
+		);
+	}
 }
