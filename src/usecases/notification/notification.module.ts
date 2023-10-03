@@ -8,5 +8,6 @@ import { SESAdapter } from 'src/adapters/implementations/ses.service';
 @Module({
   imports: [NotificationRepositoryModule, AccountRepositoryModule],
   providers: [NotificationService, SESAdapter, DiscordJSAdapter],
+  exports: [NotificationService],
 })
 export class NotificationModule {}

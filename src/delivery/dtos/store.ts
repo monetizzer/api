@@ -18,12 +18,6 @@ export class CreateDto {
   @IsString()
   @IsHEXColor()
   color?: string;
-
-  @IsOptional()
-  banner?: Buffer;
-
-  @IsOptional()
-  avatar?: Buffer;
 }
 
 export class UpdateDto {
@@ -49,10 +43,4 @@ export class UpdateDto {
   @IsString()
   @IsHEXColor()
   color?: string;
-
-  @IsOptional()
-  banner?: Buffer;
-
-  @IsOptional()
-  avatar?: Buffer;
 }

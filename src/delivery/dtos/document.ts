@@ -1,6 +1,5 @@
 import {
   IsBoolean,
-  IsDefined,
   IsEnum,
   IsNotEmpty,
   IsObject,
@@ -61,12 +60,6 @@ export class CreateCompleteDto {
 
   @IsObject()
   address: DocumentAddressDto;
-
-  @IsDefined()
-  documentPicture: Buffer;
-
-  @IsDefined()
-  selfieWithDocument: Buffer;
 }
 
 export class ReviewDto {
