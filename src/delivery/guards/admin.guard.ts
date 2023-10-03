@@ -5,7 +5,7 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { verify } from 'jsonwebtoken';
-import { JWTPayload } from './types';
+import { TokenPayload } from 'src/adapters/token';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
@@ -19,7 +19,7 @@ export class AdminGuard implements CanActivate {
 		}
 
 		try {
-			const payload = verify(token, process.env['JWT_SECRET']!) as JWTPayload;
+			const payload = verify(token, process.env['JWT_SECRET']!) as TokenPayload;
 
 			return Boolean(payload.admin);
 		} catch {

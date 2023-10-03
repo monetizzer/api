@@ -8,7 +8,7 @@ export class JWTAdapter implements TokenAdapter {
 		return sign(
 			{
 				sub: accountId,
-				isAdmin,
+				admin: isAdmin,
 			},
 			process.env['JWT_SECRET'],
 		);
