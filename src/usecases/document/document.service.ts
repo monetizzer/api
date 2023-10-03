@@ -1,6 +1,5 @@
 import { Readable } from 'stream';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { DiscordAdapter } from 'src/adapters/discord';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import {
   CreateCompleteInput,
@@ -17,6 +16,7 @@ import {
   canChangeStatus,
 } from 'src/types/enums/document-status';
 import { NotificationService } from '../notification/notification.service';
+import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 
 @Injectable()
 export class DocumentService implements DocumentUseCase {
@@ -26,7 +26,7 @@ export class DocumentService implements DocumentUseCase {
     @Inject(NotificationService)
     private readonly notificationUsecase: NotificationService,
     private readonly fileAdapter: S3Adapter,
-    private readonly discordAdapter: DiscordAdapter,
+    private readonly discordAdapter: DiscordJSAdapter,
   ) {}
 
   async createComplete({

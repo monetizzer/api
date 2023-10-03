@@ -4,6 +4,7 @@ import { StoreRepositoryModule } from 'src/repositories/mongodb/store/store-repo
 import { StoreController } from '../../delivery/store.controller';
 import { DocumentRepositoryModule } from 'src/repositories/mongodb/document/document-repository.module';
 import { AccountRepositoryModule } from 'src/repositories/mongodb/account/account-repository.module';
+import { S3Adapter } from 'src/adapters/implementations/s3.service';
 
 @Module({
   controllers: [StoreController],
@@ -12,6 +13,6 @@ import { AccountRepositoryModule } from 'src/repositories/mongodb/account/accoun
     DocumentRepositoryModule,
     AccountRepositoryModule,
   ],
-  providers: [StoreService],
+  providers: [StoreService, S3Adapter],
 })
 export class StoreModule {}
