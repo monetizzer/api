@@ -1,6 +1,6 @@
 export interface TokenPayload {
 	sub: string; // accountId
-	isAdmin: boolean;
+	admin?: boolean; //isAdmin
 }
 
 export interface GenInput {
