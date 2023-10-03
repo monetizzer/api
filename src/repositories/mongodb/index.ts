@@ -6,34 +6,34 @@ import { Collection, MongoClient } from 'mongodb';
 
 @Module({})
 export class MongoDBModule {
-  public static forRoot(): DynamicModule {
-    return {
-      module: MongoDBModule,
-      imports: [MongoDBCoreModule.forRoot()],
-    };
-  }
+	public static forRoot(): DynamicModule {
+		return {
+			module: MongoDBModule,
+			imports: [MongoDBCoreModule.forRoot()],
+		};
+	}
 
-  public static forFeature(tableNames: Array<string> = []): DynamicModule {
-    const providers = tableNames.map((tableName) => ({
-      provide: MongoDBModule.getRepositoryToken(tableName),
-      useFactory: (connection: MongoClient) =>
-        connection.db(process.env['DB_DATABASE']).collection(tableName),
-      inject: [MONGODB_CONNECTION_NAME],
-    }));
+	public static forFeature(tableNames: Array<string> = []): DynamicModule {
+		const providers = tableNames.map((tableName) => ({
+			provide: MongoDBModule.getRepositoryToken(tableName),
+			useFactory: (connection: MongoClient) =>
+				connection.db(process.env['DB_DATABASE']).collection(tableName),
+			inject: [MONGODB_CONNECTION_NAME],
+		}));
 
-    return {
-      module: MongoDBModule,
-      providers,
-      exports: providers,
-    };
-  }
+		return {
+			module: MongoDBModule,
+			providers,
+			exports: providers,
+		};
+	}
 
-  public static getRepositoryToken(table: string) {
-    return `MONGODB_${table.toUpperCase()}_REPOSITORY`;
-  }
+	public static getRepositoryToken(table: string) {
+		return `MONGODB_${table.toUpperCase()}_REPOSITORY`;
+	}
 }
 
 export const InjectRepository = (tableName: string) =>
-  Inject(MongoDBModule.getRepositoryToken(tableName));
+	Inject(MongoDBModule.getRepositoryToken(tableName));
 
 export type Repository<T> = Collection<T>;

@@ -1,102 +1,102 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository, Repository } from '..';
 import {
-  CreateInput,
-  CreateOutput,
-  GetByAccountIdInput,
-  GetByStoreIdInput,
-  GetByUsernameInput,
-  StoreEntity,
-  StoreRepository,
-  UpdateInput,
+	CreateInput,
+	CreateOutput,
+	GetByAccountIdInput,
+	GetByStoreIdInput,
+	GetByUsernameInput,
+	StoreEntity,
+	StoreRepository,
+	UpdateInput,
 } from 'src/models/store';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 
 interface StoreTable extends Omit<StoreEntity, 'storeId'> {
-  _id: string;
+	_id: string;
 }
 
 @Injectable()
 export class StoreRepositoryService implements StoreRepository {
-  constructor(
-    @InjectRepository('stores')
-    private readonly storeRepository: Repository<StoreTable>,
-    private readonly idAdapter: UIDAdapter,
-  ) {}
+	constructor(
+		@InjectRepository('stores')
+		private readonly storeRepository: Repository<StoreTable>,
+		private readonly idAdapter: UIDAdapter,
+	) {}
 
-  async getByStoreId({
-    storeId,
-  }: GetByStoreIdInput): Promise<undefined | StoreEntity> {
-    const store = await this.storeRepository.findOne({
-      _id: storeId,
-    });
+	async getByStoreId({
+		storeId,
+	}: GetByStoreIdInput): Promise<undefined | StoreEntity> {
+		const store = await this.storeRepository.findOne({
+			_id: storeId,
+		});
 
-    if (!store) return;
+		if (!store) return;
 
-    const { _id, ...storeData } = store;
+		const { _id, ...storeData } = store;
 
-    return {
-      ...storeData,
-      storeId: _id,
-    };
-  }
+		return {
+			...storeData,
+			storeId: _id,
+		};
+	}
 
-  async getByAccountId({
-    accountId,
-  }: GetByAccountIdInput): Promise<undefined | StoreEntity> {
-    const store = await this.storeRepository.findOne({
-      accountId,
-    });
+	async getByAccountId({
+		accountId,
+	}: GetByAccountIdInput): Promise<undefined | StoreEntity> {
+		const store = await this.storeRepository.findOne({
+			accountId,
+		});
 
-    if (!store) return;
+		if (!store) return;
 
-    const { _id, ...storeData } = store;
+		const { _id, ...storeData } = store;
 
-    return {
-      ...storeData,
-      storeId: _id,
-    };
-  }
+		return {
+			...storeData,
+			storeId: _id,
+		};
+	}
 
-  async getByUsername({
-    username,
-  }: GetByUsernameInput): Promise<undefined | StoreEntity> {
-    const store = await this.storeRepository.findOne({
-      username,
-    });
+	async getByUsername({
+		username,
+	}: GetByUsernameInput): Promise<undefined | StoreEntity> {
+		const store = await this.storeRepository.findOne({
+			username,
+		});
 
-    if (!store) return;
+		if (!store) return;
 
-    const { _id, ...storeData } = store;
+		const { _id, ...storeData } = store;
 
-    return {
-      ...storeData,
-      storeId: _id,
-    };
-  }
+		return {
+			...storeData,
+			storeId: _id,
+		};
+	}
 
-  async create(i: CreateInput): Promise<CreateOutput> {
-    const storeId = this.idAdapter.gen();
+	async create(i: CreateInput): Promise<CreateOutput> {
+		const storeId = this.idAdapter.gen();
 
-    await this.storeRepository.insertOne({
-      ...i,
-      _id: storeId,
-      createdAt: new Date(),
-    });
+		await this.storeRepository.insertOne({
+			...i,
+			_id: storeId,
+			createdAt: new Date(),
+		});
 
-    return {
-      storeId,
-    };
-  }
+		return {
+			storeId,
+		};
+	}
 
-  async update({ storeId, ...i }: UpdateInput): Promise<void> {
-    await this.storeRepository.updateOne(
-      {
-        _id: storeId,
-      },
-      {
-        $set: i,
-      },
-    );
-  }
+	async update({ storeId, ...i }: UpdateInput): Promise<void> {
+		await this.storeRepository.updateOne(
+			{
+				_id: storeId,
+			},
+			{
+				$set: i,
+			},
+		);
+	}
 }

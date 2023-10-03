@@ -1,7 +1,7 @@
 import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class LatestDto {
-  @IsNotEmpty()
-  @IsBoolean()
-  semVer: boolean;
+	@IsNotEmpty()
+	@IsBoolean()
+	semVer: boolean;
 }

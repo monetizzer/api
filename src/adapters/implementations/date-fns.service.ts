@@ -4,30 +4,30 @@ import { add, isBefore } from 'date-fns';
 
 @Injectable()
 export class DateFnsAdapter implements DateAdapter {
-  hasMoreThan18(birth: string): boolean {
-    const eighteenYearsAgo = add(new Date(), {
-      years: -18,
-    });
+	hasMoreThan18(birth: string): boolean {
+		const eighteenYearsAgo = add(new Date(), {
+			years: -18,
+		});
 
-    const birthDate = new Date(birth);
+		const birthDate = new Date(birth);
 
-    const isOlder = isBefore(new Date(birthDate), eighteenYearsAgo);
+		const isOlder = isBefore(new Date(birthDate), eighteenYearsAgo);
 
-    if (isOlder) return true;
+		if (isOlder) return true;
 
-    const birthDateDay = birthDate.getDate();
-    const birthDateMonth = birthDate.getMonth();
-    const birthDateYear = birthDate.getFullYear();
+		const birthDateDay = birthDate.getDate();
+		const birthDateMonth = birthDate.getMonth();
+		const birthDateYear = birthDate.getFullYear();
 
-    const eighteenYearsAgoDay = birthDate.getDate();
-    const eighteenYearsAgoMonth = birthDate.getMonth();
-    const eighteenYearsAgoYear = birthDate.getFullYear();
+		const eighteenYearsAgoDay = birthDate.getDate();
+		const eighteenYearsAgoMonth = birthDate.getMonth();
+		const eighteenYearsAgoYear = birthDate.getFullYear();
 
-    const isBirthDay =
-      birthDateDay === eighteenYearsAgoDay &&
-      birthDateMonth === eighteenYearsAgoMonth &&
-      birthDateYear === eighteenYearsAgoYear;
+		const isBirthDay =
+			birthDateDay === eighteenYearsAgoDay &&
+			birthDateMonth === eighteenYearsAgoMonth &&
+			birthDateYear === eighteenYearsAgoYear;
 
-    return isBirthDay;
-  }
+		return isBirthDay;
+	}
 }

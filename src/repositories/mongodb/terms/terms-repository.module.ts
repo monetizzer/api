@@ -4,8 +4,8 @@ import { MongoDBModule } from '..';
 import { SemVerAdapter } from 'src/adapters/implementations/semver.service';
 
 @Module({
-  imports: [MongoDBModule.forFeature(['terms'])],
-  providers: [TermsRepositoryService, SemVerAdapter],
-  exports: [TermsRepositoryService],
+	imports: [MongoDBModule.forFeature(['terms'])],
+	providers: [TermsRepositoryService, SemVerAdapter],
+	exports: [TermsRepositoryService],
 })
 export class TermsRepositoryModule {}

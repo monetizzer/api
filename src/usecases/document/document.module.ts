@@ -7,8 +7,8 @@ import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  controllers: [DocumentController],
-  imports: [DocumentRepositoryModule, NotificationModule],
-  providers: [DocumentService, S3Adapter, DiscordJSAdapter],
+	controllers: [DocumentController],
+	imports: [DocumentRepositoryModule, NotificationModule],
+	providers: [DocumentService, S3Adapter, DiscordJSAdapter],
 })
 export class DocumentModule {}

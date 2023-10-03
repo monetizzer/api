@@ -4,7 +4,7 @@ import { IdAdapter } from '../id';
 
 @Injectable()
 export class UIDAdapter implements IdAdapter {
-  gen(): string {
-    return uid(16);
-  }
+	gen(): string {
+		return uid(16);
+	}
 }

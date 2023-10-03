@@ -1,159 +1,159 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository, Repository } from '..';
 import {
-  DocumentEntity,
-  DocumentRepository,
-  GetByAccountIdInput,
-  GetManyInput,
-  IsApprovedInput,
-  UpdateStatusInput,
-  UpsertCompleteInput,
+	DocumentEntity,
+	DocumentRepository,
+	GetByAccountIdInput,
+	GetManyInput,
+	IsApprovedInput,
+	UpdateStatusInput,
+	UpsertCompleteInput,
 } from 'src/models/document';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
 import { Filter } from 'mongodb';
 
 interface DocumentTable extends Omit<DocumentEntity, 'accountId'> {
-  _id: string;
+	_id: string;
 }
 
 @Injectable()
 export class DocumentRepositoryService implements DocumentRepository {
-  constructor(
-    @InjectRepository('documents')
-    private readonly documentRepository: Repository<DocumentTable>,
-  ) {}
+	constructor(
+		@InjectRepository('documents')
+		private readonly documentRepository: Repository<DocumentTable>,
+	) {}
 
-  async isApproved({
-    type,
-    documentNumber,
-  }: IsApprovedInput): Promise<boolean> {
-    const document = await this.documentRepository.findOne({
-      type,
-      documentNumber,
-      status: DocumentStatusEnum.AA,
-    });
+	async isApproved({
+		type,
+		documentNumber,
+	}: IsApprovedInput): Promise<boolean> {
+		const document = await this.documentRepository.findOne({
+			type,
+			documentNumber,
+			status: DocumentStatusEnum.AA,
+		});
 
-    return Boolean(document);
-  }
+		return Boolean(document);
+	}
 
-  async getByAccountId({
-    accountId,
-  }: GetByAccountIdInput): Promise<undefined | DocumentEntity> {
-    const document = await this.documentRepository.findOne({
-      _id: accountId,
-    });
+	async getByAccountId({
+		accountId,
+	}: GetByAccountIdInput): Promise<undefined | DocumentEntity> {
+		const document = await this.documentRepository.findOne({
+			_id: accountId,
+		});
 
-    if (!document) return;
+		if (!document) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, ...documentData } = document;
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { _id, ...documentData } = document;
 
-    return {
-      ...documentData,
-      accountId,
-    };
-  }
+		return {
+			...documentData,
+			accountId,
+		};
+	}
 
-  async getMany({
-    type,
-    documentNumber,
-    status,
-  }: GetManyInput): Promise<DocumentEntity[]> {
-    const filters: Filter<DocumentTable> = {};
+	async getMany({
+		type,
+		documentNumber,
+		status,
+	}: GetManyInput): Promise<DocumentEntity[]> {
+		const filters: Filter<DocumentTable> = {};
 
-    if (type) {
-      filters.type = type;
-    }
+		if (type) {
+			filters.type = type;
+		}
 
-    if (type) {
-      filters.documentNumber = documentNumber;
-    }
+		if (type) {
+			filters.documentNumber = documentNumber;
+		}
 
-    if (status) {
-      filters.status = {
-        $in: status,
-      };
-    }
+		if (status) {
+			filters.status = {
+				$in: status,
+			};
+		}
 
-    const documentsCursor = this.documentRepository.find(filters);
-    const documents = await documentsCursor.toArray();
+		const documentsCursor = this.documentRepository.find(filters);
+		const documents = await documentsCursor.toArray();
 
-    return documents.map((document) => {
-      const { _id, ...documentData } = document;
+		return documents.map((document) => {
+			const { _id, ...documentData } = document;
 
-      return {
-        ...documentData,
-        accountId: _id,
-      };
-    });
-  }
+			return {
+				...documentData,
+				accountId: _id,
+			};
+		});
+	}
 
-  async updateStatus({
-    accountId,
-    status,
-    message,
-    reviewerId,
-  }: UpdateStatusInput): Promise<void> {
-    await this.documentRepository.updateOne(
-      {
-        _id: accountId,
-      },
-      {
-        $set: {
-          status,
-        },
-        $push: {
-          history: {
-            timestamp: new Date(),
-            status,
-            message,
-            reviewerId,
-          },
-        },
-      },
-    );
-  }
+	async updateStatus({
+		accountId,
+		status,
+		message,
+		reviewerId,
+	}: UpdateStatusInput): Promise<void> {
+		await this.documentRepository.updateOne(
+			{
+				_id: accountId,
+			},
+			{
+				$set: {
+					status,
+				},
+				$push: {
+					history: {
+						timestamp: new Date(),
+						status,
+						message,
+						reviewerId,
+					},
+				},
+			},
+		);
+	}
 
-  async upsertComplete({
-    accountId,
-    status,
-    type,
-    documentNumber,
-    fullName,
-    birthDate,
-    phone,
-    address,
-    documentPicturePath,
-    selfieWithDocumentPath,
-  }: UpsertCompleteInput): Promise<void> {
-    await this.documentRepository.updateOne(
-      {
-        _id: accountId,
-      },
-      {
-        $set: {
-          status,
-          type,
-          documentNumber,
-          fullName,
-          birthDate,
-          phone,
-          address,
-          documentPicturePath,
-          selfieWithDocumentPath,
-        },
-        $push: {
-          history: {
-            timestamp: new Date(),
-            status,
-            type,
-            documentNumber,
-          },
-        },
-      },
-      {
-        upsert: true,
-      },
-    );
-  }
+	async upsertComplete({
+		accountId,
+		status,
+		type,
+		documentNumber,
+		fullName,
+		birthDate,
+		phone,
+		address,
+		documentPicturePath,
+		selfieWithDocumentPath,
+	}: UpsertCompleteInput): Promise<void> {
+		await this.documentRepository.updateOne(
+			{
+				_id: accountId,
+			},
+			{
+				$set: {
+					status,
+					type,
+					documentNumber,
+					fullName,
+					birthDate,
+					phone,
+					address,
+					documentPicturePath,
+					selfieWithDocumentPath,
+				},
+				$push: {
+					history: {
+						timestamp: new Date(),
+						status,
+						type,
+						documentNumber,
+					},
+				},
+			},
+			{
+				upsert: true,
+			},
+		);
+	}
 }

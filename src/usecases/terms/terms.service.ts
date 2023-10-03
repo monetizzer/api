@@ -4,24 +4,24 @@ import { TermsRepositoryService } from 'src/repositories/mongodb/terms/terms-rep
 
 @Injectable()
 export class TermsService implements TermsUseCase {
-  constructor(
-    @Inject(TermsRepositoryService)
-    private readonly termsRepository: TermsRepositoryService,
-  ) {}
+	constructor(
+		@Inject(TermsRepositoryService)
+		private readonly termsRepository: TermsRepositoryService,
+	) {}
 
-  async latest({ semVer }: LatestInput): Promise<LatestOutput> {
-    const terms = await this.termsRepository.getLatest();
+	async latest({ semVer }: LatestInput): Promise<LatestOutput> {
+		const terms = await this.termsRepository.getLatest();
 
-    if (semVer) {
-      return {
-        semVer: terms.semVer,
-      };
-    }
+		if (semVer) {
+			return {
+				semVer: terms.semVer,
+			};
+		}
 
-    return {
-      semVer: terms.semVer,
-      terms: terms.terms,
-      liveAt: terms.liveAt,
-    };
-  }
+		return {
+			semVer: terms.semVer,
+			terms: terms.terms,
+			liveAt: terms.liveAt,
+		};
+	}
 }

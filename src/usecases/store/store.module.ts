@@ -7,12 +7,12 @@ import { AccountRepositoryModule } from 'src/repositories/mongodb/account/accoun
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 
 @Module({
-  controllers: [StoreController],
-  imports: [
-    StoreRepositoryModule,
-    DocumentRepositoryModule,
-    AccountRepositoryModule,
-  ],
-  providers: [StoreService, S3Adapter],
+	controllers: [StoreController],
+	imports: [
+		StoreRepositoryModule,
+		DocumentRepositoryModule,
+		AccountRepositoryModule,
+	],
+	providers: [StoreService, S3Adapter],
 })
 export class StoreModule {}

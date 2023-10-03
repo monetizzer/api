@@ -2,45 +2,45 @@ import { IsOptional, IsString, Max } from 'class-validator';
 import { IsHEXColor, IsID, IsUsername } from '../validators/internal';
 
 export class CreateDto {
-  @IsString()
-  @IsUsername()
-  username: string;
+	@IsString()
+	@IsUsername()
+	username: string;
 
-  @IsString()
-  @Max(25)
-  name: string;
+	@IsString()
+	@Max(25)
+	name: string;
 
-  @IsString()
-  @Max(500)
-  description: string;
+	@IsString()
+	@Max(500)
+	description: string;
 
-  @IsOptional()
-  @IsString()
-  @IsHEXColor()
-  color?: string;
+	@IsOptional()
+	@IsString()
+	@IsHEXColor()
+	color?: string;
 }
 
 export class UpdateDto {
-  @IsID()
-  storeId: string;
+	@IsID()
+	storeId: string;
 
-  @IsOptional()
-  @IsString()
-  @IsUsername()
-  username: string;
+	@IsOptional()
+	@IsString()
+	@IsUsername()
+	username: string;
 
-  @IsOptional()
-  @IsString()
-  @Max(25)
-  name: string;
+	@IsOptional()
+	@IsString()
+	@Max(25)
+	name: string;
 
-  @IsOptional()
-  @IsString()
-  @Max(500)
-  description: string;
+	@IsOptional()
+	@IsString()
+	@Max(500)
+	description: string;
 
-  @IsOptional()
-  @IsString()
-  @IsHEXColor()
-  color?: string;
+	@IsOptional()
+	@IsString()
+	@IsHEXColor()
+	color?: string;
 }

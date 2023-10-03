@@ -1,3 +1,3 @@
 export interface SecretAdapter {
-  gen: () => string;
+	gen: () => string;
 }
