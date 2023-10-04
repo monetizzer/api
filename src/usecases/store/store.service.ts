@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	ConflictException,
+	ForbiddenException,
+	Inject,
+	Injectable,
+} from '@nestjs/common';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import {
 	CreateStoreInput,
@@ -36,20 +42,16 @@ export class StoreService implements StoreUseCase {
 		]);
 
 		if (store) {
-			throw new HttpException('You already has an store', HttpStatus.CONFLICT);
+			throw new ConflictException('You already has an store');
 		}
 
 		if (document?.status !== DocumentStatusEnum.AA) {
-			throw new HttpException(
-				'You must validate your documents first',
-				HttpStatus.FORBIDDEN,
-			);
+			throw new ForbiddenException('You must validate your documents first');
 		}
 
 		if (storeUsername) {
-			throw new HttpException(
+			throw new ConflictException(
 				`There already exists an store with the username "${username}"`,
-				HttpStatus.CONFLICT,
 			);
 		}
 
@@ -108,7 +110,7 @@ export class StoreService implements StoreUseCase {
 			userStore.accountId !== accountId ||
 			userStore.storeId !== i.storeId
 		) {
-			throw new HttpException('Invalid store', HttpStatus.BAD_REQUEST);
+			throw new BadRequestException('Invalid store');
 		}
 
 		if (username) {
@@ -117,7 +119,7 @@ export class StoreService implements StoreUseCase {
 			});
 
 			if (storeByUsername) {
-				throw new HttpException('Duplicated username', HttpStatus.CONFLICT);
+				throw new ConflictException('Duplicated username');
 			}
 		}
 

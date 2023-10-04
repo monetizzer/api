@@ -1,5 +1,13 @@
 import { AccountRepositoryService } from 'src/repositories/mongodb/account/account-repository.service';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	ConflictException,
+	ForbiddenException,
+	Inject,
+	Injectable,
+	NotFoundException,
+	UnauthorizedException,
+} from '@nestjs/common';
 import {
 	AcceptInput,
 	AccountEntity,
@@ -56,7 +64,7 @@ export class AccountService implements AccountUseCase {
 		const { scopes, ...discordTokens } = await this.discordAdapter
 			.exchangeCode(code)
 			.catch(() => {
-				throw new HttpException('Invalid code', HttpStatus.BAD_REQUEST);
+				throw new BadRequestException('Invalid code');
 			});
 
 		const missingScopes = this.requiredDiscordScopes.filter(
@@ -64,9 +72,8 @@ export class AccountService implements AccountUseCase {
 		);
 
 		if (missingScopes.length > 0) {
-			throw new HttpException(
+			throw new BadRequestException(
 				`Missing required scopes: ${missingScopes.join(' ')}`,
-				HttpStatus.BAD_REQUEST,
 			);
 		}
 
@@ -75,10 +82,7 @@ export class AccountService implements AccountUseCase {
 		);
 
 		if (!discordData.verified) {
-			throw new HttpException(
-				`Discord email not verified`,
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new BadRequestException(`Discord email not verified`);
 		}
 
 		const relatedAccounts = await this.accountRepository.getManyByDiscord({
@@ -113,9 +117,8 @@ export class AccountService implements AccountUseCase {
 				account = sameDiscordId;
 			}
 			if (!account) {
-				throw new HttpException(
+				throw new ConflictException(
 					`Error finding account, please contact support`,
-					HttpStatus.CONFLICT,
 				);
 			}
 
@@ -189,7 +192,7 @@ export class AccountService implements AccountUseCase {
 		});
 
 		if (!magicLinkCode) {
-			throw new HttpException('Invalid code', HttpStatus.NOT_FOUND);
+			throw new NotFoundException('Invalid code');
 		}
 
 		const user = await this.accountRepository.getByAccountId({
@@ -197,7 +200,7 @@ export class AccountService implements AccountUseCase {
 		});
 
 		if (!user) {
-			throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+			throw new NotFoundException('User not found');
 		}
 
 		const accessToken = this.tokenAdapter.gen({
@@ -216,7 +219,7 @@ export class AccountService implements AccountUseCase {
 		});
 
 		if (!terms) {
-			throw new HttpException('Invalid terms version', HttpStatus.NOT_FOUND);
+			throw new NotFoundException('Invalid terms version');
 		}
 
 		const user = await this.accountRepository.getByAccountId({
@@ -224,7 +227,7 @@ export class AccountService implements AccountUseCase {
 		});
 
 		if (!user) {
-			throw new HttpException('Invalid user', HttpStatus.FORBIDDEN);
+			throw new ForbiddenException('Invalid user');
 		}
 
 		const isNewVersion = this.versionAdapter.isGt({
@@ -233,7 +236,7 @@ export class AccountService implements AccountUseCase {
 		});
 
 		if (!isNewVersion) {
-			throw new HttpException('Version is deprecated', HttpStatus.BAD_REQUEST);
+			throw new BadRequestException('Version is deprecated');
 		}
 
 		await this.accountRepository.updateTerms({
@@ -252,7 +255,7 @@ export class AccountService implements AccountUseCase {
 		]);
 
 		if (!account) {
-			throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
+			throw new UnauthorizedException('User not found');
 		}
 
 		return {
