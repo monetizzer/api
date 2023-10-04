@@ -12,7 +12,8 @@ import { ProductService } from 'src/usecases/product/product.service';
 import { AuthGuard } from './guards/auth.guard';
 import { AccountId } from './decorators/account-id';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { CreateDto, MarkAsReadyDto } from './dtos/product';
+import { CreateDto, MarkAsReadyDto, ReviewDto } from './dtos/product';
+import { AdminGuard } from './guards/admin.guard';
 
 @Controller('products')
 export class ProductController {
@@ -58,6 +59,20 @@ export class ProductController {
 		return this.productService.markAsReady({
 			...body,
 			accountId,
+		});
+	}
+
+	@Post('review')
+	@UseGuards(AdminGuard)
+	review(
+		@Body()
+		body: ReviewDto,
+		@AccountId()
+		reviewerId: string,
+	) {
+		return this.productService.review({
+			...body,
+			reviewerId,
 		});
 	}
 }

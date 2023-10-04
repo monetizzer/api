@@ -1,8 +1,10 @@
 import { Transform } from 'class-transformer';
 import {
+	IsArray,
 	IsBoolean,
 	IsEnum,
 	IsInt,
+	IsNotEmpty,
 	IsOptional,
 	IsString,
 	MaxLength,
@@ -43,4 +45,24 @@ export class CreateDto {
 export class MarkAsReadyDto {
 	@IsID()
 	productId: string;
+}
+
+export class ReviewDto {
+	@IsID()
+	productId: string;
+
+	@IsBoolean()
+	approve: boolean;
+
+	@IsOptional()
+	@IsString()
+	@IsNotEmpty()
+	@MaxLength(1000)
+	message?: string;
+
+	@IsOptional()
+	@IsArray()
+	@IsString({ each: true })
+	@IsNotEmpty({ each: true })
+	markedContentsIds?: Array<string>;
 }
