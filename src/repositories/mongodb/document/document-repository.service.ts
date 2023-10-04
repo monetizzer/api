@@ -65,7 +65,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 			filters.type = type;
 		}
 
-		if (type) {
+		if (documentNumber) {
 			filters.documentNumber = documentNumber;
 		}
 
@@ -103,12 +103,14 @@ export class DocumentRepositoryService implements DocumentRepository {
 					status,
 				},
 				$push: {
-					history: {
-						timestamp: new Date(),
-						status,
-						message,
-						reviewerId,
-					},
+					history: JSON.parse(
+						JSON.stringify({
+							timestamp: new Date(),
+							status,
+							message,
+							reviewerId,
+						}),
+					),
 				},
 			},
 		);
