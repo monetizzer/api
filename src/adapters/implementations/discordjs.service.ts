@@ -132,6 +132,7 @@ const componentRowToDiscordComponentRow = (
 export class DiscordJSAdapter implements DiscordAdapter {
 	channels: Record<Channels, string> = {
 		DOCUMENTS: '',
+		PRODUCTS: '',
 	};
 
 	private discordApi: (route: string, init: RequestInit) => Promise<Response>;

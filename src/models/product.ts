@@ -100,6 +100,7 @@ export interface CreateProductOutput {
 }
 
 export interface MarkAsReadyInput {
+	accountId: string;
 	productId: string;
 }
 
@@ -126,7 +127,7 @@ export interface ReviewInput {
 export interface ProductUseCase {
 	create: (i: CreateProductInput) => Promise<CreateProductOutput>;
 
-	markAsReady: (i: CreateProductInput) => Promise<void>;
+	markAsReady: (i: MarkAsReadyInput) => Promise<void>;
 
 	getToReview: () => Promise<Array<ProductEntity>>;
 
