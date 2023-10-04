@@ -39,3 +39,8 @@ export class CreateDto {
 	@Min(100)
 	price: number;
 }
+
+export class MarkAsReadyDto {
+	@IsID()
+	productId: string;
+}

@@ -5,10 +5,11 @@ import { ProductRepositoryModule } from 'src/repositories/mongodb/product/produc
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import { StoreRepositoryModule } from 'src/repositories/mongodb/store/store-repository.module';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
+import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 
 @Module({
 	controllers: [ProductController],
 	imports: [ProductRepositoryModule, StoreRepositoryModule],
-	providers: [ProductService, S3Adapter, UIDAdapter],
+	providers: [ProductService, S3Adapter, UIDAdapter, DiscordJSAdapter],
 })
 export class ProductModule {}

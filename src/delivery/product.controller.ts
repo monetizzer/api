@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	Patch,
 	Post,
 	UploadedFiles,
 	UseGuards,
@@ -11,7 +12,7 @@ import { ProductService } from 'src/usecases/product/product.service';
 import { AuthGuard } from './guards/auth.guard';
 import { AccountId } from './decorators/account-id';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { CreateDto } from './dtos/product';
+import { CreateDto, MarkAsReadyDto } from './dtos/product';
 
 @Controller('products')
 export class ProductController {
@@ -40,9 +41,23 @@ export class ProductController {
 		}
 
 		return this.productService.create({
+			...body,
 			accountId,
 			previewImages: files.map((f) => f.buffer),
+		});
+	}
+
+	@Patch('/ready')
+	@UseGuards(AuthGuard(['USER']))
+	markAsReady(
+		@Body()
+		body: MarkAsReadyDto,
+		@AccountId()
+		accountId: string,
+	) {
+		return this.productService.markAsReady({
 			...body,
+			accountId,
 		});
 	}
 }
