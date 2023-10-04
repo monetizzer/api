@@ -99,8 +99,8 @@ export class StoreController {
 
 		return this.storeService.update({
 			accountId,
-			banner: banner.buffer,
-			avatar: avatar.buffer,
+			banner: banner?.buffer,
+			avatar: avatar?.buffer,
 			...body,
 		});
 	}

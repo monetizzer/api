@@ -1,7 +1,9 @@
-import { IsBoolean, IsNotEmpty } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsOptional } from 'class-validator';
 
 export class LatestDto {
-	@IsNotEmpty()
+	@IsOptional()
 	@IsBoolean()
-	semVer: boolean;
+	@Transform((value) => Boolean(value))
+	semVer?: boolean;
 }

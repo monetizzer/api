@@ -149,6 +149,7 @@ export interface AcceptInput {
 export interface IamOutput {
 	accountId: string;
 	isAdmin: boolean;
+	username: string;
 	dvs: DocumentStatusEnum;
 	discord?: {
 		id: string;

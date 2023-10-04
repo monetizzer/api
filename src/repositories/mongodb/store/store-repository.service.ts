@@ -95,7 +95,7 @@ export class StoreRepositoryService implements StoreRepository {
 				_id: storeId,
 			},
 			{
-				$set: i,
+				$set: JSON.parse(JSON.stringify(i)),
 			},
 		);
 	}
