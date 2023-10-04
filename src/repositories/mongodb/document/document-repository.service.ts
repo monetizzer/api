@@ -11,6 +11,7 @@ import {
 } from 'src/models/document';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
 import { Filter } from 'mongodb';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 interface DocumentTable extends Omit<DocumentEntity, 'accountId'> {
 	_id: string;
@@ -21,6 +22,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 	constructor(
 		@InjectRepository('documents')
 		private readonly documentRepository: Repository<DocumentTable>,
+		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
 	async isApproved({
@@ -103,14 +105,12 @@ export class DocumentRepositoryService implements DocumentRepository {
 					status,
 				},
 				$push: {
-					history: JSON.parse(
-						JSON.stringify({
-							timestamp: new Date(),
-							status,
-							message,
-							reviewerId,
-						}),
-					),
+					history: this.utilsAdapter.cleanObj({
+						timestamp: new Date(),
+						status,
+						message,
+						reviewerId,
+					}),
 				},
 			},
 		);
