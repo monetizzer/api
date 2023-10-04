@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { TermsService } from 'src/usecases/terms/terms.service';
 import { LatestDto } from './dtos/terms';
 
@@ -8,7 +8,7 @@ export class TermsController {
 
 	@Get('/latest')
 	latest(
-		@Param()
+		@Query()
 		params: LatestDto,
 	) {
 		return this.termsService.latest(params);

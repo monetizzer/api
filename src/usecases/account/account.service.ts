@@ -233,7 +233,7 @@ export class AccountService implements AccountUseCase {
 		});
 
 		if (!isNewVersion) {
-			throw new HttpException('Version is to old', HttpStatus.BAD_REQUEST);
+			throw new HttpException('Version is deprecated', HttpStatus.BAD_REQUEST);
 		}
 
 		await this.accountRepository.updateTerms({
@@ -258,6 +258,7 @@ export class AccountService implements AccountUseCase {
 		return {
 			accountId: account.accountId,
 			isAdmin: account.isAdmin,
+			username: account.username,
 			dvs: document?.status || DocumentStatusEnum['00'],
 			...(account.discord
 				? {

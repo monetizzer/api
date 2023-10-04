@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { IsLatestInput, LatestInput, VersionAdapter } from '../version';
 
-import sortSemVer from 'semver/functions/sort';
-import gtSemVer from 'semver/functions/gt';
+import { gt, rsort } from 'semver';
 
 @Injectable()
 export class SemVerAdapter implements VersionAdapter {
 	latest({ versions }: LatestInput): string {
-		const [latestSemVer] = sortSemVer(versions);
+		const [latestSemVer] = rsort(versions);
 
 		return latestSemVer;
 	}
@@ -16,6 +15,6 @@ export class SemVerAdapter implements VersionAdapter {
 		if (!compareWith) return true;
 		if (!toValidate) return false;
 
-		return gtSemVer(toValidate, compareWith);
+		return gt(toValidate, compareWith);
 	}
 }
