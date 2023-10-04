@@ -29,7 +29,7 @@ export class ProductController {
 			},
 		}),
 	)
-	update(
+	create(
 		@Body()
 		body: CreateDto,
 		@AccountId()
