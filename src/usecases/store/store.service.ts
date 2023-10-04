@@ -74,8 +74,8 @@ export class StoreService implements StoreUseCase {
 		if (avatar) {
 			promises.push(
 				this.fileAdapter.save({
-					folder: 'stores',
-					filePath: `/avatars/${accountId}.jpeg`,
+					folder: 'public',
+					filePath: `/stores/avatars/${accountId}.jpeg`,
 					file: avatar,
 				}),
 			);
@@ -84,8 +84,8 @@ export class StoreService implements StoreUseCase {
 		if (banner) {
 			promises.push(
 				this.fileAdapter.save({
-					folder: 'stores',
-					filePath: `/banners/${accountId}.jpeg`,
+					folder: 'public',
+					filePath: `/stores/banners/${accountId}.jpeg`,
 					file: banner,
 				}),
 			);
@@ -141,8 +141,8 @@ export class StoreService implements StoreUseCase {
 		if (avatar) {
 			promises.push(
 				this.fileAdapter.save({
-					folder: 'stores',
-					filePath: `/avatars/${accountId}.jpeg`,
+					folder: 'public',
+					filePath: `/stores/avatars/${accountId}.jpeg`,
 					file: avatar,
 				}),
 			);
@@ -151,8 +151,8 @@ export class StoreService implements StoreUseCase {
 		if (banner) {
 			promises.push(
 				this.fileAdapter.save({
-					folder: 'stores',
-					filePath: `/banners/${accountId}.jpeg`,
+					folder: 'public',
+					filePath: `/stores/banners/${accountId}.jpeg`,
 					file: banner,
 				}),
 			);

@@ -96,14 +96,14 @@ export class DocumentService implements DocumentUseCase {
 					accountId,
 				}),
 				this.fileAdapter.save({
+					folder: 'private',
+					filePath: `/documents/${accountId}/document.jpeg`,
 					file: documentPicture,
-					filePath: `/${accountId}/document.jpeg`,
-					folder: 'documents',
 				}),
 				this.fileAdapter.save({
+					folder: 'private',
+					filePath: `/documents/${accountId}/selfie.jpeg`,
 					file: selfieWithDocument,
-					filePath: `/${accountId}/selfie.jpeg`,
-					folder: 'documents',
 				}),
 			]);
 
