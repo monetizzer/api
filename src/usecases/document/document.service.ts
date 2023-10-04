@@ -1,10 +1,11 @@
 import { Readable } from 'stream';
 import {
 	BadRequestException,
-	HttpException,
-	HttpStatus,
+	ConflictException,
+	ForbiddenException,
 	Inject,
 	Injectable,
+	NotFoundException,
 } from '@nestjs/common';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import {
@@ -61,20 +62,14 @@ export class DocumentService implements DocumentUseCase {
 				isValidatingOrApproved.status === DocumentStatusEnum.AA &&
 				isValidatingOrApproved.accountId !== accountId
 			) {
-				throw new HttpException(
-					'Document is being used for other person',
-					HttpStatus.CONFLICT,
-				);
+				throw new ConflictException('Document is being used for other person');
 			}
 
 			if (
 				isValidatingOrApproved.status === DocumentStatusEnum.AA &&
 				isValidatingOrApproved.accountId === accountId
 			) {
-				throw new HttpException(
-					'Your documents are already approved',
-					HttpStatus.CONFLICT,
-				);
+				throw new ConflictException('Your documents are already approved');
 			}
 
 			if (
@@ -83,10 +78,7 @@ export class DocumentService implements DocumentUseCase {
 				) &&
 				isValidatingOrApproved.accountId === accountId
 			) {
-				throw new HttpException(
-					'Your documents are being validated',
-					HttpStatus.FORBIDDEN,
-				);
+				throw new ForbiddenException('Your documents are being validated');
 			}
 		}
 
@@ -113,10 +105,7 @@ export class DocumentService implements DocumentUseCase {
 				newStatus: DocumentStatusEnum.VV,
 			})
 		) {
-			throw new HttpException(
-				'Unable to update documents',
-				HttpStatus.CONFLICT,
-			);
+			throw new ConflictException('Unable to update documents');
 		}
 
 		await this.documentRepository.upsertComplete({
@@ -175,9 +164,8 @@ export class DocumentService implements DocumentUseCase {
 		message,
 	}: ReviewInput): Promise<void> {
 		if (!approve && !message) {
-			throw new HttpException(
+			throw new BadRequestException(
 				'Message is required if document is rejected',
-				HttpStatus.BAD_REQUEST,
 			);
 		}
 
@@ -275,7 +263,7 @@ export class DocumentService implements DocumentUseCase {
 				filePath: `${type}/${name}`,
 			})
 			.catch(() => {
-				throw new HttpException('File not found', HttpStatus.NOT_FOUND);
+				throw new NotFoundException('File not found');
 			});
 	}
 }

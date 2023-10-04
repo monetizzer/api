@@ -1,9 +1,8 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Get,
-	HttpException,
-	HttpStatus,
 	Param,
 	Post,
 	Res,
@@ -60,17 +59,11 @@ export class DocumentController {
 		const [selfieWithDocument] = files.selfieWithDocument || [];
 
 		if (!documentPicture) {
-			throw new HttpException(
-				'Missing documentPicture',
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new BadRequestException('Missing documentPicture');
 		}
 
 		if (!selfieWithDocument) {
-			throw new HttpException(
-				'Missing selfieWithDocument',
-				HttpStatus.BAD_REQUEST,
-			);
+			throw new BadRequestException('Missing selfieWithDocument');
 		}
 
 		return this.documentService.createComplete({
