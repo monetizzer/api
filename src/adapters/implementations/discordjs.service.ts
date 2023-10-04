@@ -40,18 +40,98 @@ interface GetUserDmChannelIdAPIOutput {
 	// https://discord.com/developers/docs/resources/channel#channel-object
 }
 
+const buttonStyles: Record<ButtonStyle, number> = {
+	primary: 1,
+	secondary: 2,
+	success: 3,
+	danger: 4,
+	link: 5,
+};
+
+const getUsername = (username: string, discriminator: string) => {
+	if (discriminator === '0') {
+		return username;
+	}
+
+	return `${username}#${discriminator}`;
+};
+
+const getAvatarUrl = (discordId: string, hash: string) => {
+	return `https://cdn.discordapp.com/avatars/${discordId}/${hash}?size=4096`;
+};
+
+const getBannerUrl = (discordId: string, hash: string) => {
+	return `https://cdn.discordapp.com/banners/${discordId}/${hash}?size=4096`;
+};
+
+const getColorNumber = (color: string) => {
+	return parseInt(color.replace('#', ''), 16);
+};
+
+const embedToDiscordEmbed = (embed: Embed) => {
+	const color = embed.color ? getColorNumber(embed.color) : undefined;
+
+	return {
+		type: 'rich',
+		title: embed.title,
+		description: embed.description,
+		url: embed.titleUrl,
+		color,
+		timestamp: embed.timestamp ? embed.timestamp.toISOString() : undefined,
+		footer: embed.footer
+			? {
+					text: embed.footer.text,
+					icon_url: embed.footer.iconUrl,
+			  }
+			: undefined,
+		author: embed.author
+			? {
+					name: embed.author.name,
+					icon_url: embed.author.iconUrl,
+			  }
+			: undefined,
+		image: embed.bannerUrl
+			? {
+					url: embed.bannerUrl,
+			  }
+			: undefined,
+		thumbnail: embed.iconUrl
+			? {
+					url: embed.iconUrl,
+			  }
+			: undefined,
+		fields: embed.fields ? embed.fields : undefined,
+	};
+};
+
+const componentRowToDiscordComponentRow = (
+	componentsRow: Array<AnyComponent>,
+) => {
+	return {
+		type: 1,
+		components: componentsRow.map((c) => {
+			const style = buttonStyles[c.style];
+
+			return {
+				type: 2,
+				label: c.label,
+				custom_id: c.customId,
+				url: c.url,
+				emoji: c.emoji
+					? {
+							name: c.emoji,
+					  }
+					: undefined,
+				style,
+			};
+		}),
+	};
+};
+
 @Injectable()
 export class DiscordJSAdapter implements DiscordAdapter {
 	channels: Record<Channels, string> = {
 		DOCUMENTS: '',
-	};
-
-	private readonly buttonStyles: Record<ButtonStyle, number> = {
-		primary: 1,
-		secondary: 2,
-		success: 3,
-		danger: 4,
-		link: 5,
 	};
 
 	private discordApi: (route: string, init: RequestInit) => Promise<Response>;
@@ -71,13 +151,11 @@ export class DiscordJSAdapter implements DiscordAdapter {
 		let componentsFormatted;
 
 		if (embeds) {
-			embedsFormatted = embeds.map(this.embedToDiscordEmbed);
+			embedsFormatted = embeds.map(embedToDiscordEmbed);
 		}
 
 		if (components) {
-			componentsFormatted = components.map(
-				this.componentRowToDiscordComponentRow,
-			);
+			componentsFormatted = components.map(componentRowToDiscordComponentRow);
 		}
 
 		await this.discordApi(`/channels/${channelId}/messages`, {
@@ -136,7 +214,7 @@ export class DiscordJSAdapter implements DiscordAdapter {
 
 		return {
 			id: result.id,
-			username: this.getUsername(result.username, result.discriminator),
+			username: getUsername(result.username, result.discriminator),
 		};
 	}
 
@@ -154,13 +232,13 @@ export class DiscordJSAdapter implements DiscordAdapter {
 		return {
 			id: result.id,
 			email: result.email,
-			username: this.getUsername(result.username, result.discriminator),
+			username: getUsername(result.username, result.discriminator),
 			verified: result.verified,
 			avatarUrl: result.avatar
-				? this.getAvatarUrl(result.id, result.avatar)
+				? getAvatarUrl(result.id, result.avatar)
 				: undefined,
 			bannerUrl: result.banner
-				? this.getBannerUrl(result.id, result.banner)
+				? getBannerUrl(result.id, result.banner)
 				: undefined,
 		};
 	}
@@ -183,78 +261,4 @@ export class DiscordJSAdapter implements DiscordAdapter {
 	}
 
 	// Private
-
-	private getUsername(username: string, discriminator: string) {
-		if (discriminator === '0') {
-			return username;
-		}
-
-		return `${username}#${discriminator}`;
-	}
-
-	private getAvatarUrl(discordId: string, hash: string) {
-		return `https://cdn.discordapp.com/avatars/${discordId}/${hash}?size=4096`;
-	}
-
-	private getBannerUrl(discordId: string, hash: string) {
-		return `https://cdn.discordapp.com/banners/${discordId}/${hash}?size=4096`;
-	}
-
-	private getColorNumber(color: string) {
-		return parseInt(color.replace('#', ''), 16);
-	}
-
-	private embedToDiscordEmbed(embed: Embed) {
-		return {
-			type: 'rich',
-			title: embed.title,
-			description: embed.description,
-			url: embed.titleUrl,
-			color: embed.color ? this.getColorNumber(embed.color) : undefined,
-			timestamp: embed.timestamp ? embed.timestamp.toISOString() : undefined,
-			footer: embed.footer
-				? {
-						text: embed.footer.text,
-						icon_url: embed.footer.iconUrl,
-				  }
-				: undefined,
-			author: embed.author
-				? {
-						name: embed.author.name,
-						icon_url: embed.author.iconUrl,
-				  }
-				: undefined,
-			image: embed.bannerUrl
-				? {
-						url: embed.bannerUrl,
-				  }
-				: undefined,
-			thumbnail: embed.iconUrl
-				? {
-						url: embed.iconUrl,
-				  }
-				: undefined,
-			fields: embed.fields ? embed.fields : undefined,
-		};
-	}
-
-	private componentRowToDiscordComponentRow(
-		componentsRow: Array<AnyComponent>,
-	) {
-		return {
-			type: 1,
-			components: componentsRow.map((c) => ({
-				type: 2,
-				label: c.label,
-				custom_id: c.customId,
-				url: c.url,
-				emoji: c.emoji
-					? {
-							name: c.emoji,
-					  }
-					: undefined,
-				style: this.buttonStyles[c.style],
-			})),
-		};
-	}
 }

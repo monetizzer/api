@@ -44,6 +44,8 @@ export class NotificationService implements NotificationUseCase {
 
 		switch (account.notifyThrough) {
 			case PlatformEnum.DISCORD: {
+				const { color, ...d } = data || {};
+
 				promises.push(
 					this.discordAdapter.sendMessage({
 						channelId: account.discord!.dmChannelId!,
@@ -51,13 +53,12 @@ export class NotificationService implements NotificationUseCase {
 							{
 								title,
 								description,
-								fields: data
-									? Object.entries(data).map(([key, value]) => ({
-											name: key,
-											value,
-											inline: true,
-									  }))
-									: undefined,
+								fields: Object.entries(d).map(([key, value]) => ({
+									name: key,
+									value,
+									inline: true,
+								})),
+								color,
 							},
 						],
 					}),

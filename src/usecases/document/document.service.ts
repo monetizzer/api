@@ -1,5 +1,11 @@
 import { Readable } from 'stream';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+	BadRequestException,
+	HttpException,
+	HttpStatus,
+	Inject,
+	Injectable,
+} from '@nestjs/common';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import {
 	CreateCompleteInput,
@@ -191,6 +197,17 @@ export class DocumentService implements DocumentUseCase {
 			status = DocumentStatusEnum.AA;
 		}
 
+		if (
+			!canChangeStatus({
+				oldStatus: document.status,
+				newStatus: status,
+			})
+		) {
+			throw new BadRequestException(
+				`Can't change status from "${document.status}" to "${status}"`,
+			);
+		}
+
 		await Promise.all([
 			this.documentRepository.updateStatus({
 				accountId,
@@ -221,12 +238,33 @@ export class DocumentService implements DocumentUseCase {
 					},
 				],
 			}),
-			this.notificationUsecase.sendNotification({
-				accountId,
-				title: 'Parabés, seus documentos foram aprovados!',
-				description:
-					'Entre em nossa plataforma agora para continuar de onde você parou!',
-			}),
+			this.notificationUsecase.sendNotification(
+				approve
+					? {
+							accountId,
+							title: 'Parabés, seus documentos foram aprovados!',
+							description:
+								'Entre em nossa plataforma agora para continuar de onde você parou!',
+							data: {
+								color: '#12e820',
+							},
+					  }
+					: {
+							accountId,
+							title: 'Que pena, seus documentos foram reprovados!',
+							description: [
+								'Motivo:',
+								'```',
+								message,
+								'```',
+								'',
+								'Para resolver isso, corrija os problemas apontados e envie seus documentos novamente.',
+							].join('\n'),
+							data: {
+								color: '#e81212',
+							},
+					  },
+			),
 		]);
 	}
 
