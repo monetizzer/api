@@ -11,6 +11,7 @@ import {
 	UpdateInput,
 } from 'src/models/store';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 interface StoreTable extends Omit<StoreEntity, 'storeId'> {
 	_id: string;
@@ -22,6 +23,7 @@ export class StoreRepositoryService implements StoreRepository {
 		@InjectRepository('stores')
 		private readonly storeRepository: Repository<StoreTable>,
 		private readonly idAdapter: UIDAdapter,
+		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
 	async getByStoreId({
@@ -95,7 +97,7 @@ export class StoreRepositoryService implements StoreRepository {
 				_id: storeId,
 			},
 			{
-				$set: JSON.parse(JSON.stringify(i)),
+				$set: this.utilsAdapter.cleanObj(i),
 			},
 		);
 	}

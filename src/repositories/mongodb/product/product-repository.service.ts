@@ -12,6 +12,7 @@ import {
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { Filter } from 'mongodb';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 interface ProductTable extends Omit<ProductEntity, 'productId'> {
 	_id: string;
@@ -23,6 +24,7 @@ export class ProductRepositoryService implements ProductRepository {
 		@InjectRepository('products')
 		private readonly productRepository: Repository<ProductTable>,
 		private readonly idAdapter: UIDAdapter,
+		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
 	async create(i: CreateInput): Promise<CreateOutput> {
@@ -62,15 +64,13 @@ export class ProductRepositoryService implements ProductRepository {
 					status,
 				},
 				$push: {
-					history: JSON.parse(
-						JSON.stringify({
-							timestamp: new Date(),
-							status,
-							message,
-							reviewerId,
-							markedContentIds,
-						}),
-					),
+					history: this.utilsAdapter.cleanObj({
+						timestamp: new Date(),
+						status,
+						message,
+						reviewerId,
+						markedContentIds,
+					}),
 				},
 			},
 		);
