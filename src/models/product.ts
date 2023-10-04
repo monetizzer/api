@@ -118,10 +118,11 @@ export interface GetOneToReviewOutput {
 }
 
 export interface ReviewInput {
-	accountId: string;
+	productId: string;
 	reviewerId: string;
 	approve: boolean;
 	message?: string;
+	markedContentIds?: Array<string>;
 }
 
 export interface ProductUseCase {

@@ -13,6 +13,7 @@ import {
 	CreateProductOutput,
 	MarkAsReadyInput,
 	ProductUseCase,
+	ReviewInput,
 } from 'src/models/product';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
@@ -25,6 +26,7 @@ import {
 	ProductTypeEnum,
 	isPreMadeProduct,
 } from 'src/types/enums/product-type';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class ProductService implements ProductUseCase {
@@ -33,6 +35,8 @@ export class ProductService implements ProductUseCase {
 		private readonly productRepository: ProductRepositoryService,
 		@Inject(StoreRepositoryService)
 		private readonly storeRepository: StoreRepositoryService,
+		@Inject(NotificationService)
+		private readonly notificationUsecase: NotificationService,
 		private readonly fileAdapter: S3Adapter,
 		private readonly idAdapter: UIDAdapter,
 		private readonly discordAdapter: DiscordJSAdapter,
@@ -126,6 +130,107 @@ export class ProductService implements ProductUseCase {
 					},
 				],
 			}),
+		]);
+	}
+
+	async review({
+		productId,
+		approve,
+		message,
+		reviewerId,
+		markedContentIds,
+	}: ReviewInput): Promise<void> {
+		if (!approve && !message) {
+			throw new BadRequestException(
+				'Message is required if document is rejected',
+			);
+		}
+
+		const product = await this.productRepository.get({
+			productId,
+		});
+
+		const status = approve
+			? ProductStatusEnum.APPROVED
+			: ProductStatusEnum.REPROVED;
+
+		if (
+			!canChangeStatus({
+				oldStatus: product.status,
+				newStatus: status,
+			})
+		) {
+			throw new BadRequestException(
+				`Can't change status from "${product.status}" to "${status}"`,
+			);
+		}
+
+		const [store] = await Promise.all([
+			this.storeRepository.getByStoreId({
+				storeId: product.storeId,
+			}),
+			this.productRepository.updateStatus({
+				productId,
+				status,
+				reviewerId,
+				message,
+				markedContentIds,
+			}),
+		]);
+
+		if (!store) return;
+
+		await Promise.all([
+			this.discordAdapter.sendMessage({
+				channelId: this.discordAdapter.channels.PRODUCTS,
+				content: '@everyone',
+				embeds: [
+					{
+						title: `Novo produto ${approve ? 'aprovado' : 'reprovado'}.`,
+						fields: [
+							{
+								name: 'ProductId',
+								value: productId,
+								inline: true,
+							},
+							{
+								name: 'ReviewerId',
+								value: reviewerId,
+								inline: true,
+							},
+						],
+						color: approve ? '#e81212' : '#12e820',
+						timestamp: new Date(),
+					},
+				],
+			}),
+			this.notificationUsecase.sendNotification(
+				approve
+					? {
+							accountId: store.accountId,
+							title: 'Parabés, seu produto foi aprovado!',
+							description:
+								'Entre em nossa plataforma agora para continuar de onde você parou!',
+							data: {
+								color: '#12e820',
+							},
+					  }
+					: {
+							accountId: store.accountId,
+							title: 'Que pena, seu produto foi reprovados!',
+							description: [
+								'Motivo:',
+								'```',
+								message,
+								'```',
+								'',
+								'Para resolver isso, corrija os problemas apontados e solicite a revisão novamente.',
+							].join('\n'),
+							data: {
+								color: '#e81212',
+							},
+					  },
+			),
 		]);
 	}
 
