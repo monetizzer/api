@@ -41,12 +41,20 @@ export interface CreateInput {
 	description: string;
 	color?: string;
 	price: number;
-	previewImages: Array<Buffer>;
+	previewImagesUrls: Array<string>;
+	deliveryMethod: DeliveryMethodEnum;
+}
+
+export interface CreateOutput {
+	productId: string;
 }
 
 export interface UpdateStatusInput {
 	productId: string;
 	status: ProductStatusEnum;
+	message?: string;
+	markedContentIds?: Array<string>;
+	reviewerId?: string;
 }
 
 export interface GetInput {
@@ -59,7 +67,7 @@ export interface GetManyInput {
 }
 
 export interface ProductRepository {
-	create: (i: CreateInput) => Promise<ProductEntity>;
+	create: (i: CreateInput) => Promise<CreateOutput>;
 
 	updateStatus: (i: UpdateStatusInput) => Promise<void>;
 
