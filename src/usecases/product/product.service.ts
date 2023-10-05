@@ -11,6 +11,8 @@ import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import {
 	CreateProductInput,
 	CreateProductOutput,
+	GetOneToReviewInput,
+	GetOneToReviewOutput,
 	MarkAsReadyInput,
 	ProductEntity,
 	ProductUseCase,
@@ -28,6 +30,7 @@ import {
 	isPreMadeProduct,
 } from 'src/types/enums/product-type';
 import { NotificationService } from '../notification/notification.service';
+import { ContentRepositoryService } from 'src/repositories/mongodb/content/content-repository.service';
 
 @Injectable()
 export class ProductService implements ProductUseCase {
@@ -36,6 +39,8 @@ export class ProductService implements ProductUseCase {
 		private readonly productRepository: ProductRepositoryService,
 		@Inject(StoreRepositoryService)
 		private readonly storeRepository: StoreRepositoryService,
+		@Inject(ContentRepositoryService)
+		private readonly contentRepository: ContentRepositoryService,
 		@Inject(NotificationService)
 		private readonly notificationUsecase: NotificationService,
 		private readonly fileAdapter: S3Adapter,
@@ -239,6 +244,28 @@ export class ProductService implements ProductUseCase {
 		return this.productRepository.getMany({
 			status: [ProductStatusEnum.VALIDATING],
 		});
+	}
+
+	async getOneToReview({
+		productId,
+	}: GetOneToReviewInput): Promise<GetOneToReviewOutput> {
+		const [product, contents] = await Promise.all([
+			this.productRepository.get({
+				productId,
+			}),
+			this.contentRepository.getMany({
+				productId,
+			}),
+		]);
+
+		return {
+			product,
+			contents: contents.map((c) => ({
+				contentId: c.contentId,
+				type: c.type,
+				mediaUrl: c.mediaUrl,
+			})),
+		};
 	}
 
 	// Private
