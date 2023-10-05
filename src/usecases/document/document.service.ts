@@ -272,11 +272,11 @@ export class DocumentService implements DocumentUseCase {
 		]);
 	}
 
-	async getImage({ type, name }: GetImageInput): Promise<Readable> {
+	async getImage({ accountId, name }: GetImageInput): Promise<Readable> {
 		return this.fileAdapter
 			.getReadStream({
-				folder: 'documents',
-				filePath: `${type}/${name}`,
+				folder: 'private',
+				filePath: `/documents/${accountId}/${name}`,
 			})
 			.catch(() => {
 				throw new NotFoundException('File not found');

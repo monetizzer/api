@@ -3,6 +3,13 @@ import {
 	ValidationOptions,
 	ValidationArguments,
 } from 'class-validator';
+import {
+	ALL_MEDIA_EXT,
+	AUDIO_EXT,
+	IMAGE_EXT,
+	MediaTypeEnum,
+	VIDEO_EXT,
+} from 'src/types/enums/media-type';
 
 export function IsID(validationOptions: ValidationOptions = {}) {
 	// eslint-disable-next-line @typescript-eslint/ban-types
@@ -88,6 +95,50 @@ export function IsHEXColor(validationOptions: ValidationOptions = {}) {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				validate(value: any, _args: ValidationArguments) {
 					return typeof value === 'string' && /^#[A-Fa-f0-9]{6}$/.test(value);
+				},
+			},
+		});
+	};
+}
+
+export function IsFileName(
+	allowedTypes: Array<MediaTypeEnum> = [],
+	validationOptions: ValidationOptions = {},
+) {
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	return function (object: Object, propertyName: string) {
+		registerDecorator({
+			name: 'isFileName',
+			target: object.constructor,
+			propertyName: propertyName,
+			constraints: [],
+			options: {
+				message: `${propertyName} must be a valid file name`,
+				...validationOptions,
+			},
+			validator: {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				validate(value: any, _args: ValidationArguments) {
+					if (value !== 'string') return false;
+
+					const allowedExt = [];
+
+					if (allowedTypes.length <= 0) {
+						allowedExt.push(...ALL_MEDIA_EXT);
+					}
+					if (allowedTypes.includes(MediaTypeEnum.AUDIO)) {
+						allowedExt.push(...AUDIO_EXT);
+					}
+					if (allowedTypes.includes(MediaTypeEnum.VIDEO)) {
+						allowedExt.push(...VIDEO_EXT);
+					}
+					if (allowedTypes.includes(MediaTypeEnum.IMAGE)) {
+						allowedExt.push(...IMAGE_EXT);
+					}
+
+					return new RegExp(
+						`^[a-zA-Z0-9-]{1,}[.]{1}(${allowedExt.join('|')})$`,
+					).test(value);
 				},
 			},
 		});
