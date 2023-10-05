@@ -12,6 +12,7 @@ import {
 	CreateProductInput,
 	CreateProductOutput,
 	MarkAsReadyInput,
+	ProductEntity,
 	ProductUseCase,
 	ReviewInput,
 } from 'src/models/product';
@@ -232,6 +233,12 @@ export class ProductService implements ProductUseCase {
 					  },
 			),
 		]);
+	}
+
+	async getToReview(): Promise<ProductEntity[]> {
+		return this.productRepository.getMany({
+			status: [ProductStatusEnum.VALIDATING],
+		});
 	}
 
 	// Private

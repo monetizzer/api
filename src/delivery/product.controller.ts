@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	Get,
 	Patch,
 	Post,
 	UploadedFiles,
@@ -74,5 +75,11 @@ export class ProductController {
 			...body,
 			reviewerId,
 		});
+	}
+
+	@Get('review')
+	@UseGuards(AdminGuard)
+	getToReview() {
+		return this.productService.getToReview();
 	}
 }
