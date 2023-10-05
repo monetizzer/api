@@ -7,10 +7,16 @@ import { StoreRepositoryModule } from 'src/repositories/mongodb/store/store-repo
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { NotificationModule } from '../notification/notification.module';
+import { ContentRepositoryModule } from 'src/repositories/mongodb/content/content-repository.module';
 
 @Module({
 	controllers: [ProductController],
-	imports: [ProductRepositoryModule, StoreRepositoryModule, NotificationModule],
+	imports: [
+		ProductRepositoryModule,
+		StoreRepositoryModule,
+		ContentRepositoryModule,
+		NotificationModule,
+	],
 	providers: [ProductService, S3Adapter, UIDAdapter, DiscordJSAdapter],
 })
 export class ProductModule {}

@@ -3,6 +3,7 @@ import {
 	Body,
 	Controller,
 	Get,
+	Param,
 	Patch,
 	Post,
 	UploadedFiles,
@@ -13,7 +14,12 @@ import { ProductService } from 'src/usecases/product/product.service';
 import { AuthGuard } from './guards/auth.guard';
 import { AccountId } from './decorators/account-id';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { CreateDto, MarkAsReadyDto, ReviewDto } from './dtos/product';
+import {
+	CreateDto,
+	GetOneToReviewDto,
+	MarkAsReadyDto,
+	ReviewDto,
+} from './dtos/product';
 import { AdminGuard } from './guards/admin.guard';
 
 @Controller('products')
@@ -81,5 +87,14 @@ export class ProductController {
 	@UseGuards(AdminGuard)
 	getToReview() {
 		return this.productService.getToReview();
+	}
+
+	@Get('review/:productId')
+	@UseGuards(AdminGuard)
+	getOneToReview(
+		@Param()
+		params: GetOneToReviewDto,
+	) {
+		return this.productService.getOneToReview(params);
 	}
 }

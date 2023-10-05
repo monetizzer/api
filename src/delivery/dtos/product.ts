@@ -66,3 +66,8 @@ export class ReviewDto {
 	@IsNotEmpty({ each: true })
 	markedContentsIds?: Array<string>;
 }
+
+export class GetOneToReviewDto {
+	@IsID()
+	productId: string;
+}
