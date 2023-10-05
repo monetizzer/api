@@ -19,6 +19,10 @@ export interface ContentEntity {
  */
 
 export interface CreateInput {
+	// We can't generate the contentId,
+	// because the file in S3 must have the same ID,
+	// and it's created before the record on the database
+	contentId: string; // ^^^^^^^^^
 	storeId: string;
 	productId: string;
 	type: MediaTypeEnum;
@@ -44,17 +48,26 @@ export interface ContentRepository {
  */
 
 export interface CreateContentInput {
+	accountId: string;
 	productId: string;
 	type: MediaTypeEnum;
 	media: Buffer;
+	ext: string;
 }
 
-export interface GetAdminInput {
+export interface CreateContentOutput {
+	contentId: string;
+	mediaUrl: string;
+}
+
+export interface GetInput {
+	accountId: string;
+	isAdmin: boolean;
 	contentId: string;
 }
 
 export interface ContentUseCase {
-	create: (i: CreateContentInput) => Promise<void>;
+	create: (i: CreateContentInput) => Promise<CreateContentOutput>;
 
-	getAdmin: (i: CreateContentInput) => Promise<Readable>;
+	get: (i: GetInput) => Promise<Readable>;
 }

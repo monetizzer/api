@@ -6,6 +6,7 @@ import { DocumentModule } from './usecases/document/document.module';
 import { NotificationModule } from './usecases/notification/notification.module';
 import { StoreModule } from './usecases/store/store.module';
 import { ProductModule } from './usecases/product/product.module';
+import { ContentModule } from './usecases/content/content.module';
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { ProductModule } from './usecases/product/product.module';
 		NotificationModule,
 		StoreModule,
 		ProductModule,
+		ContentModule,
 	],
 })
 export class AppModule {}
