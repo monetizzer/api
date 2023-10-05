@@ -11,7 +11,10 @@ import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import {
 	CreateProductInput,
 	CreateProductOutput,
+	GetOneToReviewInput,
+	GetOneToReviewOutput,
 	MarkAsReadyInput,
+	ProductEntity,
 	ProductUseCase,
 	ReviewInput,
 } from 'src/models/product';
@@ -41,6 +44,8 @@ export class ProductService implements ProductUseCase {
 		private readonly idAdapter: UIDAdapter,
 		private readonly discordAdapter: DiscordJSAdapter,
 	) {}
+	getToReview: () => Promise<ProductEntity[]>;
+	getOneToReview: (i: GetOneToReviewInput) => Promise<GetOneToReviewOutput>;
 
 	async create({
 		storeId,
