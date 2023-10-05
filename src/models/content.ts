@@ -63,7 +63,9 @@ export interface CreateContentOutput {
 export interface GetInput {
 	accountId: string;
 	isAdmin: boolean;
+	productId: string;
 	contentId: string;
+	ext: string;
 }
 
 export interface ContentUseCase {

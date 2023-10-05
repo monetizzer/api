@@ -9,7 +9,7 @@ export interface SaveInput {
 
 export interface GetInput {
 	folder: string;
-	filePath: string;
+	filePath: `/${string}`;
 }
 
 export interface FileAdapter {

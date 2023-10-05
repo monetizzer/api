@@ -144,7 +144,7 @@ export interface StatusOutput {
 }
 
 export interface GetImageInput {
-	type: string;
+	accountId: string;
 	name: string;
 }
 

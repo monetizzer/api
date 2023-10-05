@@ -13,7 +13,7 @@ import {
 import { DocumentService } from 'src/usecases/document/document.service';
 import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
-import { CreateCompleteDto, ReviewDto } from './dtos/document';
+import { CreateCompleteDto, GetImageDto, ReviewDto } from './dtos/document';
 import { AdminGuard } from './guards/admin.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -92,16 +92,12 @@ export class DocumentController {
 	@Get(':type/:name')
 	@UseGuards(AdminGuard)
 	async getImage(
-		@Param('type')
-		type: string,
-		@Param('name')
-		name: string,
-		@Res() res: Response,
+		@Param()
+		params: GetImageDto,
+		@Res()
+		res: Response,
 	) {
-		const file = await this.documentService.getImage({
-			type,
-			name,
-		});
+		const file = await this.documentService.getImage(params);
 
 		file.pipe(res);
 	}

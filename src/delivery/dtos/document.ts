@@ -9,8 +9,9 @@ import {
 } from 'class-validator';
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
 import { IsDateYYYYMMDD } from '../validators/date';
-import { IsID } from '../validators/internal';
+import { IsFileName, IsID } from '../validators/internal';
 import { Transform } from 'class-transformer';
+import { MediaTypeEnum } from 'src/types/enums/media-type';
 
 class DocumentAddressDto {
 	@IsString()
@@ -77,4 +78,12 @@ export class ReviewDto {
 	@IsNotEmpty()
 	@MaxLength(1000)
 	message?: string;
+}
+
+export class GetImageDto {
+	@IsID()
+	accountId: string;
+
+	@IsFileName([MediaTypeEnum.IMAGE])
+	name: string;
 }
