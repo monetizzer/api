@@ -77,16 +77,16 @@ export class ProductRepositoryService implements ProductRepository {
 	}
 
 	async get({ productId }: GetInput): Promise<undefined | ProductEntity> {
-		const products = await this.productRepository.findOne({
+		const product = await this.productRepository.findOne({
 			_id: productId,
 		});
 
-		if (!products) return;
+		if (!product) return;
 
-		const { _id, ...productsData } = products;
+		const { _id, ...productData } = product;
 
 		return {
-			...productsData,
+			...productData,
 			productId: _id,
 		};
 	}
