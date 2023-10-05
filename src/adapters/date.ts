@@ -1,3 +1,8 @@
+export interface IsOfLegalAgeInput {
+	birthDate: string;
+	minAge: number;
+}
+
 export interface DateAdapter {
-	hasMoreThan18: (birthDate: string) => boolean;
+	isOfLegalAge: (i: IsOfLegalAgeInput) => boolean;
 }

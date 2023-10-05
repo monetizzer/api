@@ -24,6 +24,16 @@ import {
 } from 'src/types/enums/document-status';
 import { NotificationService } from '../notification/notification.service';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
+import { DateAdapter } from 'src/adapters/implementations/date.service';
+
+interface ValidateIfIsOfLegalAgeInput {
+	birthDate: string;
+	country: keyof typeof COUNTRIES_LEGAL_AGE;
+}
+
+const COUNTRIES_LEGAL_AGE = {
+	BR: 18,
+};
 
 @Injectable()
 export class DocumentService implements DocumentUseCase {
@@ -34,6 +44,7 @@ export class DocumentService implements DocumentUseCase {
 		private readonly notificationUsecase: NotificationService,
 		private readonly fileAdapter: S3Adapter,
 		private readonly discordAdapter: DiscordJSAdapter,
+		private readonly dateAdapter: DateAdapter,
 	) {}
 
 	async createComplete({
@@ -47,6 +58,11 @@ export class DocumentService implements DocumentUseCase {
 		documentPicture,
 		selfieWithDocument,
 	}: CreateCompleteInput): Promise<void> {
+		this.validateIfIsOfLegalAge({
+			birthDate,
+			country: address.country as any,
+		});
+
 		const [isValidatingOrApproved] = await this.documentRepository.getMany({
 			type,
 			documentNumber,
@@ -265,5 +281,27 @@ export class DocumentService implements DocumentUseCase {
 			.catch(() => {
 				throw new NotFoundException('File not found');
 			});
+	}
+
+	// Private
+
+	private validateIfIsOfLegalAge({
+		birthDate,
+		country,
+	}: ValidateIfIsOfLegalAgeInput) {
+		const minAge = COUNTRIES_LEGAL_AGE[country];
+
+		if (!minAge) {
+			throw new ForbiddenException("Your country isn't supported for now");
+		}
+
+		if (
+			!this.dateAdapter.isOfLegalAge({
+				birthDate,
+				minAge,
+			})
+		) {
+			throw new BadRequestException('You must be at least 18');
+		}
 	}
 }
