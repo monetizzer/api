@@ -17,9 +17,7 @@ export class ContentRepositoryService implements ContentRepository {
 		private readonly idAdapter: UIDAdapter,
 	) {}
 
-	async create(i: CreateInput): Promise<void> {
-		const contentId = this.idAdapter.gen();
-
+	async create({ contentId, ...i }: CreateInput): Promise<void> {
 		await this.contentRepository.insertOne({
 			...i,
 			_id: contentId,
