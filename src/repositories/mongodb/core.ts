@@ -19,9 +19,17 @@ export class MongoDBCoreModule implements OnApplicationShutdown {
 		const connectionsProviders: Provider = {
 			provide: MONGODB_CONNECTION_NAME,
 			useFactory: async () => {
-				const connection = new MongoClient(
-					`mongodb://${process.env['DB_HOST']}:${process.env['DB_PORT']}`,
-				);
+				const dbHost = process.env['DB_HOST'];
+				const dbPort = process.env['DB_PORT'];
+				let URI = '';
+
+				if (dbHost && dbPort) {
+					URI = `mongodb://${dbHost}:${dbPort}`;
+				} else {
+					URI = `mongodb+srv://${process.env['DB_USER']}:${process.env['DB_PASSWORD']}@${process.env['DB_CLUSTER']}`;
+				}
+
+				const connection = new MongoClient(URI);
 
 				await connection.connect();
 
