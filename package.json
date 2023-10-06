@@ -5,22 +5,6 @@
 	"author": "",
 	"private": true,
 	"license": "UNLICENSED",
-	"scripts": {
-		"prepare": "husky install",
-		"build": "nest build",
-		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-		"start": "nest start",
-		"start:dev": "nest start --watch",
-		"start:debug": "nest start --debug --watch",
-		"start:prod": "node dist/main",
-		"lint": "eslint \"src/**/*.ts\" --fix --quiet",
-		"test": "jest",
-		"test:watch": "jest --watch",
-		"test:cov": "jest --coverage",
-		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"test:e2e": "jest --config ./test/jest-e2e.json",
-		"husky:pre-commit": "tsc && yarn lint"
-	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.420.0",
 		"@aws-sdk/client-ses": "^3.418.0",
@@ -51,6 +35,7 @@
 		"@types/supertest": "^2.0.12",
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
 		"@typescript-eslint/parser": "^6.0.0",
+		"env-cmd": "^10.1.0",
 		"eslint": "^8.42.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-prettier": "^5.0.0",
@@ -82,5 +67,22 @@
 		],
 		"coverageDirectory": "../coverage",
 		"testEnvironment": "node"
+	},
+	"scripts": {
+		"prepare": "husky install",
+		"build": "nest build",
+		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+		"start": "nest start",
+		"start:docker": "nest start --watch",
+		"start:dev": "env-cmd nest start --watch",
+		"start:debug": "nest start --debug --watch",
+		"start:prod": "node dist/main",
+		"lint": "eslint \"src/**/*.ts\" --fix --quiet",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:cov": "jest --coverage",
+		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+		"test:e2e": "jest --config ./test/jest-e2e.json",
+		"husky:pre-commit": "tsc && yarn lint"
 	}
 }
