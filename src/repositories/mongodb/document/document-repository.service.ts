@@ -104,7 +104,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 				$set: {
 					status,
 				},
-				$push: {
+				$addToSet: {
 					history: this.utilsAdapter.cleanObj({
 						timestamp: new Date(),
 						status,
@@ -144,7 +144,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 					documentPictureUrl,
 					selfieWithDocumentUrl,
 				},
-				$push: {
+				$addToSet: {
 					history: {
 						timestamp: new Date(),
 						status,

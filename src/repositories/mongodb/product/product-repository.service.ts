@@ -63,7 +63,7 @@ export class ProductRepositoryService implements ProductRepository {
 				$set: {
 					status,
 				},
-				$push: {
+				$addToSet: {
 					history: this.utilsAdapter.cleanObj({
 						timestamp: new Date(),
 						status,

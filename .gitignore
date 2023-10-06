@@ -35,7 +35,10 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # Env
-.env.docker
+.env
+.env.*
+!.env.docker.example
 
 # Temp
 /tmp
+/local-aws
