@@ -119,7 +119,7 @@ export class SaleRepositoryService implements SaleRepository {
 	async updateExpired(): Promise<void> {
 		const timeLimit = new Date().getTime() - 16 * 60 * 1000;
 
-		this.saleRepository.updateMany(
+		await this.saleRepository.updateMany(
 			{
 				status: SalesStatusEnum.PENDING,
 				createdAt: { $lte: new Date(timeLimit) },
@@ -131,6 +131,7 @@ export class SaleRepositoryService implements SaleRepository {
 				$push: {
 					history: this.utilsAdapter.cleanObj({
 						timestamp: new Date(),
+						status: SalesStatusEnum.EXPIRED,
 					}),
 				},
 			},
