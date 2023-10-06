@@ -119,7 +119,7 @@ export function IsFileName(
 			validator: {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				validate(value: any, _args: ValidationArguments) {
-					if (value !== 'string') return false;
+					if (typeof value !== 'string') return false;
 
 					const allowedExt = [];
 

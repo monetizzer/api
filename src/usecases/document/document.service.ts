@@ -104,12 +104,12 @@ export class DocumentService implements DocumentUseCase {
 					accountId,
 				}),
 				this.fileAdapter.save({
-					folder: 'private',
+					folder: process.env['PRIVATE_BUCKET_NAME'],
 					filePath: `/documents/${accountId}/document.jpeg`,
 					file: documentPicture,
 				}),
 				this.fileAdapter.save({
-					folder: 'private',
+					folder: process.env['PRIVATE_BUCKET_NAME'],
 					filePath: `/documents/${accountId}/selfie.jpeg`,
 					file: selfieWithDocument,
 				}),
@@ -133,8 +133,8 @@ export class DocumentService implements DocumentUseCase {
 			address,
 			documentNumber,
 			type,
-			documentPictureUrl: `${process.env['API_URL']}/${documentPicturePath}`,
-			selfieWithDocumentUrl: `${process.env['API_URL']}/${selfieWithDocumentPath}`,
+			documentPictureUrl: `${process.env['API_URL']}${documentPicturePath}`,
+			selfieWithDocumentUrl: `${process.env['API_URL']}${selfieWithDocumentPath}`,
 		});
 
 		await this.discordAdapter.sendMessage({
@@ -275,7 +275,7 @@ export class DocumentService implements DocumentUseCase {
 	async getImage({ accountId, name }: GetImageInput): Promise<Readable> {
 		return this.fileAdapter
 			.getReadStream({
-				folder: 'private',
+				folder: process.env['PRIVATE_BUCKET_NAME'],
 				filePath: `/documents/${accountId}/${name}`,
 			})
 			.catch(() => {

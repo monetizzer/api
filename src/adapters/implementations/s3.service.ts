@@ -5,8 +5,6 @@ import {
 	PutObjectCommand,
 	S3Client,
 } from '@aws-sdk/client-s3';
-import { createReadStream, mkdirSync, writeFileSync } from 'fs';
-import { join } from 'path';
 import { Readable } from 'stream';
 
 @Injectable()
@@ -14,61 +12,38 @@ export class S3Adapter implements FileAdapter {
 	private client: S3Client;
 
 	constructor() {
-		if (process.env['NODE_ENV'] === 'production') {
-			this.client = new S3Client();
-		} else {
-			this.client = {} as S3Client;
-		}
+		this.client = new S3Client({
+			endpoint: process.env['AWS_ENDPOINT'],
+			region: process.env['AWS_DEFAULT_REGION'],
+			credentials: {
+				secretAccessKey: process.env['AWS_SECRET_ACCESS_KEY'],
+				accessKeyId: process.env['AWS_ACCESS_KEY_ID'],
+			},
+			forcePathStyle: process.env['NODE_ENV'] !== 'production',
+		});
 	}
 
 	async save({ folder, filePath, file, metadata }: SaveInput) {
-		if (process.env['NODE_ENV'] === 'production') {
-			await this.client.send(
-				new PutObjectCommand({
-					Bucket: folder,
-					Key: filePath,
-					Body: file,
-					Metadata: metadata,
-				}),
-			);
-
-			return `${folder}${filePath}`;
-		}
-
-		const fileName = filePath.split('/').pop()!;
-		const foldersToCreatePath = join(
-			__dirname,
-			'..',
-			'..',
-			'tmp',
-			'assets',
-			folder,
-			filePath.replace(`/${fileName}`, ''),
+		await this.client.send(
+			new PutObjectCommand({
+				Bucket: folder,
+				Key: filePath.replace(/^\//, ''),
+				Body: file,
+				Metadata: metadata,
+			}),
 		);
-		mkdirSync(foldersToCreatePath, {
-			recursive: true,
-		});
-		const path = join(__dirname, '..', '..', 'tmp', 'assets', folder, filePath);
 
-		writeFileSync(path, file, { flag: 'w' });
-
-		return `${folder}${filePath}`;
+		return filePath;
 	}
 
 	async getReadStream({ folder, filePath }: GetInput): Promise<Readable> {
-		if (process.env['NODE_ENV'] === 'production') {
-			const file = await this.client.send(
-				new GetObjectCommand({
-					Bucket: folder,
-					Key: filePath,
-				}),
-			);
+		const file = await this.client.send(
+			new GetObjectCommand({
+				Bucket: folder,
+				Key: filePath.replace(/^\//, ''),
+			}),
+		);
 
-			return file.Body! as Readable;
-		} else {
-			return createReadStream(
-				join(__dirname, '..', '..', 'tmp', 'assets', folder, filePath),
-			);
-		}
+		return file.Body! as Readable;
 	}
 }

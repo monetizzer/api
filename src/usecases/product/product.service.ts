@@ -66,7 +66,7 @@ export class ProductService implements ProductUseCase {
 		const previewImagesUrls = await Promise.all(
 			previewImages.map((img) =>
 				this.fileAdapter.save({
-					folder: 'public',
+					folder: process.env['PUBLIC_BUCKET_NAME'],
 					filePath: `/products/preview/${storeId}/${this.idAdapter.gen()}.jpeg`,
 					file: img,
 				}),

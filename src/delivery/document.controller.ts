@@ -3,6 +3,7 @@ import {
 	Body,
 	Controller,
 	Get,
+	Header,
 	Param,
 	Post,
 	Res,
@@ -89,8 +90,9 @@ export class DocumentController {
 		return this.documentService.getToReview();
 	}
 
-	@Get(':type/:name')
+	@Get(':accountId/:name')
 	@UseGuards(AdminGuard)
+	@Header('Content-type', 'image/jpeg')
 	async getImage(
 		@Param()
 		params: GetImageDto,
