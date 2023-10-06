@@ -24,9 +24,9 @@ export const AuthGuard = (types: Array<AuthType>): Type<CanActivate> => {
 		}
 
 		private validateUserAuth(request: Request) {
-			const [type, token] = request.headers.authorization?.split(' ') ?? [];
+			const token = request.cookies?.['access-token'];
 
-			if (type !== 'Bearer' || !token) {
+			if (!token) {
 				throw new UnauthorizedException();
 			}
 

@@ -63,7 +63,7 @@ export class ContentService implements ContentUseCase {
 		const contentId = this.idAdapter.gen();
 
 		const path = await this.fileAdapter.save({
-			folder: 'private',
+			folder: process.env['PRIVATE_BUCKET_NAME'],
 			filePath: `/contents/${product.storeId}/${contentId}.${ext}`,
 			file: media,
 		});
@@ -105,7 +105,7 @@ export class ContentService implements ContentUseCase {
 
 		return this.fileAdapter
 			.getReadStream({
-				folder: 'private',
+				folder: process.env['PRIVATE_BUCKET_NAME'],
 				filePath: `/contents/${product.storeId}/${contentId}.${ext}`,
 			})
 			.catch(() => {

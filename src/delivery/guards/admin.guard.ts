@@ -12,9 +12,9 @@ export class AdminGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const request = context.switchToHttp().getRequest();
 
-		const [type, token] = request.headers.authorization?.split(' ') ?? [];
+		const token = request.cookies?.['access-token'];
 
-		if (type !== 'Bearer' || !token) {
+		if (!token) {
 			throw new UnauthorizedException();
 		}
 
