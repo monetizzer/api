@@ -26,8 +26,8 @@ export interface TransactionEntity {
 
 export interface CreateIncomeInput {
 	accountId: string;
-	saleId: string;
 	amount: number;
+	saleId: string;
 }
 
 export interface CreateWithdrawInput {
@@ -40,17 +40,31 @@ export interface CreateOutput {
 	transactionId: string;
 }
 
-export interface CompleteIncomeInput {
-	transactionId: string;
-	paymentId: string;
-}
+export type CompleteIncomeInput =
+	| {
+			transactionId: string;
+			status: TransactionStatusEnum.FAILED;
+			message: string;
+			reviewerId: string;
+	  }
+	| {
+			transactionId: string;
+			status: TransactionStatusEnum.COMPLETED;
+			paymentId: string;
+	  };
 
-export interface CompleteWithdrawInput {
-	status: TransactionStatusEnum.FAILED | TransactionStatusEnum.COMPLETED;
-	message?: string;
-	proofOfPaymentUrl?: string;
-	reviewerId: string;
-}
+export type CompleteWithdrawInput =
+	| {
+			transactionId: string;
+			status: TransactionStatusEnum.FAILED;
+			message: string;
+			reviewerId: string;
+	  }
+	| {
+			transactionId: string;
+			status: TransactionStatusEnum.COMPLETED;
+			proofOfPaymentUrl: string;
+	  };
 
 export interface GetByTransactionIdInput {
 	transactionId: string;
