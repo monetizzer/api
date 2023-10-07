@@ -16,12 +16,17 @@ import {
 	SaleEntity,
 	SaleUseCase,
 } from 'src/models/sale';
+import { TransactionEntity } from 'src/models/transaction';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { SaleRepositoryService } from 'src/repositories/mongodb/sale/sale-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
 import { TransactionRepositoryService } from 'src/repositories/mongodb/transaction/transaction-repository.service';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { isPreMadeProduct } from 'src/types/enums/product-type';
+import { SalesStatusEnum } from 'src/types/enums/sale-status';
+import { TransactionStatusEnum } from 'src/types/enums/transaction-status';
+import { NotificationService } from '../notification/notification.service';
+import { AccountRepositoryService } from 'src/repositories/mongodb/account/account-repository.service';
 
 interface ValidateCanGetSaleInput {
 	accountId: string;
@@ -40,6 +45,9 @@ export class SaleService implements SaleUseCase {
 		private readonly productRepository: ProductRepositoryService,
 		@Inject(StoreRepositoryService)
 		private readonly storeRepository: StoreRepositoryService,
+		@Inject(AccountRepositoryService)
+		private readonly accountRepository: AccountRepositoryService,
+		private readonly notificationUsecase: NotificationService,
 		private readonly paymentAdapter: GerencianetAdapter,
 	) {}
 
@@ -98,7 +106,95 @@ export class SaleService implements SaleUseCase {
 		};
 	}
 
-	processPixWebhook: (i: ProcessPixWebhookInput) => Promise<void>;
+	async processPixWebhook({
+		saleId,
+		paymentId,
+		amount,
+	}: ProcessPixWebhookInput): Promise<void> {
+		const transactions = await this.transactionRepository.getMany({ saleId });
+
+		if (transactions.length <= 0) {
+			await this.paymentAdapter.refund({ saleId });
+
+			return;
+		}
+
+		if (
+			transactions.length === 1 &&
+			transactions[0].status === TransactionStatusEnum.FAILED
+		) {
+			await this.paymentAdapter.refund({ saleId });
+
+			return;
+		}
+
+		const completedTransactions: Array<TransactionEntity> = [];
+		const processingTransactions: Array<TransactionEntity> = [];
+		const failedTransactions: Array<TransactionEntity> = [];
+
+		for (const transaction of transactions) {
+			if (transaction.status === TransactionStatusEnum.COMPLETED) {
+				completedTransactions.push(transaction);
+			}
+			if (transaction.status === TransactionStatusEnum.PROCESSING) {
+				processingTransactions.push(transaction);
+			}
+			if (transaction.status === TransactionStatusEnum.FAILED) {
+				failedTransactions.push(transaction);
+			}
+		}
+
+		if (completedTransactions.length > 0) {
+			const completedWithSamePaymentId = completedTransactions.find(
+				(t) => t.paymentId === paymentId,
+			);
+
+			if (!completedWithSamePaymentId) {
+				await this.paymentAdapter.refund({ saleId });
+
+				return;
+			}
+
+			return;
+		}
+
+		const processingWithSameAmount = processingTransactions.find(
+			(t) => t.amount === amount,
+		);
+
+		if (!processingWithSameAmount) {
+			await this.paymentAdapter.refund({ saleId });
+
+			return;
+		}
+
+		const sale = await this.saleRepository.getBySaleId({
+			saleId,
+		});
+
+		if (!sale) {
+			await this.paymentAdapter.refund({ saleId });
+
+			return;
+		}
+
+		await Promise.all([
+			this.transactionRepository.completeIncome({
+				transactionId: processingWithSameAmount.transactionId,
+				status: TransactionStatusEnum.COMPLETED,
+				paymentId,
+			}),
+			this.saleRepository.updateStatus({
+				saleId,
+				status: SalesStatusEnum.PAID,
+			}),
+			this.notificationUsecase.sendNotification({
+				accountId: sale.clientId,
+				title: 'Pagamento confirmado!',
+				description: `Pagamento do pedido __#${saleId}__ confirmado! Você já pode acessar os conteúdos.`,
+			}),
+		]);
+	}
 
 	async get({ isAdmin, accountId, saleId }: GetInput): Promise<GetOutput> {
 		const sale = await this.saleRepository.getBySaleId({ saleId });
