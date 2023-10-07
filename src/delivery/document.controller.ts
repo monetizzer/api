@@ -2,9 +2,12 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	FileTypeValidator,
 	Get,
 	Header,
+	MaxFileSizeValidator,
 	Param,
+	ParseFilePipe,
 	Post,
 	Res,
 	UploadedFiles,
@@ -42,7 +45,14 @@ export class DocumentController {
 		body: CreateCompleteDto,
 		@AccountId()
 		accountId: string,
-		@UploadedFiles()
+		@UploadedFiles(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({ maxSize: 10_000_000 }),
+					new FileTypeValidator({ fileType: /^image\// }),
+				],
+			}),
+		)
 		files: {
 			documentPicture?: Array<Express.Multer.File>;
 			selfieWithDocument?: Array<Express.Multer.File>;

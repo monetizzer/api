@@ -2,8 +2,11 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	FileTypeValidator,
 	Get,
+	MaxFileSizeValidator,
 	Param,
+	ParseFilePipe,
 	Patch,
 	Post,
 	UploadedFiles,
@@ -34,7 +37,14 @@ export class ProductController {
 		body: CreateDto,
 		@AccountId()
 		accountId: string,
-		@UploadedFiles()
+		@UploadedFiles(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({ maxSize: 10_000_000 }),
+					new FileTypeValidator({ fileType: /^image\// }),
+				],
+			}),
+		)
 		files: Array<Express.Multer.File>,
 	) {
 		if (!files || files.length < 1) {

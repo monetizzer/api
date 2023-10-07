@@ -2,7 +2,9 @@ import {
 	Body,
 	Controller,
 	Get,
+	MaxFileSizeValidator,
 	Param,
+	ParseFilePipe,
 	Post,
 	Res,
 	UploadedFile,
@@ -29,7 +31,11 @@ export class ContentController {
 		body: CreateDto,
 		@AccountId()
 		accountId: string,
-		@UploadedFile()
+		@UploadedFile(
+			new ParseFilePipe({
+				validators: [new MaxFileSizeValidator({ maxSize: 100_000_000 })],
+			}),
+		)
 		file: Express.Multer.File,
 	) {
 		return this.contentService.create({
