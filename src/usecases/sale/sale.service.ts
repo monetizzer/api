@@ -19,7 +19,6 @@ import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-rep
 import { TransactionRepositoryService } from 'src/repositories/mongodb/transaction/transaction-repository.service';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { isPreMadeProduct } from 'src/types/enums/product-type';
-import { SalesStatusEnum } from 'src/types/enums/sale-status';
 
 @Injectable()
 export class SaleService implements SaleUseCase {
@@ -49,19 +48,13 @@ export class SaleService implements SaleUseCase {
 		}
 
 		if (isPreMadeProduct(product.type)) {
-			const salesOfSameProduct = await this.saleRepository.getMany({
-				clientId,
-				productId,
-				status: [
-					SalesStatusEnum.PENDING,
-					SalesStatusEnum.PAID,
-					SalesStatusEnum.DELIVERED,
-					SalesStatusEnum.IN_DISPUTE,
-					SalesStatusEnum.CONFIRMED_DELIVERY,
-				],
-			});
+			const hasBoughtPreMadeProduct =
+				await this.saleRepository.hasBoughtPreMadeProduct({
+					clientId,
+					productId,
+				});
 
-			if (salesOfSameProduct.length > 0) {
+			if (hasBoughtPreMadeProduct) {
 				throw new ConflictException('Already purchased this product');
 			}
 		}

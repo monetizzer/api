@@ -16,8 +16,10 @@ import {
 import { ProductEntity } from 'src/models/product';
 import { ContentRepositoryService } from 'src/repositories/mongodb/content/content-repository.service';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
+import { SaleRepositoryService } from 'src/repositories/mongodb/sale/sale-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
 import { canBeEdited } from 'src/types/enums/product-status';
+import { isPreMadeProduct } from 'src/types/enums/product-type';
 
 interface ValidateCanGetContentInput {
 	accountId: string;
@@ -34,6 +36,8 @@ export class ContentService implements ContentUseCase {
 		private readonly storeRepository: StoreRepositoryService,
 		@Inject(ProductRepositoryService)
 		private readonly productRepository: ProductRepositoryService,
+		@Inject(SaleRepositoryService)
+		private readonly saleRepository: SaleRepositoryService,
 		private readonly fileAdapter: S3Adapter,
 		private readonly idAdapter: UIDAdapter,
 	) {}
@@ -133,8 +137,15 @@ export class ContentService implements ContentUseCase {
 
 		if (store?.storeId === product.storeId) return;
 
-		// TODO: Validate if user has a sale with the productId
-		// https://app.clickup.com/30989429/v/dc/xhq3n-340/xhq3n-660?block=block-d88a9fdc-46c7-4189-b214-527caeba0fa8
+		if (isPreMadeProduct(product.type)) {
+			const hasBoughtPreMadeProduct =
+				await this.saleRepository.hasBoughtPreMadeProduct({
+					clientId: accountId,
+					productId: product.productId,
+				});
+
+			if (hasBoughtPreMadeProduct) return;
+		}
 
 		throw new ForbiddenException('Cannot access content');
 	}

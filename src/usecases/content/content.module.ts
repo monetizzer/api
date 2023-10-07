@@ -6,6 +6,7 @@ import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import { StoreRepositoryModule } from 'src/repositories/mongodb/store/store-repository.module';
 import { ProductRepositoryModule } from 'src/repositories/mongodb/product/product-repository.module';
+import { SaleRepositoryModule } from 'src/repositories/mongodb/sale/sale-repository.module';
 
 @Module({
 	controllers: [ContentController],
@@ -13,6 +14,7 @@ import { ProductRepositoryModule } from 'src/repositories/mongodb/product/produc
 		ContentRepositoryModule,
 		StoreRepositoryModule,
 		ProductRepositoryModule,
+		SaleRepositoryModule,
 	],
 	providers: [ContentService, S3Adapter, UIDAdapter],
 })
