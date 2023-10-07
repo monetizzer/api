@@ -1,6 +1,9 @@
 import {
 	Body,
 	Controller,
+	FileTypeValidator,
+	MaxFileSizeValidator,
+	ParseFilePipe,
 	Patch,
 	Post,
 	UploadedFiles,
@@ -36,7 +39,14 @@ export class StoreController {
 		body: CreateDto,
 		@AccountId()
 		accountId: string,
-		@UploadedFiles()
+		@UploadedFiles(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({ maxSize: 10_000_000 }),
+					new FileTypeValidator({ fileType: /^image\// }),
+				],
+			}),
+		)
 		files: {
 			banner?: Array<Express.Multer.File>;
 			avatar?: Array<Express.Multer.File>;
@@ -72,7 +82,14 @@ export class StoreController {
 		body: UpdateDto,
 		@AccountId()
 		accountId: string,
-		@UploadedFiles()
+		@UploadedFiles(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({ maxSize: 10_000_000 }),
+					new FileTypeValidator({ fileType: /^image\// }),
+				],
+			}),
+		)
 		files: {
 			banner?: Array<Express.Multer.File>;
 			avatar?: Array<Express.Multer.File>;
