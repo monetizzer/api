@@ -63,7 +63,7 @@ export interface SaleRepository {
 
 	updateStatus: (i: UpdateStatusInput) => Promise<void>;
 
-	// Update the status of all sales that are expired to EXPIRED
+	// Update the status of all expired sales to EXPIRED
 	updateExpired: () => Promise<void>;
 }
 
@@ -111,4 +111,7 @@ export interface SaleUseCase {
 	checkout: (i: CheckoutInput) => Promise<CheckoutOutput>;
 
 	get: (i: GetInput) => Promise<SaleEntity>;
+
+	// Update the status of all expired sales to EXPIRED
+	updateExpired: () => Promise<void>;
 }
