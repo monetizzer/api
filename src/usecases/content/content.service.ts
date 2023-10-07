@@ -57,7 +57,7 @@ export class ContentService implements ContentUseCase {
 			throw new ForbiddenException('Cannot create a content without a store');
 		}
 
-		const product = await this.productRepository.get({
+		const product = await this.productRepository.getByProductId({
 			productId,
 		});
 
@@ -100,7 +100,7 @@ export class ContentService implements ContentUseCase {
 		contentId,
 		ext,
 	}: GetInput): Promise<Readable> {
-		const product = await this.productRepository.get({
+		const product = await this.productRepository.getByProductId({
 			productId,
 		});
 

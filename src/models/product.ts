@@ -57,7 +57,7 @@ export interface UpdateStatusInput {
 	reviewerId?: string;
 }
 
-export interface GetInput {
+export interface GetByProductIdInput {
 	productId: string;
 }
 
@@ -71,7 +71,9 @@ export interface ProductRepository {
 
 	updateStatus: (i: UpdateStatusInput) => Promise<void>;
 
-	get: (i: GetInput) => Promise<ProductEntity | undefined>;
+	getByProductId: (
+		i: GetByProductIdInput,
+	) => Promise<ProductEntity | undefined>;
 
 	getMany: (i: GetManyInput) => Promise<Array<ProductEntity>>;
 }

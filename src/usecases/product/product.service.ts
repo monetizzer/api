@@ -89,7 +89,7 @@ export class ProductService implements ProductUseCase {
 	}
 
 	async markAsReady({ accountId, productId }: MarkAsReadyInput): Promise<void> {
-		const product = await this.productRepository.get({ productId });
+		const product = await this.productRepository.getByProductId({ productId });
 
 		if (!product) {
 			throw new NotFoundException('Product not found');
@@ -152,7 +152,7 @@ export class ProductService implements ProductUseCase {
 			);
 		}
 
-		const product = await this.productRepository.get({
+		const product = await this.productRepository.getByProductId({
 			productId,
 		});
 
@@ -250,7 +250,7 @@ export class ProductService implements ProductUseCase {
 		productId,
 	}: GetOneToReviewInput): Promise<GetOneToReviewOutput> {
 		const [product, contents] = await Promise.all([
-			this.productRepository.get({
+			this.productRepository.getByProductId({
 				productId,
 			}),
 			this.contentRepository.getMany({

@@ -56,7 +56,7 @@ export class SaleService implements SaleUseCase {
 		productId,
 		paymentMethod,
 	}: CheckoutInput): Promise<CheckoutOutput> {
-		const product = await this.productRepository.get({
+		const product = await this.productRepository.getByProductId({
 			productId,
 		});
 
@@ -206,7 +206,7 @@ export class SaleService implements SaleUseCase {
 		});
 
 		const [product, store] = await Promise.all([
-			this.productRepository.get({
+			this.productRepository.getByProductId({
 				productId: sale.productId,
 			}),
 			this.storeRepository.getByStoreId({
