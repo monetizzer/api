@@ -4,13 +4,12 @@ import {
 	CreateInput,
 	CreateOutput,
 	GetInput,
-	GetManyInput,
+	HasBoughtPreMadeProductInput,
 	SaleEntity,
 	SaleRepository,
 	UpdateStatusInput,
 } from 'src/models/sale';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
-import { Filter } from 'mongodb';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
 
@@ -82,38 +81,25 @@ export class SaleRepositoryService implements SaleRepository {
 		};
 	}
 
-	async getMany({
+	async hasBoughtPreMadeProduct({
 		clientId,
 		productId,
-		status,
-	}: GetManyInput): Promise<SaleEntity[]> {
-		const filters: Filter<SaleTable> = {};
-
-		if (clientId) {
-			filters.saleId = clientId;
-		}
-
-		if (productId) {
-			filters.productId = productId;
-		}
-
-		if (status) {
-			filters.status = {
-				$in: status,
-			};
-		}
-
-		const salesCursor = this.saleRepository.find(filters);
-		const sales = await salesCursor.toArray();
-
-		return sales.map((sale) => {
-			const { _id, ...saleData } = sale;
-
-			return {
-				...saleData,
-				saleId: _id,
-			};
+	}: HasBoughtPreMadeProductInput): Promise<boolean> {
+		const sale = await this.saleRepository.findOne({
+			clientId,
+			productId,
+			status: {
+				$in: [
+					SalesStatusEnum.PENDING,
+					SalesStatusEnum.PAID,
+					SalesStatusEnum.DELIVERED,
+					SalesStatusEnum.IN_DISPUTE,
+					SalesStatusEnum.CONFIRMED_DELIVERY,
+				],
+			},
 		});
+
+		return Boolean(sale);
 	}
 
 	async updateExpired(): Promise<void> {

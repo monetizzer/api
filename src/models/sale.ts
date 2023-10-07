@@ -42,10 +42,9 @@ export interface GetBySaleIdInput {
 	saleId: string;
 }
 
-export interface GetManyInput {
-	clientId?: string;
-	productId?: string;
-	status?: Array<SalesStatusEnum>;
+export interface HasBoughtPreMadeProductInput {
+	clientId: string;
+	productId: string;
 }
 
 export interface UpdateStatusInput {
@@ -58,7 +57,9 @@ export interface SaleRepository {
 
 	getBySaleId: (i: GetBySaleIdInput) => Promise<SaleEntity | undefined>;
 
-	getMany: (i: GetManyInput) => Promise<Array<SaleEntity>>;
+	hasBoughtPreMadeProduct: (
+		i: HasBoughtPreMadeProductInput,
+	) => Promise<boolean>;
 
 	updateStatus: (i: UpdateStatusInput) => Promise<void>;
 
