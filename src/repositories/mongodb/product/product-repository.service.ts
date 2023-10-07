@@ -3,7 +3,7 @@ import { InjectRepository, Repository } from '..';
 import {
 	CreateInput,
 	CreateOutput,
-	GetInput,
+	GetByProductIdInput,
 	GetManyInput,
 	ProductEntity,
 	ProductRepository,
@@ -76,7 +76,9 @@ export class ProductRepositoryService implements ProductRepository {
 		);
 	}
 
-	async get({ productId }: GetInput): Promise<undefined | ProductEntity> {
+	async getByProductId({
+		productId,
+	}: GetByProductIdInput): Promise<undefined | ProductEntity> {
 		const product = await this.productRepository.findOne({
 			_id: productId,
 		});
