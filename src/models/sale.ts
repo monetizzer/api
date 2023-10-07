@@ -86,14 +86,9 @@ export interface ProcessPixWebhookInput {
 }
 
 export interface CheckoutInput {
-	pix: Array<{
-		endToEndId: string; // Pix ID
-		txid: string; // Sale ID
-		chave: string; // Pix Key
-		valor: string; // Value
-		horario: string; // ISO Date
-		infoPagador: string; // Message
-	}>;
+	clientId: string;
+	productId: string;
+	paymentMethod: PaymentMethodEnum;
 }
 
 export interface CheckoutOutput {
