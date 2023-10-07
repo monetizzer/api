@@ -11,6 +11,10 @@ interface CanChangeStatusInput {
 	newStatus: ProductStatusEnum;
 }
 
+interface CanBeEditedInput {
+	status: ProductStatusEnum;
+}
+
 export const canChangeStatus = ({
 	oldStatus,
 	newStatus,
@@ -39,4 +43,12 @@ export const canChangeStatus = ({
 			return [ProductStatusEnum.VALIDATING].includes(newStatus);
 		}
 	}
+};
+
+export const canBeEdited = ({ status }: CanBeEditedInput) => {
+	return [
+		ProductStatusEnum.IN_PREPARATION,
+		ProductStatusEnum.PAUSED,
+		ProductStatusEnum.REPROVED,
+	].includes(status);
 };

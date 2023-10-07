@@ -26,24 +26,16 @@ export class DocumentController {
 	@Post('complete')
 	@UseGuards(AuthGuard(['USER']))
 	@UseInterceptors(
-		FileFieldsInterceptor(
-			[
-				{
-					name: 'documentPicture',
-					maxCount: 1,
-				},
-				{
-					name: 'selfieWithDocument',
-					maxCount: 1,
-				},
-			],
+		FileFieldsInterceptor([
 			{
-				limits: {
-					fileSize: 5_000_000, // 5MB in bytes
-					files: 2,
-				},
+				name: 'documentPicture',
+				maxCount: 1,
 			},
-		),
+			{
+				name: 'selfieWithDocument',
+				maxCount: 1,
+			},
+		]),
 	)
 	createComplete(
 		@Body()

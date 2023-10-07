@@ -23,13 +23,7 @@ export class ContentController {
 
 	@Post('/')
 	@UseGuards(AuthGuard(['USER']))
-	@UseInterceptors(
-		FileInterceptor('media', {
-			limits: {
-				fileSize: 20_000_000, // 20MB in bytes
-			},
-		}),
-	)
+	@UseInterceptors(FileInterceptor('media'))
 	create(
 		@Body()
 		body: CreateDto,
@@ -45,7 +39,7 @@ export class ContentController {
 		});
 	}
 
-	@Get(':productId/:contentIdAndExt')
+	@Get(':storeId/:productId/:contentIdAndExt')
 	@UseGuards(AuthGuard(['USER']))
 	async get(
 		@Param()

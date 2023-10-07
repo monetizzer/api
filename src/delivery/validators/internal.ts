@@ -144,3 +144,29 @@ export function IsFileName(
 		});
 	};
 }
+
+export function IsPrice(validationOptions: ValidationOptions = {}) {
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	return function (object: Object, propertyName: string) {
+		registerDecorator({
+			name: 'isPrice',
+			target: object.constructor,
+			propertyName: propertyName,
+			constraints: [],
+			options: {
+				message: `${propertyName} must be a valid price`,
+				...validationOptions,
+			},
+			validator: {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				validate(value: any, _args: ValidationArguments) {
+					if (typeof value !== 'number') return false;
+
+					if (value < 100) return false;
+
+					return value % 1 === 0;
+				},
+			},
+		});
+	};
+}

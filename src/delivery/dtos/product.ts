@@ -3,22 +3,15 @@ import {
 	IsArray,
 	IsBoolean,
 	IsEnum,
-	IsInt,
 	IsNotEmpty,
 	IsOptional,
 	IsString,
 	MaxLength,
-	Min,
 } from 'class-validator';
-import { IsHEXColor, IsID } from '../validators/internal';
+import { IsHEXColor, IsID, IsPrice } from '../validators/internal';
 import { ProductTypeEnum } from 'src/types/enums/product-type';
 
 export class CreateDto {
-	@IsOptional()
-	@IsBoolean()
-	@Transform((value) => Boolean(value))
-	semVer?: boolean;
-
 	@IsID()
 	storeId: string;
 
@@ -37,8 +30,8 @@ export class CreateDto {
 	@IsHEXColor()
 	color?: string;
 
-	@IsInt()
-	@Min(100)
+	@IsPrice()
+	@Transform(({ value }) => parseFloat(value))
 	price: number;
 }
 

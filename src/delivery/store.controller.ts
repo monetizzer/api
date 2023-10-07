@@ -20,24 +20,16 @@ export class StoreController {
 	@Post('/')
 	@UseGuards(AuthGuard(['USER']))
 	@UseInterceptors(
-		FileFieldsInterceptor(
-			[
-				{
-					name: 'banner',
-					maxCount: 1,
-				},
-				{
-					name: 'avatar',
-					maxCount: 1,
-				},
-			],
+		FileFieldsInterceptor([
 			{
-				limits: {
-					fileSize: 5_000_000, // 5MB in bytes
-					files: 2,
-				},
+				name: 'banner',
+				maxCount: 1,
 			},
-		),
+			{
+				name: 'avatar',
+				maxCount: 1,
+			},
+		]),
 	)
 	create(
 		@Body()
@@ -64,24 +56,16 @@ export class StoreController {
 	@Patch('/')
 	@UseGuards(AuthGuard(['USER']))
 	@UseInterceptors(
-		FileFieldsInterceptor(
-			[
-				{
-					name: 'banner',
-					maxCount: 1,
-				},
-				{
-					name: 'avatar',
-					maxCount: 1,
-				},
-			],
+		FileFieldsInterceptor([
 			{
-				limits: {
-					fileSize: 5_000_000, // 5MB in bytes
-					files: 2,
-				},
+				name: 'banner',
+				maxCount: 1,
 			},
-		),
+			{
+				name: 'avatar',
+				maxCount: 1,
+			},
+		]),
 	)
 	update(
 		@Body()

@@ -28,14 +28,7 @@ export class ProductController {
 
 	@Post('/')
 	@UseGuards(AuthGuard(['USER']))
-	@UseInterceptors(
-		FilesInterceptor('previewImages', 5, {
-			limits: {
-				fileSize: 5_000_000, // 5MB in bytes
-				files: 5,
-			},
-		}),
-	)
+	@UseInterceptors(FilesInterceptor('previewImages'))
 	create(
 		@Body()
 		body: CreateDto,
