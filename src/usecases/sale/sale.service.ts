@@ -4,6 +4,7 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { GerencianetAdapter } from 'src/adapters/implementations/gerencianet.service';
 import {
 	CheckoutInput,
@@ -92,4 +93,9 @@ export class SaleService implements SaleUseCase {
 	processPixWebhook: (i: ProcessPixWebhookInput) => Promise<void>;
 
 	get: (i: GetInput) => Promise<SaleEntity>;
+
+	@Cron(CronExpression.EVERY_30_MINUTES)
+	async updateExpired(): Promise<void> {
+		await this.saleRepository.updateExpired();
+	}
 }

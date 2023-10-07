@@ -12,6 +12,7 @@ import {
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
+import { PaymentMethodEnum } from 'src/types/enums/payment-method';
 
 interface SaleTable extends Omit<SaleEntity, 'saleId'> {
 	_id: string;
@@ -108,7 +109,10 @@ export class SaleRepositoryService implements SaleRepository {
 		await this.saleRepository.updateMany(
 			{
 				status: SalesStatusEnum.PENDING,
-				createdAt: { $lte: new Date(timeLimit) },
+				paymentMethod: PaymentMethodEnum.PIX,
+				createdAt: {
+					$lte: new Date(timeLimit),
+				},
 			},
 			{
 				$set: {
