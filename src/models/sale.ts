@@ -1,5 +1,7 @@
 import { PaymentMethodEnum } from 'src/types/enums/payment-method';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
+import { ProductEntity } from './product';
+import { StoreEntity } from './store';
 
 interface SaleHistoryItem {
 	timestamp: Date;
@@ -105,12 +107,17 @@ export interface GetInput {
 	saleId: string;
 }
 
+export interface GetOutput extends SaleEntity {
+	product: ProductEntity;
+	store: StoreEntity;
+}
+
 export interface SaleUseCase {
 	processPixWebhook: (i: ProcessPixWebhookInput) => Promise<void>;
 
 	checkout: (i: CheckoutInput) => Promise<CheckoutOutput>;
 
-	get: (i: GetInput) => Promise<SaleEntity>;
+	get: (i: GetInput) => Promise<GetOutput>;
 
 	// Update the status of all expired sales to EXPIRED
 	updateExpired: () => Promise<void>;

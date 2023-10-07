@@ -3,7 +3,7 @@ import { InjectRepository, Repository } from '..';
 import {
 	CreateInput,
 	CreateOutput,
-	GetInput,
+	GetBySaleIdInput,
 	HasBoughtPreMadeProductInput,
 	SaleEntity,
 	SaleRepository,
@@ -67,7 +67,9 @@ export class SaleRepositoryService implements SaleRepository {
 		);
 	}
 
-	async getBySaleId({ saleId }: GetInput): Promise<undefined | SaleEntity> {
+	async getBySaleId({
+		saleId,
+	}: GetBySaleIdInput): Promise<undefined | SaleEntity> {
 		const sale = await this.saleRepository.findOne({
 			_id: saleId,
 		});
