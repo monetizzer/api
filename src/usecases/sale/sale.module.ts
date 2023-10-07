@@ -7,7 +7,6 @@ import { ProductRepositoryModule } from 'src/repositories/mongodb/product/produc
 import { StoreRepositoryModule } from 'src/repositories/mongodb/store/store-repository.module';
 import { GerencianetAdapter } from 'src/adapters/implementations/gerencianet.service';
 import { NotificationModule } from '../notification/notification.module';
-import { AccountRepositoryModule } from 'src/repositories/mongodb/account/account-repository.module';
 
 @Module({
 	controllers: [SaleController],
@@ -16,7 +15,6 @@ import { AccountRepositoryModule } from 'src/repositories/mongodb/account/accoun
 		TransactionRepositoryModule,
 		ProductRepositoryModule,
 		StoreRepositoryModule,
-		AccountRepositoryModule,
 		NotificationModule,
 	],
 	providers: [SaleService, GerencianetAdapter],

@@ -26,7 +26,6 @@ import { isPreMadeProduct } from 'src/types/enums/product-type';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
 import { TransactionStatusEnum } from 'src/types/enums/transaction-status';
 import { NotificationService } from '../notification/notification.service';
-import { AccountRepositoryService } from 'src/repositories/mongodb/account/account-repository.service';
 
 interface ValidateCanGetSaleInput {
 	accountId: string;
@@ -45,8 +44,6 @@ export class SaleService implements SaleUseCase {
 		private readonly productRepository: ProductRepositoryService,
 		@Inject(StoreRepositoryService)
 		private readonly storeRepository: StoreRepositoryService,
-		@Inject(AccountRepositoryService)
-		private readonly accountRepository: AccountRepositoryService,
 		private readonly notificationUsecase: NotificationService,
 		private readonly paymentAdapter: GerencianetAdapter,
 	) {}
