@@ -8,6 +8,7 @@ import { StoreModule } from './usecases/store/store.module';
 import { ProductModule } from './usecases/product/product.module';
 import { ContentModule } from './usecases/content/content.module';
 import { SaleModule } from './usecases/sale/sale.module';
+import { TransactionModule } from './usecases/transaction/transaction.module';
 
 @Module({
 	imports: [
@@ -20,6 +21,7 @@ import { SaleModule } from './usecases/sale/sale.module';
 		ProductModule,
 		ContentModule,
 		SaleModule,
+		TransactionModule,
 	],
 })
 export class AppModule {}

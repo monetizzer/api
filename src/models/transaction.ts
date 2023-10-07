@@ -106,8 +106,8 @@ export interface WalletInput {
 }
 
 export interface WalletOutput {
-	amountToWithdraw: string;
-	pending: string;
+	balance: number;
+	pending: number;
 }
 
 export interface RequestWithdrawInput {
