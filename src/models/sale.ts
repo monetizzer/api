@@ -78,14 +78,21 @@ export interface SaleRepository {
  */
 
 export interface ProcessPixWebhookInput {
-	pix: Array<{
-		endToEndId: string; // Pix ID
-		txid: string; // Sale ID
-		chave: string; // Pix Key
-		valor: string; // Value
-		horario: string; // ISO Date
-		infoPagador: string; // Message
-	}>;
+	saleId: string;
+	paymentId: string;
+	amount: number;
+
+	// Webhook message received (formatted on the controller):
+	// ----
+	// pix: Array<{
+	// 	endToEndId: string; // Pix ID
+	// 	txid: string; // Sale ID
+	// 	chave: string; // Pix Key
+	// 	valor: string; // Amount
+	// 	horario: string; // ISO Date
+	// 	infoPagador: string; // Message
+	// }>;
+	// ----
 }
 
 export interface CheckoutInput {

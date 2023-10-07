@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { SaleService } from 'src/usecases/sale/sale.service';
 import { AccountId } from './decorators/account-id';
-import { CheckoutDto, GetDto } from './dtos/sale';
+import { CheckoutDto, GetDto, ProcessPixWebhookDto } from './dtos/sale';
 import { IsAdmin } from './decorators/is-admin';
 import { AuthGuard } from './guards/auth.guard';
 
@@ -37,6 +37,20 @@ export class SaleController {
 			...params,
 			isAdmin,
 			accountId,
+		});
+	}
+
+	@Post('/webhooks/pix')
+	processPixWebhook(
+		@Body()
+		body: ProcessPixWebhookDto,
+	) {
+		const [pix] = body.pix;
+
+		return this.saleService.processPixWebhook({
+			saleId: pix.txid,
+			paymentId: pix.endToEndId,
+			amount: pix.valor,
 		});
 	}
 }
