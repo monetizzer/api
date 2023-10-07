@@ -16,6 +16,9 @@ export class CreateDto {
 
 export class GetDto {
 	@IsID()
+	storeId: string;
+
+	@IsID()
 	productId: string;
 
 	@IsFileName()

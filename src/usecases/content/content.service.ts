@@ -17,6 +17,7 @@ import { ProductEntity } from 'src/models/product';
 import { ContentRepositoryService } from 'src/repositories/mongodb/content/content-repository.service';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
+import { canBeEdited } from 'src/types/enums/product-status';
 
 interface ValidateCanGetContentInput {
 	accountId: string;
@@ -60,11 +61,17 @@ export class ContentService implements ContentUseCase {
 			throw new NotFoundException('Product not found');
 		}
 
+		if (!canBeEdited(product)) {
+			throw new NotFoundException(
+				`Product with status "${product.status}" cannot be edited`,
+			);
+		}
+
 		const contentId = this.idAdapter.gen();
 
 		const path = await this.fileAdapter.save({
 			folder: process.env['PRIVATE_BUCKET_NAME'],
-			filePath: `/contents/${product.storeId}/${contentId}.${ext}`,
+			filePath: `/contents/${product.storeId}/${product.productId}/${contentId}.${ext}`,
 			file: media,
 		});
 
@@ -73,12 +80,12 @@ export class ContentService implements ContentUseCase {
 			storeId: product.storeId,
 			productId,
 			type,
-			mediaUrl: `${process.env['API_URL']}/${path}`,
+			mediaUrl: `${process.env['API_URL']}${path}`,
 		});
 
 		return {
 			contentId,
-			mediaUrl: `${process.env['API_URL']}/${path}`,
+			mediaUrl: `${process.env['API_URL']}${path}`,
 		};
 	}
 
@@ -106,7 +113,7 @@ export class ContentService implements ContentUseCase {
 		return this.fileAdapter
 			.getReadStream({
 				folder: process.env['PRIVATE_BUCKET_NAME'],
-				filePath: `/contents/${product.storeId}/${contentId}.${ext}`,
+				filePath: `/contents/${product.storeId}/${product.productId}/${contentId}.${ext}`,
 			})
 			.catch(() => {
 				throw new NotFoundException('File not found');

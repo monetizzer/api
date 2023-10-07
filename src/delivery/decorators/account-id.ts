@@ -6,7 +6,7 @@ export const AccountId = createParamDecorator(
 	(data: undefined, ctx: ExecutionContext) => {
 		const request = ctx.switchToHttp().getRequest();
 
-		const [, token] = request.headers.authorization?.split(' ') ?? [];
+		const token = request.cookies?.['access-token'];
 
 		const payload = decode(token) as TokenPayload;
 
