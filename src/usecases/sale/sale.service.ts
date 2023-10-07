@@ -1,5 +1,6 @@
 import {
 	ConflictException,
+	ForbiddenException,
 	Inject,
 	Injectable,
 	NotFoundException,
@@ -9,6 +10,7 @@ import { GerencianetAdapter } from 'src/adapters/implementations/gerencianet.ser
 import {
 	CheckoutInput,
 	CheckoutOutput,
+	GetOutput,
 	GetInput,
 	ProcessPixWebhookInput,
 	SaleEntity,
@@ -20,6 +22,12 @@ import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-rep
 import { TransactionRepositoryService } from 'src/repositories/mongodb/transaction/transaction-repository.service';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { isPreMadeProduct } from 'src/types/enums/product-type';
+
+interface ValidateCanGetSaleInput {
+	accountId: string;
+	isAdmin: boolean;
+	sale: SaleEntity;
+}
 
 @Injectable()
 export class SaleService implements SaleUseCase {
@@ -92,10 +100,51 @@ export class SaleService implements SaleUseCase {
 
 	processPixWebhook: (i: ProcessPixWebhookInput) => Promise<void>;
 
-	get: (i: GetInput) => Promise<SaleEntity>;
+	async get({ isAdmin, accountId, saleId }: GetInput): Promise<GetOutput> {
+		const sale = await this.saleRepository.getBySaleId({ saleId });
+
+		await this.validateCanGetSale({
+			isAdmin,
+			accountId,
+			sale,
+		});
+
+		const [product, store] = await Promise.all([
+			this.productRepository.get({
+				productId: sale.productId,
+			}),
+			this.storeRepository.getByStoreId({
+				storeId: sale.storeId,
+			}),
+		]);
+
+		return {
+			...sale,
+			product,
+			store,
+		};
+	}
 
 	@Cron(CronExpression.EVERY_30_MINUTES)
 	async updateExpired(): Promise<void> {
 		await this.saleRepository.updateExpired();
+	}
+
+	// Private
+
+	async validateCanGetSale({
+		isAdmin,
+		accountId,
+		sale,
+	}: ValidateCanGetSaleInput) {
+		if (isAdmin) return;
+
+		if (accountId === sale.clientId) return;
+
+		const store = await this.storeRepository.getByAccountId({ accountId });
+
+		if (store?.storeId === sale.storeId) return;
+
+		throw new ForbiddenException('Cannot access sale');
 	}
 }

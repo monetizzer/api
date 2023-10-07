@@ -10,3 +10,8 @@ export class CheckoutDto {
 	@IsEnum(PaymentMethodEnum)
 	paymentMethod: PaymentMethodEnum;
 }
+
+export class GetDto {
+	@IsID()
+	saleId: string;
+}
