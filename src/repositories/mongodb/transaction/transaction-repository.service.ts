@@ -112,11 +112,12 @@ export class TransactionRepositoryService implements TransactionRepository {
 		let data: MatchKeysAndValues<TransactionTable> = {};
 
 		if (i.status === TransactionStatusEnum.COMPLETED) {
-			const { status, proofOfPaymentUrl } = i;
+			const { status, proofOfPaymentUrl, reviewerId } = i;
 
 			data = {
 				status,
 				proofOfPaymentUrl,
+				reviewerId,
 			};
 		} else {
 			const { status, message, reviewerId } = i;
