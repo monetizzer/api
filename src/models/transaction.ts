@@ -64,6 +64,7 @@ export type CompleteWithdrawInput =
 			transactionId: string;
 			status: TransactionStatusEnum.COMPLETED;
 			proofOfPaymentUrl: string;
+			reviewerId: string;
 	  };
 
 export interface GetByTransactionIdInput {
@@ -119,9 +120,7 @@ export interface RequestWithdrawInput {
 export interface WithdrawInput {
 	reviewerId: string;
 	transactionId: string;
-	status: TransactionStatusEnum.FAILED | TransactionStatusEnum.COMPLETED;
-	image?: Buffer;
-	message?: string;
+	image: Buffer;
 }
 
 export interface TransactionUseCase {
