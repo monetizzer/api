@@ -13,11 +13,12 @@ import {
 	CreateProductOutput,
 	GetOneToReviewInput,
 	GetOneToReviewOutput,
-	GetStoreProductsInput,
+	GetApprovedStoreProductsInput,
 	MarkAsReadyInput,
 	ProductEntity,
 	ProductUseCase,
 	ReviewInput,
+	GetStoreProductsInput,
 } from 'src/models/product';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
@@ -258,12 +259,12 @@ export class ProductService implements ProductUseCase {
 		};
 	}
 
-	async getStoreProducts({
+	async getApprovedStoreProducts({
 		storeId,
 		type,
 		page,
 		limit: originalLimit,
-	}: GetStoreProductsInput): Promise<PaginatedItems<ProductEntity>> {
+	}: GetApprovedStoreProductsInput): Promise<PaginatedItems<ProductEntity>> {
 		const { offset, limit, paging } = this.utilsAdapter.pagination({
 			page,
 			limit: originalLimit,
@@ -273,6 +274,40 @@ export class ProductService implements ProductUseCase {
 			storeId,
 			type,
 			status: [ProductStatusEnum.APPROVED],
+			limit,
+			offset,
+		});
+
+		return {
+			paging,
+			data: products,
+		};
+	}
+
+	async getStoreProducts({
+		accountId,
+		status,
+		type,
+		page,
+		limit: originalLimit,
+	}: GetStoreProductsInput): Promise<PaginatedItems<ProductEntity>> {
+		const { offset, limit, paging } = this.utilsAdapter.pagination({
+			page,
+			limit: originalLimit,
+		});
+
+		const store = await this.storeRepository.getByAccountId({
+			accountId,
+		});
+
+		if (!store) {
+			throw new ForbiddenException('Unable to access products');
+		}
+
+		const products = await this.productRepository.getMany({
+			storeId: store.storeId,
+			type,
+			status: status ? [status] : undefined,
 			limit,
 			offset,
 		});
