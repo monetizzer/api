@@ -9,6 +9,7 @@ import {
 	Param,
 	ParseFilePipe,
 	Post,
+	Query,
 	Res,
 	UploadedFiles,
 	UseGuards,
@@ -21,6 +22,7 @@ import { CreateCompleteDto, GetImageDto, ReviewDto } from './dtos/document';
 import { AdminGuard } from './guards/admin.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+import { PaginatedDto } from './dtos';
 
 @Controller('documents')
 export class DocumentController {
@@ -88,8 +90,11 @@ export class DocumentController {
 
 	@Get('review')
 	@UseGuards(AdminGuard)
-	getToReview() {
-		return this.documentService.getToReview();
+	getToReview(
+		@Query()
+		query: PaginatedDto,
+	) {
+		return this.documentService.getToReview(query);
 	}
 
 	@Get(':accountId/:name')

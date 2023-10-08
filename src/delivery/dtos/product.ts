@@ -10,6 +10,7 @@ import {
 } from 'class-validator';
 import { IsHEXColor, IsID, IsPrice } from '../validators/internal';
 import { ProductTypeEnum } from 'src/types/enums/product-type';
+import { PaginatedDto } from '.';
 
 export class CreateDto {
 	@IsID()
@@ -63,4 +64,14 @@ export class ReviewDto {
 export class GetOneToReviewDto {
 	@IsID()
 	productId: string;
+}
+
+export class GetStoreProductsDto extends PaginatedDto {
+	@IsOptional()
+	@IsID()
+	storeId?: string;
+
+	@IsOptional()
+	@IsEnum(ProductTypeEnum)
+	type?: ProductTypeEnum;
 }

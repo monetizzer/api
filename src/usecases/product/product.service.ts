@@ -13,6 +13,7 @@ import {
 	CreateProductOutput,
 	GetOneToReviewInput,
 	GetOneToReviewOutput,
+	GetStoreProductsInput,
 	MarkAsReadyInput,
 	ProductEntity,
 	ProductUseCase,
@@ -31,7 +32,8 @@ import {
 } from 'src/types/enums/product-type';
 import { NotificationService } from '../notification/notification.service';
 import { ContentRepositoryService } from 'src/repositories/mongodb/content/content-repository.service';
-import { PaginatedItems } from 'src/types/paginated-items';
+import { Paginated, PaginatedItems } from 'src/types/paginated-items';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 @Injectable()
 export class ProductService implements ProductUseCase {
@@ -47,6 +49,7 @@ export class ProductService implements ProductUseCase {
 		private readonly fileAdapter: S3Adapter,
 		private readonly idAdapter: UIDAdapter,
 		private readonly discordAdapter: DiscordJSAdapter,
+		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
 	async create({
@@ -218,13 +221,17 @@ export class ProductService implements ProductUseCase {
 		]);
 	}
 
-	async getToReview(): Promise<PaginatedItems<ProductEntity>> {
+	async getToReview(i: Paginated): Promise<PaginatedItems<ProductEntity>> {
+		const { offset, limit, paging } = this.utilsAdapter.pagination(i);
+
 		const products = await this.productRepository.getMany({
 			status: [ProductStatusEnum.VALIDATING],
+			limit,
+			offset,
 		});
 
 		return {
-			paging: {},
+			paging,
 			data: products,
 		};
 	}
@@ -248,6 +255,31 @@ export class ProductService implements ProductUseCase {
 				type: c.type,
 				mediaUrl: c.mediaUrl,
 			})),
+		};
+	}
+
+	async getStoreProducts({
+		storeId,
+		type,
+		page,
+		limit: originalLimit,
+	}: GetStoreProductsInput): Promise<PaginatedItems<ProductEntity>> {
+		const { offset, limit, paging } = this.utilsAdapter.pagination({
+			page,
+			limit: originalLimit,
+		});
+
+		const products = await this.productRepository.getMany({
+			storeId,
+			type,
+			status: [ProductStatusEnum.APPROVED],
+			limit,
+			offset,
+		});
+
+		return {
+			paging,
+			data: products,
 		};
 	}
 

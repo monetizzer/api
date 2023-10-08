@@ -60,6 +60,8 @@ export class DocumentRepositoryService implements DocumentRepository {
 		type,
 		documentNumber,
 		status,
+		limit,
+		offset,
 	}: GetManyInput): Promise<DocumentEntity[]> {
 		const filters: Filter<DocumentTable> = {};
 
@@ -77,7 +79,10 @@ export class DocumentRepositoryService implements DocumentRepository {
 			};
 		}
 
-		const documentsCursor = this.documentRepository.find(filters);
+		const documentsCursor = this.documentRepository.find(filters, {
+			limit,
+			skip: offset,
+		});
 		const documents = await documentsCursor.toArray();
 
 		return documents.map((document) => {

@@ -2,7 +2,7 @@ import { DeliveryMethodEnum } from 'src/types/enums/delivery-method';
 import { MediaTypeEnum } from 'src/types/enums/media-type';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { ProductTypeEnum } from 'src/types/enums/product-type';
-import { PaginatedItems } from 'src/types/paginated-items';
+import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 
 interface ProductHistoryItem {
 	timestamp: Date;
@@ -64,7 +64,10 @@ export interface GetByProductIdInput {
 
 export interface GetManyInput {
 	storeId?: string;
+	type?: ProductTypeEnum;
 	status?: Array<ProductStatusEnum>;
+	limit?: number;
+	offset?: number;
 }
 
 export interface ProductRepository {
@@ -128,14 +131,23 @@ export interface ReviewInput {
 	markedContentIds?: Array<string>;
 }
 
+export interface GetStoreProductsInput extends Paginated {
+	storeId: string;
+	type?: ProductTypeEnum;
+}
+
 export interface ProductUseCase {
 	create: (i: CreateProductInput) => Promise<CreateProductOutput>;
 
 	markAsReady: (i: MarkAsReadyInput) => Promise<void>;
 
-	getToReview: () => Promise<PaginatedItems<ProductEntity>>;
+	getToReview: (i: Paginated) => Promise<PaginatedItems<ProductEntity>>;
 
 	getOneToReview: (i: GetOneToReviewInput) => Promise<GetOneToReviewOutput>;
 
 	review: (i: ReviewInput) => Promise<void>;
+
+	getStoreProducts: (
+		i: GetStoreProductsInput,
+	) => Promise<PaginatedItems<ProductEntity>>;
 }

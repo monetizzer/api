@@ -25,7 +25,8 @@ import {
 import { NotificationService } from '../notification/notification.service';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { DateAdapter } from 'src/adapters/implementations/date.service';
-import { PaginatedItems } from 'src/types/paginated-items';
+import { Paginated, PaginatedItems } from 'src/types/paginated-items';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 interface ValidateIfIsOfLegalAgeInput {
 	birthDate: string;
@@ -46,6 +47,7 @@ export class DocumentService implements DocumentUseCase {
 		private readonly fileAdapter: S3Adapter,
 		private readonly discordAdapter: DiscordJSAdapter,
 		private readonly dateAdapter: DateAdapter,
+		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
 	async createComplete({
@@ -166,13 +168,17 @@ export class DocumentService implements DocumentUseCase {
 		};
 	}
 
-	async getToReview(): Promise<PaginatedItems<DocumentEntity>> {
+	async getToReview(i: Paginated): Promise<PaginatedItems<DocumentEntity>> {
+		const { offset, limit, paging } = this.utilsAdapter.pagination(i);
+
 		const documents = await this.documentRepository.getMany({
 			status: [DocumentStatusEnum.VV],
+			offset,
+			limit,
 		});
 
 		return {
-			paging: {},
+			paging,
 			data: documents,
 		};
 	}

@@ -1,11 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { UtilsAdapter as UtilsAdapterType } from '../utils';
+import {
+	PaginationInput,
+	PaginationOutput,
+	UtilsAdapter as UtilsAdapterType,
+} from '../utils';
 import { cleanObj } from '@techmmunity/utils';
 
 @Injectable()
 export class UtilsAdapter implements UtilsAdapterType {
 	cleanObj<T>(i: Record<any, any>): T {
 		return cleanObj(i) as T;
+	}
+
+	pagination({
+		page: originalPage,
+		limit: originalLimit,
+	}: PaginationInput): PaginationOutput {
+		const page = originalPage || 1;
+		const limit = originalLimit || 15;
+
+		return {
+			paging: {
+				curPage: page,
+				nextPage: page + 1,
+				prevPage: page === 1 ? undefined : page - 1,
+				limit,
+			},
+			limit,
+			offset: (page - 1) * limit,
+		};
 	}
 
 	formatMoney(valueNumber: number): string {
