@@ -25,6 +25,7 @@ import {
 	MarkAsReadyDto,
 	ReviewDto,
 	GetStoreProductsDto,
+	GetProductDto,
 } from './dtos/product';
 import { AdminGuard } from './guards/admin.guard';
 import { PaginatedDto } from './dtos';
@@ -125,6 +126,19 @@ export class ProductController {
 	) {
 		return this.productService.getStoreProducts({
 			...query,
+			accountId,
+		});
+	}
+
+	@Get('/:productId')
+	getProduct(
+		@Param()
+		params: GetProductDto,
+		@AccountId()
+		accountId?: string,
+	) {
+		return this.productService.getProduct({
+			...params,
 			accountId,
 		});
 	}
