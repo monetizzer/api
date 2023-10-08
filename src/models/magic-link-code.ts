@@ -1,6 +1,6 @@
 export interface MagicLinkCodeEntity {
 	accountId: string;
-	code: boolean;
+	code: string;
 	createdAt: Date;
 }
 

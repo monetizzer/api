@@ -210,33 +210,10 @@ export class ProductService implements ProductUseCase {
 					},
 				],
 			}),
-			this.notificationUsecase.sendNotification(
-				approve
-					? {
-							accountId: store.accountId,
-							title: 'Parabés, seu produto foi aprovado!',
-							description:
-								'Entre em nossa plataforma agora para continuar de onde você parou!',
-							data: {
-								color: '#12e820',
-							},
-					  }
-					: {
-							accountId: store.accountId,
-							title: 'Que pena, seu produto foi reprovados!',
-							description: [
-								'Motivo:',
-								'```',
-								message,
-								'```',
-								'',
-								'Para resolver isso, corrija os problemas apontados e solicite a revisão novamente.',
-							].join('\n'),
-							data: {
-								color: '#e81212',
-							},
-					  },
-			),
+			this.notificationUsecase.sendNotification({
+				accountId: store.accountId,
+				templateId: approve ? 'PRODUCT_APPROVED' : 'PRODUCT_REPROVED',
+			}),
 		]);
 	}
 

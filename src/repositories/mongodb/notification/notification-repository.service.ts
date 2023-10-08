@@ -22,16 +22,14 @@ export class NotificationRepositoryService implements NotificationRepository {
 	async save({
 		accountId,
 		platform,
-		title,
-		description,
+		templateId,
 		data,
 	}: SaveInput): Promise<void> {
 		await this.notificationRepository.insertOne({
 			_id: this.idAdapter.gen(),
 			accountId,
 			platform,
-			title,
-			description,
+			templateId,
 			data,
 			createdAt: new Date(),
 		});

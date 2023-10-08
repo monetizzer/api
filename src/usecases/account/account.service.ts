@@ -177,8 +177,11 @@ export class AccountService implements AccountUseCase {
 
 		await this.notificationUsecase.sendNotification({
 			accountId: account.accountId,
-			title: 'Seu link de login chegou!',
-			description: `${process.env['FRONT_URL']}/auth/email?accountId=${account.accountId}&code=${code}`,
+			account,
+			templateId: 'MAGIC_LINK_LOGIN',
+			data: {
+				code,
+			},
 		});
 	}
 
