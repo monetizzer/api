@@ -2,6 +2,7 @@ import { DeliveryMethodEnum } from 'src/types/enums/delivery-method';
 import { MediaTypeEnum } from 'src/types/enums/media-type';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { ProductTypeEnum } from 'src/types/enums/product-type';
+import { PaginatedItems } from 'src/types/paginated-items';
 
 interface ProductHistoryItem {
 	timestamp: Date;
@@ -132,7 +133,7 @@ export interface ProductUseCase {
 
 	markAsReady: (i: MarkAsReadyInput) => Promise<void>;
 
-	getToReview: () => Promise<Array<ProductEntity>>;
+	getToReview: () => Promise<PaginatedItems<ProductEntity>>;
 
 	getOneToReview: (i: GetOneToReviewInput) => Promise<GetOneToReviewOutput>;
 

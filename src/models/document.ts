@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
+import { PaginatedItems } from 'src/types/paginated-items';
 
 interface DocumentHistoryItem {
 	timestamp: Date;
@@ -153,7 +154,7 @@ export interface DocumentUseCase {
 
 	createComplete: (i: CreateCompleteInput) => Promise<void>;
 
-	getToReview: () => Promise<Array<DocumentEntity>>;
+	getToReview: () => Promise<PaginatedItems<DocumentEntity>>;
 
 	review: (i: ReviewInput) => Promise<void>;
 

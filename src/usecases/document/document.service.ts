@@ -25,6 +25,7 @@ import {
 import { NotificationService } from '../notification/notification.service';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { DateAdapter } from 'src/adapters/implementations/date.service';
+import { PaginatedItems } from 'src/types/paginated-items';
 
 interface ValidateIfIsOfLegalAgeInput {
 	birthDate: string;
@@ -165,12 +166,15 @@ export class DocumentService implements DocumentUseCase {
 		};
 	}
 
-	async getToReview(): Promise<DocumentEntity[]> {
+	async getToReview(): Promise<PaginatedItems<DocumentEntity>> {
 		const documents = await this.documentRepository.getMany({
 			status: [DocumentStatusEnum.VV],
 		});
 
-		return documents;
+		return {
+			paging: {},
+			data: documents,
+		};
 	}
 
 	async review({
