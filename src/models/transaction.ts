@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream';
 import { TransactionStatusEnum } from 'src/types/enums/transaction-status';
 import { TransactionTypeEnum } from 'src/types/enums/transaction-type';
 
@@ -123,10 +124,19 @@ export interface WithdrawInput {
 	image: Buffer;
 }
 
+export interface GetPaymentProofImgInput {
+	accountId: string;
+	transactionId: string;
+	ext: string;
+	isAdmin: boolean;
+}
+
 export interface TransactionUseCase {
 	wallet: (i: WalletInput) => Promise<WalletOutput>;
 
 	requestWithdraw: (i: RequestWithdrawInput) => Promise<void>;
 
 	withdraw: (i: WithdrawInput) => Promise<void>;
+
+	getPaymentProofImg: (i: GetPaymentProofImgInput) => Promise<Readable>;
 }

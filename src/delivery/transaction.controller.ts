@@ -3,6 +3,7 @@ import {
 	Controller,
 	Get,
 	MaxFileSizeValidator,
+	Param,
 	ParseFilePipe,
 	Patch,
 	UploadedFile,
@@ -13,8 +14,9 @@ import { TransactionService } from 'src/usecases/transaction/transaction.service
 import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
-import { WithdrawDto } from './dtos/transaction';
+import { GetPaymentProofImgDto, WithdrawDto } from './dtos/transaction';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { IsAdmin } from './decorators/is-admin';
 
 @Controller('wallet')
 export class TransactionController {
@@ -50,6 +52,28 @@ export class TransactionController {
 			...body,
 			image: file.buffer,
 			reviewerId,
+		});
+	}
+
+	@Get('/payment-proof/:transactionIdAndExt')
+	@UseGuards(AuthGuard(['USER']))
+	getPaymentProofImg(
+		@Param()
+		params: GetPaymentProofImgDto,
+		@AccountId()
+		accountId: string,
+		@IsAdmin()
+		isAdmin: boolean,
+	) {
+		const { transactionIdAndExt } = params;
+
+		const [transactionId, ext] = transactionIdAndExt.split('.');
+
+		return this.transactionService.getPaymentProofImg({
+			accountId,
+			transactionId,
+			ext,
+			isAdmin,
 		});
 	}
 }
