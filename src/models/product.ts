@@ -131,8 +131,14 @@ export interface ReviewInput {
 	markedContentIds?: Array<string>;
 }
 
-export interface GetStoreProductsInput extends Paginated {
+export interface GetApprovedStoreProductsInput extends Paginated {
 	storeId: string;
+	type?: ProductTypeEnum;
+}
+
+export interface GetStoreProductsInput extends Paginated {
+	accountId: string;
+	status?: ProductStatusEnum;
 	type?: ProductTypeEnum;
 }
 
@@ -146,6 +152,10 @@ export interface ProductUseCase {
 	getOneToReview: (i: GetOneToReviewInput) => Promise<GetOneToReviewOutput>;
 
 	review: (i: ReviewInput) => Promise<void>;
+
+	getApprovedStoreProducts: (
+		i: GetApprovedStoreProductsInput,
+	) => Promise<PaginatedItems<ProductEntity>>;
 
 	getStoreProducts: (
 		i: GetStoreProductsInput,

@@ -21,9 +21,10 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import {
 	CreateDto,
 	GetOneToReviewDto,
-	GetStoreProductsDto,
+	GetApprovedStoreProductsDto,
 	MarkAsReadyDto,
 	ReviewDto,
+	GetStoreProductsDto,
 } from './dtos/product';
 import { AdminGuard } from './guards/admin.guard';
 import { PaginatedDto } from './dtos';
@@ -75,7 +76,7 @@ export class ProductController {
 		});
 	}
 
-	@Post('review')
+	@Post('/review')
 	@UseGuards(AdminGuard)
 	review(
 		@Body()
@@ -89,7 +90,7 @@ export class ProductController {
 		});
 	}
 
-	@Get('review')
+	@Get('/review')
 	@UseGuards(AdminGuard)
 	getToReview(
 		@Query()
@@ -98,7 +99,7 @@ export class ProductController {
 		return this.productService.getToReview(query);
 	}
 
-	@Get('review/:productId')
+	@Get('/review/:productId')
 	@UseGuards(AdminGuard)
 	getOneToReview(
 		@Param()
@@ -108,10 +109,23 @@ export class ProductController {
 	}
 
 	@Get('/')
+	getApprovedStoreProducts(
+		@Query()
+		query: GetApprovedStoreProductsDto,
+	) {
+		return this.getApprovedStoreProducts(query);
+	}
+
+	@Get('/store')
 	getStoreProducts(
 		@Query()
 		query: GetStoreProductsDto,
+		@AccountId()
+		accountId: string,
 	) {
-		return this.getStoreProducts(query);
+		return this.productService.getStoreProducts({
+			...query,
+			accountId,
+		});
 	}
 }
