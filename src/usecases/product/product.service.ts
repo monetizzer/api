@@ -19,6 +19,7 @@ import {
 	ProductUseCase,
 	ReviewInput,
 	GetStoreProductsInput,
+	GetProductInput,
 } from 'src/models/product';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
@@ -316,6 +317,27 @@ export class ProductService implements ProductUseCase {
 			paging,
 			data: products,
 		};
+	}
+
+	async getProduct({
+		accountId,
+		productId,
+	}: GetProductInput): Promise<ProductEntity> {
+		const product = await this.productRepository.getByProductId({ productId });
+
+		if (!product) {
+			throw new NotFoundException('Product not found');
+		}
+
+		if (product.status !== ProductStatusEnum.APPROVED) {
+			const store = await this.storeRepository.getByAccountId({ accountId });
+
+			if (store?.accountId !== accountId) {
+				throw new NotFoundException('Product not found');
+			}
+		}
+
+		return product;
 	}
 
 	// Private

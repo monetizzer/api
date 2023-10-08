@@ -6,10 +6,12 @@ export const IsAdmin = createParamDecorator(
 	(data: undefined, ctx: ExecutionContext) => {
 		const request = ctx.switchToHttp().getRequest();
 
-		const token = request.cookies?.['access-token'];
+		const [, token] = request.headers.authorization?.split(' ') ?? [];
+
+		if (!token) return false;
 
 		const payload = decode(token) as TokenPayload;
 
-		return payload.admin || false;
+		return payload?.admin || false;
 	},
 );

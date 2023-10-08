@@ -142,6 +142,11 @@ export interface GetStoreProductsInput extends Paginated {
 	type?: ProductTypeEnum;
 }
 
+export interface GetProductInput {
+	accountId?: string;
+	productId: string;
+}
+
 export interface ProductUseCase {
 	create: (i: CreateProductInput) => Promise<CreateProductOutput>;
 
@@ -160,4 +165,6 @@ export interface ProductUseCase {
 	getStoreProducts: (
 		i: GetStoreProductsInput,
 	) => Promise<PaginatedItems<ProductEntity>>;
+
+	getProduct: (i: GetProductInput) => Promise<ProductEntity>;
 }

@@ -86,3 +86,8 @@ export class GetStoreProductsDto extends PaginatedDto {
 	@IsEnum(ProductTypeEnum)
 	type?: ProductTypeEnum;
 }
+
+export class GetProductDto {
+	@IsID()
+	productId: string;
+}
