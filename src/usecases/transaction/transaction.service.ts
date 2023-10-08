@@ -1,11 +1,13 @@
 import {
 	BadRequestException,
+	ForbiddenException,
 	Inject,
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import {
+	GetPaymentProofImgInput,
 	RequestWithdrawInput,
 	TransactionUseCase,
 	WalletInput,
@@ -20,6 +22,7 @@ import {
 import { TransactionTypeEnum } from 'src/types/enums/transaction-type';
 import { NotificationService } from '../notification/notification.service';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
+import { Readable } from 'node:stream';
 
 @Injectable()
 export class TransactionService implements TransactionUseCase {
@@ -110,7 +113,7 @@ export class TransactionService implements TransactionUseCase {
 
 		await Promise.all([
 			this.fileAdapter.save({
-				folder: 'private',
+				folder: process.env['PRIVATE_BUCKET_NAME'],
 				filePath: path as any,
 				file: image,
 			}),
@@ -128,5 +131,31 @@ export class TransactionService implements TransactionUseCase {
 				)} foi feito com sucesso e o comprovante de pagamento já está disponivel.`,
 			}),
 		]);
+	}
+
+	async getPaymentProofImg({
+		accountId,
+		transactionId,
+		ext,
+		isAdmin,
+	}: GetPaymentProofImgInput): Promise<Readable> {
+		if (!isAdmin) {
+			const transaction = await this.transactionRepository.getByTransactionId({
+				transactionId,
+			});
+
+			if (!transaction) {
+				throw new NotFoundException('Transaction not found');
+			}
+
+			if (transaction.accountId !== accountId) {
+				throw new ForbiddenException('Unable to access this file');
+			}
+		}
+
+		return this.fileAdapter.getReadStream({
+			folder: process.env['PRIVATE_BUCKET_NAME'],
+			filePath: `/payment-proof/${transactionId}.${ext}`,
+		});
 	}
 }
