@@ -31,6 +31,7 @@ import {
 } from 'src/types/enums/product-type';
 import { NotificationService } from '../notification/notification.service';
 import { ContentRepositoryService } from 'src/repositories/mongodb/content/content-repository.service';
+import { PaginatedItems } from 'src/types/paginated-items';
 
 @Injectable()
 export class ProductService implements ProductUseCase {
@@ -217,10 +218,15 @@ export class ProductService implements ProductUseCase {
 		]);
 	}
 
-	async getToReview(): Promise<ProductEntity[]> {
-		return this.productRepository.getMany({
+	async getToReview(): Promise<PaginatedItems<ProductEntity>> {
+		const products = await this.productRepository.getMany({
 			status: [ProductStatusEnum.VALIDATING],
 		});
+
+		return {
+			paging: {},
+			data: products,
+		};
 	}
 
 	async getOneToReview({
