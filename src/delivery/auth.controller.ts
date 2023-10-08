@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AccountService } from 'src/usecases/account/account.service';
 import {
 	AcceptTermsDto,
@@ -8,23 +8,17 @@ import {
 } from './dtos/auth';
 import { AuthGuard } from './guards/auth.guard';
 import { AccountId } from './decorators/account-id';
-import { Response } from 'express';
-import { AuthOutput } from 'src/models/account';
 
 @Controller('')
 export class AuthController {
 	constructor(private readonly accountService: AccountService) {}
 
 	@Post('/auth/discord')
-	async createFromDiscordOauth(
+	createFromDiscordOauth(
 		@Body()
 		body: CreateFromDiscordOauthDto,
-		@Res({ passthrough: true })
-		res: Response,
 	) {
-		const auth = await this.accountService.createFromDiscordOauth(body);
-
-		this.setCookies(auth, res);
+		return this.accountService.createFromDiscordOauth(body);
 	}
 
 	@Post('/auth/magic-link/gen-email')
@@ -36,15 +30,11 @@ export class AuthController {
 	}
 
 	@Post('/auth/magic-link')
-	async createFromMagicLink(
+	createFromMagicLink(
 		@Body()
 		body: CreateFromMagicLinkDto,
-		@Res({ passthrough: true })
-		res: Response,
 	) {
-		const auth = await this.accountService.createFromMagicLink(body);
-
-		this.setCookies(auth, res);
+		return this.accountService.createFromMagicLink(body);
 	}
 
 	@Post('/terms/accept')
@@ -69,15 +59,6 @@ export class AuthController {
 	) {
 		return this.accountService.iam({
 			accountId,
-		});
-	}
-
-	// Private
-
-	private setCookies({ accessToken }: AuthOutput, res: Response) {
-		res.cookie('access-token', accessToken, {
-			httpOnly: true,
-			secure: process.env['NODE_ENV'] === 'production',
 		});
 	}
 }
