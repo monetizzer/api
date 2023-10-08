@@ -5,10 +5,26 @@ export interface NotificationEntity {
 	notificationId: string;
 	accountId: string;
 	platform: PlatformEnum;
-	title: string;
-	description: string;
+	templateId: string;
 	data?: Record<string, string>;
 	createdAt: Date;
+}
+
+export interface TemplateEntity {
+	title: string; // Title of email or message
+	email: {
+		html: string; // Email HTML body
+	};
+	discord: {
+		description: string; // Embed description
+		color: string; // Embed color
+		// Button link
+		link?: {
+			url: string;
+			text: string;
+			emoji?: string;
+		};
+	};
 }
 
 /**
@@ -22,8 +38,7 @@ export interface NotificationEntity {
 export interface SaveInput {
 	accountId: string;
 	platform: PlatformEnum;
-	title: string;
-	description: string;
+	templateId: string;
 	data?: Record<string, string>;
 }
 
@@ -41,8 +56,7 @@ export interface NotificationRepository {
 
 export interface SendNotificationInput {
 	accountId: string;
-	title: string;
-	description: string;
+	templateId: string;
 	data?: Record<string, string>;
 	account?: AccountEntity;
 }

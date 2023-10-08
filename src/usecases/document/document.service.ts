@@ -242,33 +242,13 @@ export class DocumentService implements DocumentUseCase {
 					},
 				],
 			}),
-			this.notificationUsecase.sendNotification(
-				approve
-					? {
-							accountId,
-							title: 'Parabés, seus documentos foram aprovados!',
-							description:
-								'Entre em nossa plataforma agora para continuar de onde você parou!',
-							data: {
-								color: '#12e820',
-							},
-					  }
-					: {
-							accountId,
-							title: 'Que pena, seus documentos foram reprovados!',
-							description: [
-								'Motivo:',
-								'```',
-								message,
-								'```',
-								'',
-								'Para resolver isso, corrija os problemas apontados e envie seus documentos novamente.',
-							].join('\n'),
-							data: {
-								color: '#e81212',
-							},
-					  },
-			),
+			this.notificationUsecase.sendNotification({
+				accountId,
+				templateId: approve ? 'DOCUMENTS_APPROVED' : 'DOCUMENTS_REPROVED',
+				data: {
+					message,
+				},
+			}),
 		]);
 	}
 

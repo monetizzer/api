@@ -13,10 +13,19 @@ export class UtilsAdapter implements UtilsAdapterType {
 
 		const decimalsStart = value.length - 2;
 
-		return [
-			value.substring(0, decimalsStart),
-			'.',
-			value.substring(decimalsStart),
-		].join('');
+		const formatter = new Intl.NumberFormat('pt-BR', {
+			style: 'currency',
+			currency: 'BRL',
+		});
+
+		return formatter.format(
+			parseFloat(
+				[
+					value.substring(0, decimalsStart),
+					'.',
+					value.substring(decimalsStart),
+				].join(''),
+			),
+		);
 	}
 }

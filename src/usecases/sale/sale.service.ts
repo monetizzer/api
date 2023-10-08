@@ -187,8 +187,10 @@ export class SaleService implements SaleUseCase {
 			}),
 			this.notificationUsecase.sendNotification({
 				accountId: sale.clientId,
-				title: 'Pagamento confirmado!',
-				description: `Pagamento do pedido __#${saleId}__ confirmado! Você já pode acessar os conteúdos.`,
+				templateId: 'SALE_PAID',
+				data: {
+					saleId,
+				},
 			}),
 		]);
 	}

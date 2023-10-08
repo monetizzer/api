@@ -125,10 +125,10 @@ export class TransactionService implements TransactionUseCase {
 			}),
 			this.notificationService.sendNotification({
 				accountId: transaction.accountId,
-				title: 'Saque realizado com sucesso!',
-				description: `Seu saque no valor de R$${this.utilsAdapter.formatMoney(
-					transaction.amount,
-				)} foi feito com sucesso e o comprovante de pagamento já está disponivel.`,
+				templateId: 'WITHDRAW_COMPLETED',
+				data: {
+					amount: this.utilsAdapter.formatMoney(transaction.amount),
+				},
 			}),
 		]);
 	}
