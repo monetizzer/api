@@ -9,6 +9,7 @@ import {
 	ParseFilePipe,
 	Patch,
 	Post,
+	Query,
 	UploadedFiles,
 	UseGuards,
 	UseInterceptors,
@@ -20,10 +21,12 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import {
 	CreateDto,
 	GetOneToReviewDto,
+	GetStoreProductsDto,
 	MarkAsReadyDto,
 	ReviewDto,
 } from './dtos/product';
 import { AdminGuard } from './guards/admin.guard';
+import { PaginatedDto } from './dtos';
 
 @Controller('products')
 export class ProductController {
@@ -88,8 +91,11 @@ export class ProductController {
 
 	@Get('review')
 	@UseGuards(AdminGuard)
-	getToReview() {
-		return this.productService.getToReview();
+	getToReview(
+		@Query()
+		query: PaginatedDto,
+	) {
+		return this.productService.getToReview(query);
 	}
 
 	@Get('review/:productId')
@@ -99,5 +105,13 @@ export class ProductController {
 		params: GetOneToReviewDto,
 	) {
 		return this.productService.getOneToReview(params);
+	}
+
+	@Get('/')
+	getStoreProducts(
+		@Query()
+		query: GetStoreProductsDto,
+	) {
+		return this.getStoreProducts(query);
 	}
 }

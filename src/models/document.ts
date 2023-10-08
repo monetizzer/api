@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
-import { PaginatedItems } from 'src/types/paginated-items';
+import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 
 interface DocumentHistoryItem {
 	timestamp: Date;
@@ -80,6 +80,8 @@ export interface GetManyInput {
 	type?: DocumentTypeEnum;
 	documentNumber?: string;
 	status?: Array<DocumentStatusEnum>;
+	limit?: number;
+	offset?: number;
 }
 
 export interface DocumentRepository {
@@ -154,7 +156,7 @@ export interface DocumentUseCase {
 
 	createComplete: (i: CreateCompleteInput) => Promise<void>;
 
-	getToReview: () => Promise<PaginatedItems<DocumentEntity>>;
+	getToReview: (i: Paginated) => Promise<PaginatedItems<DocumentEntity>>;
 
 	review: (i: ReviewInput) => Promise<void>;
 

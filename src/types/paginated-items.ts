@@ -1,4 +1,14 @@
+export interface Paginated {
+	page?: number;
+	limit?: number;
+}
+
 export interface PaginatedItems<T> {
-	paging: Record<string, never>;
+	paging: {
+		curPage: number;
+		nextPage: number;
+		prevPage?: number;
+		limit: number;
+	};
 	data: Array<T>;
 }

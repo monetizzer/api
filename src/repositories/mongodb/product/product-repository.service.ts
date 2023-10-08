@@ -93,11 +93,21 @@ export class ProductRepositoryService implements ProductRepository {
 		};
 	}
 
-	async getMany({ storeId, status }: GetManyInput): Promise<ProductEntity[]> {
+	async getMany({
+		storeId,
+		type,
+		status,
+		limit,
+		offset,
+	}: GetManyInput): Promise<ProductEntity[]> {
 		const filters: Filter<ProductTable> = {};
 
 		if (storeId) {
 			filters.storeId = storeId;
+		}
+
+		if (type) {
+			filters.type = type;
 		}
 
 		if (status) {
@@ -106,7 +116,10 @@ export class ProductRepositoryService implements ProductRepository {
 			};
 		}
 
-		const productsCursor = this.productRepository.find(filters);
+		const productsCursor = this.productRepository.find(filters, {
+			skip: offset,
+			limit,
+		});
 		const products = await productsCursor.toArray();
 
 		return products.map((product) => {

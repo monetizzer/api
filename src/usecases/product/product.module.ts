@@ -8,6 +8,7 @@ import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { NotificationModule } from '../notification/notification.module';
 import { ContentRepositoryModule } from 'src/repositories/mongodb/content/content-repository.module';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 @Module({
 	controllers: [ProductController],
@@ -17,6 +18,12 @@ import { ContentRepositoryModule } from 'src/repositories/mongodb/content/conten
 		ContentRepositoryModule,
 		NotificationModule,
 	],
-	providers: [ProductService, S3Adapter, UIDAdapter, DiscordJSAdapter],
+	providers: [
+		ProductService,
+		S3Adapter,
+		UIDAdapter,
+		DiscordJSAdapter,
+		UtilsAdapter,
+	],
 })
 export class ProductModule {}
