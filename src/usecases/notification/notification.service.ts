@@ -11,6 +11,8 @@ import {
 	TemplateEntity,
 	NotificationUseCase,
 	SendNotificationInput,
+	SendInternalNotificationInput,
+	InternalTemplateEntity,
 } from 'src/models/notification';
 import { AccountRepositoryService } from 'src/repositories/mongodb/account/account-repository.service';
 import { NotificationRepositoryService } from 'src/repositories/mongodb/notification/notification-repository.service';
@@ -33,6 +35,7 @@ const COLORS = {
 export class NotificationService implements NotificationUseCase {
 	defaultData: Record<string, string> = {
 		frontEndUrl: process.env['FRONT_URL'],
+		backOfficeUrl: process.env['BACKOFFICE_URL'],
 	};
 
 	private readonly templates: Record<string, TemplateEntity> = {
@@ -136,6 +139,123 @@ export class NotificationService implements NotificationUseCase {
 		},
 	};
 
+	private readonly internalTemplates: Record<string, InternalTemplateEntity> = {
+		NEW_DOCUMENT_TO_REVIEW: {
+			discord: {
+				channelId: this.discordAdapter.channels.DOCUMENTS,
+				mentions: ['@everyone'],
+				title: 'Novos documentos a serem revisados',
+				color: COLORS.primary,
+				link: {
+					url: '{{backOfficeUrl}}/documents',
+					text: 'Ver documentos',
+				},
+			},
+		},
+
+		NEW_DOCUMENT_APPROVED: {
+			discord: {
+				channelId: this.discordAdapter.channels.DOCUMENTS,
+				mentions: ['@everyone'],
+				title: 'Novo documento aprovado',
+				color: COLORS.success,
+				fields: [
+					{
+						title: 'AccountId',
+						description: '{{accountId}}',
+					},
+					{
+						title: 'ReviewerId',
+						description: '{{reviewerId}}',
+					},
+				],
+			},
+		},
+
+		NEW_DOCUMENT_REPROVED: {
+			discord: {
+				channelId: this.discordAdapter.channels.DOCUMENTS,
+				mentions: ['@everyone'],
+				title: 'Novo documento reprovado',
+				description: ['Motivo:', '```', '{{message}}', '```'].join('\n'),
+				color: COLORS.error,
+				fields: [
+					{
+						title: 'AccountId',
+						description: '{{accountId}}',
+					},
+					{
+						title: 'ReviewerId',
+						description: '{{reviewerId}}',
+					},
+				],
+			},
+		},
+
+		NEW_PRODUCT_TO_REVIEW: {
+			discord: {
+				channelId: this.discordAdapter.channels.PRODUCTS,
+				mentions: ['@everyone'],
+				title: 'Novo produto a ser revisado',
+				color: COLORS.primary,
+				link: {
+					url: '{{backOfficeUrl}}/products',
+					text: 'Ver produtos',
+				},
+				fields: [
+					{
+						title: 'ProductId',
+						description: '{{productId}}',
+					},
+				],
+			},
+		},
+
+		NEW_PRODUCT_APPROVED: {
+			discord: {
+				channelId: this.discordAdapter.channels.PRODUCTS,
+				mentions: ['@everyone'],
+				title: 'Novo produto aprovado',
+				color: COLORS.success,
+				fields: [
+					{
+						title: 'ProductId',
+						description: '{{productId}}',
+					},
+					{
+						title: 'ReviewerId',
+						description: '{{reviewerId}}',
+					},
+				],
+			},
+		},
+
+		NEW_PRODUCT_REPROVED: {
+			discord: {
+				channelId: this.discordAdapter.channels.PRODUCTS,
+				mentions: ['@everyone'],
+				title: 'Novo produto reprovado',
+				description: ['Motivo:', '```', '{{message}}', '```'].join('\n'),
+				color: COLORS.error,
+				fields: [
+					{
+						title: 'ProductId',
+						description: '{{productId}}',
+					},
+					{
+						title: 'ReviewerId',
+						description: '{{reviewerId}}',
+					},
+					{
+						title: 'MarkedContentIds',
+						description: '{{markedContentIds}}',
+						inline: false,
+					},
+				],
+			},
+		},
+	};
+
 	constructor(
 		@Inject(NotificationRepositoryService)
 		private readonly notificationRepository: NotificationRepositoryService,
@@ -208,6 +328,58 @@ export class NotificationService implements NotificationUseCase {
 		await Promise.all(promises);
 	}
 
+	async sendInternalNotification({
+		templateId,
+		data: dataWithoutDefault,
+	}: SendInternalNotificationInput): Promise<void> {
+		const template = this.internalTemplates[templateId];
+
+		if (!template) {
+			throw new InternalServerErrorException('Internal template not found');
+		}
+
+		const data = {
+			...this.defaultData,
+			...(dataWithoutDefault || {}),
+		};
+
+		await this.discordAdapter.sendMessage({
+			channelId: template.discord.channelId,
+			content: template.discord.mentions
+				? template.discord.mentions
+						.map((m) => (m.startsWith('@') ? m : `<@${m}>`))
+						.join(' ')
+				: undefined,
+			embeds: [
+				{
+					title: this.applyVariables(template.discord.title, data),
+					description: this.applyVariables(template.discord.description, data),
+					color: template.discord.color,
+					timestamp: new Date(),
+					fields: template.discord.fields
+						? template.discord.fields.map((f) => ({
+								name: this.applyVariables(f.title, data),
+								value: this.applyVariables(f.description, data),
+								inline: f.inline ?? true,
+						  }))
+						: undefined,
+				},
+			],
+			components: template.discord.link
+				? [
+						[
+							{
+								style: 'link',
+								url: this.applyVariables(template.discord.link.url, data),
+								label: this.applyVariables(template.discord.link.text, data),
+								emoji: template.discord.link.emoji,
+							},
+						],
+				  ]
+				: undefined,
+		});
+	}
+
 	// Private
 
 	applyVariables(text: string, variables: Record<string, string>) {
@@ -245,6 +417,7 @@ export class NotificationService implements NotificationUseCase {
 					title: this.applyVariables(template.title, data),
 					description: this.applyVariables(template.discord.description, data),
 					color: template.discord.color,
+					timestamp: new Date(),
 				},
 			],
 			components: template.discord.link

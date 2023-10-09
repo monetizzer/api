@@ -5,7 +5,6 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
-import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import {
@@ -50,7 +49,6 @@ export class ProductService implements ProductUseCase {
 		private readonly notificationUsecase: NotificationService,
 		private readonly fileAdapter: S3Adapter,
 		private readonly idAdapter: UIDAdapter,
-		private readonly discordAdapter: DiscordJSAdapter,
 		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
@@ -125,22 +123,11 @@ export class ProductService implements ProductUseCase {
 				productId,
 				status: ProductStatusEnum.VALIDATING,
 			}),
-			this.discordAdapter.sendMessage({
-				channelId: this.discordAdapter.channels.PRODUCTS,
-				content: '@everyone',
-				embeds: [
-					{
-						title: `Novo produto a ser revisado.`,
-						fields: [
-							{
-								name: 'productId',
-								value: productId,
-								inline: true,
-							},
-						],
-						timestamp: new Date(),
-					},
-				],
+			this.notificationUsecase.sendInternalNotification({
+				templateId: 'NEW_PRODUCT_TO_REVIEW',
+				data: {
+					productId,
+				},
 			}),
 		]);
 	}
@@ -193,28 +180,13 @@ export class ProductService implements ProductUseCase {
 		if (!store) return;
 
 		await Promise.all([
-			this.discordAdapter.sendMessage({
-				channelId: this.discordAdapter.channels.PRODUCTS,
-				content: '@everyone',
-				embeds: [
-					{
-						title: `Novo produto ${approve ? 'aprovado' : 'reprovado'}.`,
-						fields: [
-							{
-								name: 'ProductId',
-								value: productId,
-								inline: true,
-							},
-							{
-								name: 'ReviewerId',
-								value: reviewerId,
-								inline: true,
-							},
-						],
-						color: approve ? '#e81212' : '#12e820',
-						timestamp: new Date(),
-					},
-				],
+			this.notificationUsecase.sendInternalNotification({
+				templateId: approve ? 'NEW_PRODUCT_APPROVED' : 'NEW_PRODUCT_REPROVED',
+				data: {
+					productId,
+					reviewerId,
+					markedContentIds: markedContentIds.join(','),
+				},
 			}),
 			this.notificationUsecase.sendNotification({
 				accountId: store.accountId,
