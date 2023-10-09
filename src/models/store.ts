@@ -58,6 +58,7 @@ export interface UpdateInput {
 }
 
 export interface GetManyInput {
+	storeId?: Array<string>;
 	limit?: number;
 	offset?: number;
 	orderBy?: OrderBy<StoreEntity>;
@@ -108,10 +109,16 @@ export interface UpdateStoreInput {
 
 export type GetNewInput = Paginated;
 
+export type GetBestSellersInput = Paginated;
+
 export interface StoreUseCase {
 	create: (i: CreateStoreInput) => Promise<void>;
 
 	update: (i: UpdateStoreInput) => Promise<void>;
 
 	getNew: (i: GetNewInput) => Promise<PaginatedItems<StoreEntity>>;
+
+	getBestSellers: (
+		i: GetBestSellersInput,
+	) => Promise<PaginatedItems<StoreEntity>>;
 }
