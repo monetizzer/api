@@ -25,14 +25,21 @@ export class ContentRepositoryService implements ContentRepository {
 		});
 	}
 
-	async getMany({ productId }: GetManyInput): Promise<ContentEntity[]> {
+	async getMany({
+		productId,
+		limit,
+		offset,
+	}: GetManyInput): Promise<ContentEntity[]> {
 		const filters: Filter<ContentTable> = {};
 
 		if (productId) {
 			filters.productId = productId;
 		}
 
-		const contentsCursor = this.contentRepository.find(filters);
+		const contentsCursor = this.contentRepository.find(filters, {
+			limit,
+			skip: offset,
+		});
 		const contents = await contentsCursor.toArray();
 
 		return contents.map((content) => {

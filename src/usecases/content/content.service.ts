@@ -7,10 +7,13 @@ import {
 import { Readable } from 'node:stream';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 import {
+	ContentEntity,
 	ContentUseCase,
 	CreateContentInput,
 	CreateContentOutput,
+	GetByProductInput,
 	GetInput,
 } from 'src/models/content';
 import { ProductEntity } from 'src/models/product';
@@ -20,6 +23,7 @@ import { SaleRepositoryService } from 'src/repositories/mongodb/sale/sale-reposi
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
 import { canBeEdited } from 'src/types/enums/product-status';
 import { isPreMadeProduct } from 'src/types/enums/product-type';
+import { PaginatedItems } from 'src/types/paginated-items';
 
 interface ValidateCanGetContentInput {
 	accountId: string;
@@ -40,6 +44,7 @@ export class ContentService implements ContentUseCase {
 		private readonly saleRepository: SaleRepositoryService,
 		private readonly fileAdapter: S3Adapter,
 		private readonly idAdapter: UIDAdapter,
+		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
 	async create({
@@ -122,6 +127,28 @@ export class ContentService implements ContentUseCase {
 			.catch(() => {
 				throw new NotFoundException('File not found');
 			});
+	}
+
+	async getByProduct({
+		productId,
+		page,
+		limit: originalLimit,
+	}: GetByProductInput): Promise<PaginatedItems<ContentEntity>> {
+		const { offset, limit, paging } = this.utilsAdapter.pagination({
+			page,
+			limit: originalLimit,
+		});
+
+		const contents = await this.contentRepository.getMany({
+			productId,
+			limit,
+			offset,
+		});
+
+		return {
+			paging,
+			data: contents,
+		};
 	}
 
 	// Private

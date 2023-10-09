@@ -24,3 +24,8 @@ export class GetDto {
 	@IsFileName()
 	contentIdAndExt: string;
 }
+
+export class GetByProductDto {
+	@IsID()
+	productId: string;
+}
