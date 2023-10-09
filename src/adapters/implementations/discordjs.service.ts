@@ -131,8 +131,8 @@ const componentRowToDiscordComponentRow = (
 @Injectable()
 export class DiscordJSAdapter implements DiscordAdapter {
 	channels: Record<Channels, string> = {
-		DOCUMENTS: '',
-		PRODUCTS: '',
+		DOCUMENTS: '1160958824988024912',
+		PRODUCTS: '1160958806705061899',
 	};
 
 	private discordApi: (route: string, init: RequestInit) => Promise<Response>;

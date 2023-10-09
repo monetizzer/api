@@ -27,6 +27,27 @@ export interface TemplateEntity {
 	};
 }
 
+export interface InternalTemplateEntity {
+	discord: {
+		channelId: string;
+		mentions: Array<string>;
+		title: string;
+		description?: string; // Embed description
+		color: string; // Embed color
+		// Button link
+		link?: {
+			url: string;
+			text: string;
+			emoji?: string;
+		};
+		fields?: Array<{
+			title: string;
+			description: string;
+			inline?: false;
+		}>;
+	};
+}
+
 /**
  *
  *
@@ -61,6 +82,13 @@ export interface SendNotificationInput {
 	account?: AccountEntity;
 }
 
+export interface SendInternalNotificationInput {
+	templateId: string;
+	data?: Record<string, string>;
+}
+
 export interface NotificationUseCase {
 	sendNotification: (i: SendNotificationInput) => Promise<void>;
+
+	sendInternalNotification: (i: SendInternalNotificationInput) => Promise<void>;
 }

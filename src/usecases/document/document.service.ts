@@ -23,7 +23,6 @@ import {
 	canChangeStatus,
 } from 'src/types/enums/document-status';
 import { NotificationService } from '../notification/notification.service';
-import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
 import { DateAdapter } from 'src/adapters/implementations/date.service';
 import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
@@ -45,7 +44,6 @@ export class DocumentService implements DocumentUseCase {
 		@Inject(NotificationService)
 		private readonly notificationUsecase: NotificationService,
 		private readonly fileAdapter: S3Adapter,
-		private readonly discordAdapter: DiscordJSAdapter,
 		private readonly dateAdapter: DateAdapter,
 		private readonly utilsAdapter: UtilsAdapter,
 	) {}
@@ -127,37 +125,23 @@ export class DocumentService implements DocumentUseCase {
 			throw new ConflictException('Unable to update documents');
 		}
 
-		await this.documentRepository.upsertComplete({
-			accountId,
-			status: DocumentStatusEnum.VV,
-			fullName,
-			birthDate,
-			phone,
-			address,
-			documentNumber,
-			type,
-			documentPictureUrl: `${process.env['API_URL']}${documentPicturePath}`,
-			selfieWithDocumentUrl: `${process.env['API_URL']}${selfieWithDocumentPath}`,
-		});
-
-		await this.discordAdapter.sendMessage({
-			channelId: this.discordAdapter.channels.DOCUMENTS,
-			content: '@everyone',
-			embeds: [
-				{
-					title: 'Novos documentos a serem validados',
-				},
-			],
-			components: [
-				[
-					{
-						style: 'link',
-						url: `${process.env['BACKOFFICE_URL']}/documents`,
-						label: 'Ver documentos',
-					},
-				],
-			],
-		});
+		await Promise.all([
+			this.documentRepository.upsertComplete({
+				accountId,
+				status: DocumentStatusEnum.VV,
+				fullName,
+				birthDate,
+				phone,
+				address,
+				documentNumber,
+				type,
+				documentPictureUrl: `${process.env['API_URL']}${documentPicturePath}`,
+				selfieWithDocumentUrl: `${process.env['API_URL']}${selfieWithDocumentPath}`,
+			}),
+			this.notificationUsecase.sendInternalNotification({
+				templateId: 'NEW_DOCUMENT_TO_REVIEW',
+			}),
+		]);
 	}
 
 	async status(i: StatusInput): Promise<StatusOutput> {
@@ -229,28 +213,13 @@ export class DocumentService implements DocumentUseCase {
 				reviewerId,
 				message,
 			}),
-			this.discordAdapter.sendMessage({
-				channelId: this.discordAdapter.channels.DOCUMENTS,
-				content: '@everyone',
-				embeds: [
-					{
-						title: `Novo documento ${approve ? 'aprovado' : 'reprovado'}.`,
-						fields: [
-							{
-								name: 'AccountId',
-								value: accountId,
-								inline: true,
-							},
-							{
-								name: 'ReviewerId',
-								value: reviewerId,
-								inline: true,
-							},
-						],
-						color: approve ? '#e81212' : '#12e820',
-						timestamp: new Date(),
-					},
-				],
+			this.notificationUsecase.sendInternalNotification({
+				templateId: approve ? 'NEW_DOCUMENT_APPROVED' : 'NEW_DOCUMENT_REPROVED',
+				data: {
+					accountId,
+					reviewerId,
+					message,
+				},
 			}),
 			this.notificationUsecase.sendNotification({
 				accountId,
