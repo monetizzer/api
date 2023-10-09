@@ -2,6 +2,8 @@ import {
 	Body,
 	Controller,
 	Get,
+	HttpCode,
+	HttpStatus,
 	Param,
 	Post,
 	Query,
@@ -23,6 +25,7 @@ import { AuthGuard } from './guards/auth.guard';
 export class SaleController {
 	constructor(private readonly saleService: SaleService) {}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('/webhooks/pix')
 	processPixWebhook(
 		@Body()

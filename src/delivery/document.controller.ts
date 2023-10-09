@@ -5,6 +5,8 @@ import {
 	FileTypeValidator,
 	Get,
 	Header,
+	HttpCode,
+	HttpStatus,
 	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
@@ -28,6 +30,7 @@ import { PaginatedDto } from './dtos';
 export class DocumentController {
 	constructor(private readonly documentService: DocumentService) {}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('complete')
 	@UseGuards(AuthGuard(['USER']))
 	@UseInterceptors(
@@ -79,15 +82,6 @@ export class DocumentController {
 		});
 	}
 
-	@Get('status')
-	@UseGuards(AuthGuard(['USER']))
-	status(
-		@AccountId()
-		accountId: string,
-	) {
-		return this.documentService.status({ accountId });
-	}
-
 	@Get('review')
 	@UseGuards(AdminGuard)
 	getToReview(
@@ -111,6 +105,7 @@ export class DocumentController {
 		file.pipe(res);
 	}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('review')
 	@UseGuards(AdminGuard)
 	review(

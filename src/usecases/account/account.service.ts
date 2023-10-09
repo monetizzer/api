@@ -14,7 +14,7 @@ import {
 	AccountUseCase,
 	AuthOutput,
 	CreateFromDiscordInput,
-	CreateFromMagicLinkInput,
+	ExchangeMagicLinkCodeInput,
 	IamInput,
 	IamOutput,
 	SendMagicLinkInput,
@@ -185,10 +185,10 @@ export class AccountService implements AccountUseCase {
 		});
 	}
 
-	async createFromMagicLink({
+	async exchangeMagicLinkCode({
 		accountId,
 		code,
-	}: CreateFromMagicLinkInput): Promise<AuthOutput> {
+	}: ExchangeMagicLinkCodeInput): Promise<AuthOutput> {
 		const magicLinkCode = await this.magicLinkCodeRepository.get({
 			accountId,
 			code,

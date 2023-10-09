@@ -2,6 +2,8 @@ import {
 	Body,
 	Controller,
 	Get,
+	HttpCode,
+	HttpStatus,
 	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
@@ -33,6 +35,7 @@ export class TransactionController {
 		});
 	}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Patch('/withdraw')
 	@UseGuards(AdminGuard)
 	@UseInterceptors(FileInterceptor('image'))

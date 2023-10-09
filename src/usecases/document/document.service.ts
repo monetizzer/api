@@ -14,8 +14,6 @@ import {
 	DocumentUseCase,
 	GetImageInput,
 	ReviewInput,
-	StatusInput,
-	StatusOutput,
 } from 'src/models/document';
 import { DocumentRepositoryService } from 'src/repositories/mongodb/document/document-repository.service';
 import {
@@ -142,14 +140,6 @@ export class DocumentService implements DocumentUseCase {
 				templateId: 'NEW_DOCUMENT_TO_REVIEW',
 			}),
 		]);
-	}
-
-	async status(i: StatusInput): Promise<StatusOutput> {
-		const document = await this.documentRepository.getByAccountId(i);
-
-		return {
-			status: document.status || DocumentStatusEnum['00'],
-		};
 	}
 
 	async getToReview(i: Paginated): Promise<PaginatedItems<DocumentEntity>> {
