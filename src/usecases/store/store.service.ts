@@ -6,8 +6,10 @@ import {
 	Injectable,
 } from '@nestjs/common';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 import {
 	CreateStoreInput,
+	StoreEntity,
 	StoreUseCase,
 	UpdateStoreInput,
 } from 'src/models/store';
@@ -15,6 +17,7 @@ import { AccountRepositoryService } from 'src/repositories/mongodb/account/accou
 import { DocumentRepositoryService } from 'src/repositories/mongodb/document/document-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
+import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 
 @Injectable()
 export class StoreService implements StoreUseCase {
@@ -26,6 +29,7 @@ export class StoreService implements StoreUseCase {
 		@Inject(AccountRepositoryService)
 		private readonly accountRepository: AccountRepositoryService,
 		private readonly fileAdapter: S3Adapter,
+		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
 	async create({
@@ -161,5 +165,28 @@ export class StoreService implements StoreUseCase {
 		}
 
 		await Promise.all(promises);
+	}
+
+	async getNew({
+		page,
+		limit: originalLimit,
+	}: Paginated): Promise<PaginatedItems<StoreEntity>> {
+		const { offset, limit, paging } = this.utilsAdapter.pagination({
+			page,
+			limit: originalLimit,
+		});
+
+		const stores = await this.storeRepository.getMany({
+			limit,
+			offset,
+			orderBy: {
+				createdAt: 'desc',
+			},
+		});
+
+		return {
+			paging,
+			data: stores,
+		};
 	}
 }

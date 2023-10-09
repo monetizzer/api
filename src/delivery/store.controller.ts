@@ -2,10 +2,12 @@ import {
 	Body,
 	Controller,
 	FileTypeValidator,
+	Get,
 	MaxFileSizeValidator,
 	ParseFilePipe,
 	Patch,
 	Post,
+	Query,
 	UploadedFiles,
 	UseGuards,
 	UseInterceptors,
@@ -15,6 +17,7 @@ import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
 import { CreateDto, UpdateDto } from './dtos/store';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PaginatedDto } from './dtos';
 
 @Controller('stores')
 export class StoreController {
@@ -104,5 +107,13 @@ export class StoreController {
 			avatar: avatar?.buffer,
 			...body,
 		});
+	}
+
+	@Get('/new')
+	async getNew(
+		@Query()
+		query: PaginatedDto,
+	) {
+		return this.storeService.getNew(query);
 	}
 }
