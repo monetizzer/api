@@ -11,6 +11,8 @@ import {
 	VIDEO_EXT,
 } from 'src/types/enums/media-type';
 
+export const ID_REGEX = /^[a-z0-9]{16}$/i;
+
 export function IsID(validationOptions: ValidationOptions = {}) {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	return function (object: Object, propertyName: string) {
@@ -26,7 +28,7 @@ export function IsID(validationOptions: ValidationOptions = {}) {
 			validator: {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				validate(value: any, _args: ValidationArguments) {
-					return typeof value === 'string' && /^[a-z0-9]{16}$/i.test(value);
+					return typeof value === 'string' && ID_REGEX.test(value);
 				},
 			},
 		});

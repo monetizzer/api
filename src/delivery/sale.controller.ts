@@ -1,13 +1,40 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	Param,
+	Post,
+	Query,
+	UseGuards,
+} from '@nestjs/common';
 import { SaleService } from 'src/usecases/sale/sale.service';
 import { AccountId } from './decorators/account-id';
-import { CheckoutDto, GetDto, ProcessPixWebhookDto } from './dtos/sale';
+import {
+	CheckoutDto,
+	ClientSalesDto,
+	GetDto,
+	ProcessPixWebhookDto,
+} from './dtos/sale';
 import { IsAdmin } from './decorators/is-admin';
 import { AuthGuard } from './guards/auth.guard';
 
 @Controller('sales')
 export class SaleController {
 	constructor(private readonly saleService: SaleService) {}
+
+	@Post('/webhooks/pix')
+	processPixWebhook(
+		@Body()
+		body: ProcessPixWebhookDto,
+	) {
+		const [pix] = body.pix;
+
+		return this.saleService.processPixWebhook({
+			saleId: pix.txid,
+			paymentId: pix.endToEndId,
+			amount: pix.valor,
+		});
+	}
 
 	@Post('/checkout')
 	@UseGuards(AuthGuard(['USER']))
@@ -40,17 +67,17 @@ export class SaleController {
 		});
 	}
 
-	@Post('/webhooks/pix')
-	processPixWebhook(
-		@Body()
-		body: ProcessPixWebhookDto,
+	@Get('client')
+	@UseGuards(AuthGuard(['USER', 'BOT']))
+	clientSales(
+		@Query()
+		query: ClientSalesDto,
+		@AccountId()
+		accountId: string,
 	) {
-		const [pix] = body.pix;
-
-		return this.saleService.processPixWebhook({
-			saleId: pix.txid,
-			paymentId: pix.endToEndId,
-			amount: pix.valor,
+		return this.saleService.clientSales({
+			...query,
+			accountId,
 		});
 	}
 }

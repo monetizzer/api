@@ -4,6 +4,7 @@ import {
 	CreateInput,
 	CreateOutput,
 	GetBySaleIdInput,
+	GetManyInput,
 	HasBoughtPreMadeProductInput,
 	SaleEntity,
 	SaleRepository,
@@ -13,6 +14,7 @@ import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
 import { PaymentMethodEnum } from 'src/types/enums/payment-method';
+import { Filter } from 'mongodb';
 
 interface SaleTable extends Omit<SaleEntity, 'saleId'> {
 	_id: string;
@@ -82,6 +84,45 @@ export class SaleRepositoryService implements SaleRepository {
 			...saleData,
 			saleId: _id,
 		};
+	}
+
+	async getMany({
+		clientId,
+		storeId,
+		status,
+		limit,
+		offset,
+	}: GetManyInput): Promise<SaleEntity[]> {
+		const filters: Filter<SaleTable> = {};
+
+		if (storeId) {
+			filters.storeId = storeId;
+		}
+
+		if (clientId) {
+			filters.clientId = clientId;
+		}
+
+		if (status) {
+			filters.status = {
+				$in: status,
+			};
+		}
+
+		const salesCursor = this.saleRepository.find(filters, {
+			skip: offset,
+			limit,
+		});
+		const sales = await salesCursor.toArray();
+
+		return sales.map((sale) => {
+			const { _id, ...saleData } = sale;
+
+			return {
+				...saleData,
+				saleId: _id,
+			};
+		});
 	}
 
 	async hasBoughtPreMadeProduct({

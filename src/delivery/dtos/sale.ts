@@ -3,12 +3,15 @@ import {
 	IsDateString,
 	IsEnum,
 	IsInt,
+	IsOptional,
 	IsString,
 	ValidateNested,
 } from 'class-validator';
 import { IsID } from '../validators/internal';
 import { PaymentMethodEnum } from 'src/types/enums/payment-method';
 import { Transform } from 'class-transformer';
+import { SalesStatusEnum } from 'src/types/enums/sale-status';
+import { PaginatedDto } from '.';
 
 export class CheckoutDto {
 	@IsID()
@@ -49,4 +52,15 @@ export class ProcessPixWebhookDto {
 	@IsArray()
 	@ValidateNested({ each: true })
 	pix: Array<PixWebhookItem>;
+}
+
+export class ClientSalesDto extends PaginatedDto {
+	@IsOptional()
+	@IsID()
+	storeId?: string;
+
+	@IsOptional()
+	@IsString()
+	@IsEnum(SalesStatusEnum)
+	status?: SalesStatusEnum;
 }
