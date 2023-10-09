@@ -1,13 +1,8 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	Type,
-	UnauthorizedException,
-	mixin,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Type, mixin } from '@nestjs/common';
 import { verify } from 'jsonwebtoken';
 import { Request } from 'express';
 import { AuthType } from './types';
+import { ID_REGEX } from '../validators/internal';
 
 export const AuthGuard = (types: Array<AuthType>): Type<CanActivate> => {
 	class AuthGuardMixin implements CanActivate {
@@ -20,23 +15,49 @@ export const AuthGuard = (types: Array<AuthType>): Type<CanActivate> => {
 				validations.push(this.validateUserAuth(request));
 			}
 
+			if (types.includes('BOT')) {
+				validations.push(this.validateBotAuth(request));
+			}
+
 			return validations.some(Boolean);
 		}
 
 		private validateUserAuth(request: Request) {
-			const token = request.cookies?.['access-token'];
+			const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
-			if (!token) {
-				throw new UnauthorizedException();
+			if (type !== 'Bearer' || !token) {
+				return false;
 			}
 
 			try {
 				verify(token, process.env['JWT_SECRET']!);
 			} catch {
-				throw new UnauthorizedException();
+				return false;
 			}
 
 			return true;
+		}
+
+		private validateBotAuth(request: Request) {
+			const [type, token] = request.headers.authorization?.split(' ') ?? [];
+
+			if (type !== 'Bot' || !token) {
+				return false;
+			}
+
+			try {
+				verify(token, process.env['JWT_SECRET']!);
+			} catch {
+				return false;
+			}
+
+			const accountId = request.query.accountId;
+
+			if (typeof accountId !== 'string') {
+				return false;
+			}
+
+			return ID_REGEX.test(accountId);
 		}
 	}
 

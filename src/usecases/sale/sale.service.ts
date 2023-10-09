@@ -15,6 +15,7 @@ import {
 	ProcessPixWebhookInput,
 	SaleEntity,
 	SaleUseCase,
+	ClientSalesInput,
 } from 'src/models/sale';
 import { TransactionEntity } from 'src/models/transaction';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
@@ -26,6 +27,8 @@ import { isPreMadeProduct } from 'src/types/enums/product-type';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
 import { TransactionStatusEnum } from 'src/types/enums/transaction-status';
 import { NotificationService } from '../notification/notification.service';
+import { PaginatedItems } from 'src/types/paginated-items';
+import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 interface ValidateCanGetSaleInput {
 	accountId: string;
@@ -46,6 +49,7 @@ export class SaleService implements SaleUseCase {
 		private readonly storeRepository: StoreRepositoryService,
 		private readonly notificationUsecase: NotificationService,
 		private readonly paymentAdapter: GerencianetAdapter,
+		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
 	async checkout({
@@ -217,6 +221,32 @@ export class SaleService implements SaleUseCase {
 			...sale,
 			product,
 			store,
+		};
+	}
+
+	async clientSales({
+		accountId,
+		storeId,
+		status,
+		page,
+		limit: originalLimit,
+	}: ClientSalesInput): Promise<PaginatedItems<SaleEntity>> {
+		const { offset, limit, paging } = this.utilsAdapter.pagination({
+			page,
+			limit: originalLimit,
+		});
+
+		const sales = await this.saleRepository.getMany({
+			clientId: accountId,
+			storeId,
+			status: status ? [status] : undefined,
+			offset,
+			limit,
+		});
+
+		return {
+			paging,
+			data: sales,
 		};
 	}
 

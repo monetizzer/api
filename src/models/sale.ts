@@ -2,6 +2,7 @@ import { PaymentMethodEnum } from 'src/types/enums/payment-method';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
 import { ProductEntity } from './product';
 import { StoreEntity } from './store';
+import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 
 interface SaleHistoryItem {
 	timestamp: Date;
@@ -54,10 +55,20 @@ export interface UpdateStatusInput {
 	status: SalesStatusEnum;
 }
 
+export interface GetManyInput {
+	clientId?: string;
+	storeId?: string;
+	status?: Array<SalesStatusEnum>;
+	limit?: number;
+	offset?: number;
+}
+
 export interface SaleRepository {
 	create: (i: CreateInput) => Promise<CreateOutput>;
 
 	getBySaleId: (i: GetBySaleIdInput) => Promise<SaleEntity | undefined>;
+
+	getMany: (i: GetManyInput) => Promise<Array<SaleEntity>>;
 
 	hasBoughtPreMadeProduct: (
 		i: HasBoughtPreMadeProductInput,
@@ -119,6 +130,12 @@ export interface GetOutput extends SaleEntity {
 	store: StoreEntity;
 }
 
+export interface ClientSalesInput extends Paginated {
+	accountId: string;
+	storeId?: string;
+	status?: SalesStatusEnum;
+}
+
 export interface SaleUseCase {
 	processPixWebhook: (i: ProcessPixWebhookInput) => Promise<void>;
 
@@ -128,4 +145,6 @@ export interface SaleUseCase {
 
 	// Update the status of all expired sales to EXPIRED
 	updateExpired: () => Promise<void>;
+
+	clientSales: (i: ClientSalesInput) => Promise<PaginatedItems<SaleEntity>>;
 }
