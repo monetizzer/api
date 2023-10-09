@@ -1,4 +1,5 @@
 import { Paginated, PaginatedItems } from 'src/types/paginated-items';
+import { OrderBy } from 'src/types/repository';
 
 export interface StoreEntity {
 	storeId: string;
@@ -59,7 +60,7 @@ export interface UpdateInput {
 export interface GetManyInput {
 	limit?: number;
 	offset?: number;
-	orderBy?: Partial<Record<keyof StoreEntity, 'asc' | 'desc'>>;
+	orderBy?: OrderBy<StoreEntity>;
 }
 
 export interface StoreRepository {

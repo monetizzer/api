@@ -11,7 +11,7 @@ import {
 } from 'src/models/product';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
-import { Filter } from 'mongodb';
+import { Filter, FindOptions } from 'mongodb';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 interface ProductTable extends Omit<ProductEntity, 'productId'> {
@@ -99,6 +99,7 @@ export class ProductRepositoryService implements ProductRepository {
 		status,
 		limit,
 		offset,
+		orderBy,
 	}: GetManyInput): Promise<ProductEntity[]> {
 		const filters: Filter<ProductTable> = {};
 
@@ -116,9 +117,21 @@ export class ProductRepositoryService implements ProductRepository {
 			};
 		}
 
+		let sort: FindOptions<ProductTable>['sort'] | undefined;
+
+		if (orderBy) {
+			const { productId, ...order } = orderBy;
+
+			sort = this.utilsAdapter.cleanObj({
+				...order,
+				_id: productId,
+			});
+		}
+
 		const productsCursor = this.productRepository.find(filters, {
 			skip: offset,
 			limit,
+			sort,
 		});
 		const products = await productsCursor.toArray();
 

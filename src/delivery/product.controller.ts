@@ -91,6 +91,14 @@ export class ProductController {
 		});
 	}
 
+	@Get('/new')
+	async getNew(
+		@Query()
+		query: PaginatedDto,
+	) {
+		return this.productService.getNew(query);
+	}
+
 	@Get('/review')
 	@UseGuards(AdminGuard)
 	getToReview(

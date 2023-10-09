@@ -19,6 +19,7 @@ import {
 	ReviewInput,
 	GetStoreProductsInput,
 	GetProductInput,
+	GetNewInput,
 } from 'src/models/product';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
@@ -193,6 +194,30 @@ export class ProductService implements ProductUseCase {
 				templateId: approve ? 'PRODUCT_APPROVED' : 'PRODUCT_REPROVED',
 			}),
 		]);
+	}
+
+	async getNew({
+		page,
+		limit: originalLimit,
+	}: GetNewInput): Promise<PaginatedItems<ProductEntity>> {
+		const { offset, limit, paging } = this.utilsAdapter.pagination({
+			page,
+			limit: originalLimit,
+		});
+
+		const products = await this.productRepository.getMany({
+			status: [ProductStatusEnum.APPROVED],
+			limit,
+			offset,
+			orderBy: {
+				createdAt: 'desc',
+			},
+		});
+
+		return {
+			paging,
+			data: products,
+		};
 	}
 
 	async getToReview(i: Paginated): Promise<PaginatedItems<ProductEntity>> {
