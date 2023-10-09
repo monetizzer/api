@@ -99,6 +99,14 @@ export class ProductController {
 		return this.productService.getNew(query);
 	}
 
+	@Get('/best-sellers')
+	async getBestSellers(
+		@Query()
+		query: PaginatedDto,
+	) {
+		return this.productService.getBestSellers(query);
+	}
+
 	@Get('/review')
 	@UseGuards(AdminGuard)
 	getToReview(

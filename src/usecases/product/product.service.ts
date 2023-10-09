@@ -20,6 +20,7 @@ import {
 	GetStoreProductsInput,
 	GetProductInput,
 	GetNewInput,
+	GetBestSellersInput,
 } from 'src/models/product';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
@@ -36,6 +37,8 @@ import { NotificationService } from '../notification/notification.service';
 import { ContentRepositoryService } from 'src/repositories/mongodb/content/content-repository.service';
 import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
+import { SalesStatusEnum } from 'src/types/enums/sale-status';
+import { SaleRepositoryService } from 'src/repositories/mongodb/sale/sale-repository.service';
 
 @Injectable()
 export class ProductService implements ProductUseCase {
@@ -46,6 +49,8 @@ export class ProductService implements ProductUseCase {
 		private readonly storeRepository: StoreRepositoryService,
 		@Inject(ContentRepositoryService)
 		private readonly contentRepository: ContentRepositoryService,
+		@Inject(SaleRepositoryService)
+		private readonly saleRepository: SaleRepositoryService,
 		@Inject(NotificationService)
 		private readonly notificationUsecase: NotificationService,
 		private readonly fileAdapter: S3Adapter,
@@ -212,6 +217,44 @@ export class ProductService implements ProductUseCase {
 			orderBy: {
 				createdAt: 'desc',
 			},
+		});
+
+		return {
+			paging,
+			data: products,
+		};
+	}
+
+	async getBestSellers({
+		page,
+		limit: originalLimit,
+	}: GetBestSellersInput): Promise<PaginatedItems<ProductEntity>> {
+		const allSales = await this.saleRepository.getMany({
+			status: [SalesStatusEnum.DELIVERED, SalesStatusEnum.CONFIRMED_DELIVERY],
+		});
+
+		const salesCountByProductId: Record<string, number> = {};
+
+		for (const sale of allSales) {
+			if (salesCountByProductId[sale.productId]) {
+				salesCountByProductId[sale.productId]++;
+			} else {
+				salesCountByProductId[sale.productId] = 1;
+			}
+		}
+
+		const { offset, limit, paging } = this.utilsAdapter.pagination({
+			page,
+			limit: originalLimit,
+		});
+
+		const productsIds = Object.entries(salesCountByProductId)
+			.sort((a, b) => (a[1] < b[1] ? 1 : -1))
+			.slice(offset, offset + limit)
+			.map(([productId]) => productId);
+
+		const products = await this.productRepository.getMany({
+			productId: productsIds,
 		});
 
 		return {

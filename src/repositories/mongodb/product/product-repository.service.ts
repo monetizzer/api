@@ -94,6 +94,7 @@ export class ProductRepositoryService implements ProductRepository {
 	}
 
 	async getMany({
+		productId,
 		storeId,
 		type,
 		status,
@@ -102,6 +103,12 @@ export class ProductRepositoryService implements ProductRepository {
 		orderBy,
 	}: GetManyInput): Promise<ProductEntity[]> {
 		const filters: Filter<ProductTable> = {};
+
+		if (productId) {
+			filters._id = {
+				$in: productId,
+			};
+		}
 
 		if (storeId) {
 			filters.storeId = storeId;
