@@ -1,3 +1,5 @@
+import { Paginated, PaginatedItems } from 'src/types/paginated-items';
+
 export interface StoreEntity {
 	storeId: string;
 	accountId: string;
@@ -54,12 +56,20 @@ export interface UpdateInput {
 	avatarUrl?: string;
 }
 
+export interface GetManyInput {
+	limit?: number;
+	offset?: number;
+	orderBy?: Partial<Record<keyof StoreEntity, 'asc' | 'desc'>>;
+}
+
 export interface StoreRepository {
 	getByStoreId: (i: GetByStoreIdInput) => Promise<StoreEntity | undefined>;
 
 	getByAccountId: (i: GetByAccountIdInput) => Promise<StoreEntity | undefined>;
 
 	getByUsername: (i: GetByUsernameInput) => Promise<StoreEntity | undefined>;
+
+	getMany: (i: GetManyInput) => Promise<Array<StoreEntity>>;
 
 	create: (i: CreateInput) => Promise<CreateOutput>;
 
@@ -95,8 +105,12 @@ export interface UpdateStoreInput {
 	avatar?: Buffer;
 }
 
+export type GetNewInput = Paginated;
+
 export interface StoreUseCase {
 	create: (i: CreateStoreInput) => Promise<void>;
 
 	update: (i: UpdateStoreInput) => Promise<void>;
+
+	getNew: (i: GetNewInput) => Promise<PaginatedItems<StoreEntity>>;
 }
