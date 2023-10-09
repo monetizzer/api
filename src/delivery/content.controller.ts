@@ -6,6 +6,7 @@ import {
 	Param,
 	ParseFilePipe,
 	Post,
+	Query,
 	Res,
 	UploadedFile,
 	UseGuards,
@@ -14,10 +15,11 @@ import {
 import { ContentService } from 'src/usecases/content/content.service';
 import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
-import { CreateDto, GetDto } from './dtos/content';
+import { CreateDto, GetByProductDto, GetDto } from './dtos/content';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IsAdmin } from './decorators/is-admin';
 import { Response } from 'express';
+import { PaginatedDto } from './dtos';
 
 @Controller('contents')
 export class ContentController {
@@ -45,7 +47,7 @@ export class ContentController {
 		});
 	}
 
-	@Get(':storeId/:productId/:contentIdAndExt')
+	@Get('/:storeId/:productId/:contentIdAndExt')
 	@UseGuards(AuthGuard(['USER']))
 	async get(
 		@Param()
@@ -70,5 +72,19 @@ export class ContentController {
 		});
 
 		file.pipe(res);
+	}
+
+	@Get('/:productId')
+	@UseGuards(AuthGuard(['USER']))
+	async getByProduct(
+		@Param()
+		params: GetByProductDto,
+		@Query()
+		query: PaginatedDto,
+	) {
+		return this.contentService.getByProduct({
+			...query,
+			...params,
+		});
 	}
 }
