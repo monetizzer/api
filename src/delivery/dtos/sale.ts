@@ -64,3 +64,18 @@ export class ClientSalesDto extends PaginatedDto {
 	@IsEnum(SalesStatusEnum)
 	status?: SalesStatusEnum;
 }
+
+export class StoreSalesDto extends PaginatedDto {
+	@IsOptional()
+	@IsID()
+	clientId?: string;
+
+	@IsOptional()
+	@IsID()
+	productId?: string;
+
+	@IsOptional()
+	@IsString()
+	@IsEnum(SalesStatusEnum)
+	status?: SalesStatusEnum;
+}

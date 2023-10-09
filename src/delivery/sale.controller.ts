@@ -14,6 +14,7 @@ import {
 	ClientSalesDto,
 	GetDto,
 	ProcessPixWebhookDto,
+	StoreSalesDto,
 } from './dtos/sale';
 import { IsAdmin } from './decorators/is-admin';
 import { AuthGuard } from './guards/auth.guard';
@@ -37,7 +38,7 @@ export class SaleController {
 	}
 
 	@Post('/checkout')
-	@UseGuards(AuthGuard(['USER']))
+	@UseGuards(AuthGuard(['USER', 'BOT']))
 	checkout(
 		@Body()
 		body: CheckoutDto,
@@ -51,7 +52,7 @@ export class SaleController {
 	}
 
 	@Get('/:saleId')
-	@UseGuards(AuthGuard(['USER']))
+	@UseGuards(AuthGuard(['USER', 'BOT']))
 	get(
 		@IsAdmin()
 		isAdmin: boolean,
@@ -76,6 +77,20 @@ export class SaleController {
 		accountId: string,
 	) {
 		return this.saleService.clientSales({
+			...query,
+			accountId,
+		});
+	}
+
+	@Get('store')
+	@UseGuards(AuthGuard(['USER', 'BOT']))
+	storeSales(
+		@Query()
+		query: StoreSalesDto,
+		@AccountId()
+		accountId: string,
+	) {
+		return this.saleService.storeSales({
 			...query,
 			accountId,
 		});

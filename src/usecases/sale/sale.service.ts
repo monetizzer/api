@@ -16,6 +16,7 @@ import {
 	SaleEntity,
 	SaleUseCase,
 	ClientSalesInput,
+	StoreSalesInput,
 } from 'src/models/sale';
 import { TransactionEntity } from 'src/models/transaction';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
@@ -239,6 +240,42 @@ export class SaleService implements SaleUseCase {
 		const sales = await this.saleRepository.getMany({
 			clientId: accountId,
 			storeId,
+			status: status ? [status] : undefined,
+			offset,
+			limit,
+		});
+
+		return {
+			paging,
+			data: sales,
+		};
+	}
+
+	async storeSales({
+		accountId,
+		clientId,
+		productId,
+		status,
+		page,
+		limit: originalLimit,
+	}: StoreSalesInput): Promise<PaginatedItems<SaleEntity>> {
+		const store = await this.storeRepository.getByAccountId({
+			accountId,
+		});
+
+		if (!store) {
+			throw new NotFoundException('Store not found');
+		}
+
+		const { offset, limit, paging } = this.utilsAdapter.pagination({
+			page,
+			limit: originalLimit,
+		});
+
+		const sales = await this.saleRepository.getMany({
+			storeId: store.storeId,
+			clientId,
+			productId,
 			status: status ? [status] : undefined,
 			offset,
 			limit,

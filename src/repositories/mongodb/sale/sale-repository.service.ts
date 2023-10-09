@@ -89,6 +89,7 @@ export class SaleRepositoryService implements SaleRepository {
 	async getMany({
 		clientId,
 		storeId,
+		productId,
 		status,
 		limit,
 		offset,
@@ -101,6 +102,10 @@ export class SaleRepositoryService implements SaleRepository {
 
 		if (clientId) {
 			filters.clientId = clientId;
+		}
+
+		if (productId) {
+			filters.productId = productId;
 		}
 
 		if (status) {
