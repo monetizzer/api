@@ -64,6 +64,7 @@ export interface GetByProductIdInput {
 }
 
 export interface GetManyInput {
+	productId?: Array<string>;
 	storeId?: string;
 	type?: ProductTypeEnum;
 	status?: Array<ProductStatusEnum>;
@@ -108,6 +109,8 @@ export interface CreateProductOutput {
 }
 
 export type GetNewInput = Paginated;
+
+export type GetBestSellersInput = Paginated;
 
 export interface MarkAsReadyInput {
 	accountId: string;
@@ -157,6 +160,10 @@ export interface ProductUseCase {
 	markAsReady: (i: MarkAsReadyInput) => Promise<void>;
 
 	getNew: (i: GetNewInput) => Promise<PaginatedItems<ProductEntity>>;
+
+	getBestSellers: (
+		i: GetBestSellersInput,
+	) => Promise<PaginatedItems<ProductEntity>>;
 
 	getToReview: (i: Paginated) => Promise<PaginatedItems<ProductEntity>>;
 

@@ -88,7 +88,7 @@ export class StoreRepositoryService implements StoreRepository {
 		const filters: Filter<StoreTable> = {};
 
 		if (storeId) {
-			filters.storeId = {
+			filters._id = {
 				$in: storeId,
 			};
 		}

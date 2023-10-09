@@ -8,6 +8,7 @@ import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { NotificationModule } from '../notification/notification.module';
 import { ContentRepositoryModule } from 'src/repositories/mongodb/content/content-repository.module';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
+import { SaleRepositoryModule } from 'src/repositories/mongodb/sale/sale-repository.module';
 
 @Module({
 	controllers: [ProductController],
@@ -15,6 +16,7 @@ import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 		ProductRepositoryModule,
 		StoreRepositoryModule,
 		ContentRepositoryModule,
+		SaleRepositoryModule,
 		NotificationModule,
 	],
 	providers: [ProductService, S3Adapter, UIDAdapter, UtilsAdapter],
