@@ -276,7 +276,15 @@ export class SaleService implements SaleUseCase {
 			storeId: store.storeId,
 			clientId,
 			productId,
-			status: status ? [status] : undefined,
+			status: status
+				? [status]
+				: [
+						SalesStatusEnum.PAID,
+						SalesStatusEnum.DELIVERED,
+						SalesStatusEnum.CONFIRMED_DELIVERY,
+						SalesStatusEnum.IN_DISPUTE,
+						SalesStatusEnum.REFUNDED,
+				  ],
 			offset,
 			limit,
 		});
