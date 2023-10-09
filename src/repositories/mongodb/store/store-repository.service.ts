@@ -13,7 +13,7 @@ import {
 } from 'src/models/store';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
-import { FindOptions } from 'mongodb';
+import { Filter, FindOptions } from 'mongodb';
 
 interface StoreTable extends Omit<StoreEntity, 'storeId'> {
 	_id: string;
@@ -80,10 +80,19 @@ export class StoreRepositoryService implements StoreRepository {
 	}
 
 	async getMany({
+		storeId,
 		offset,
 		limit,
 		orderBy,
 	}: GetManyInput): Promise<StoreEntity[]> {
+		const filters: Filter<StoreTable> = {};
+
+		if (storeId) {
+			filters.storeId = {
+				$in: storeId,
+			};
+		}
+
 		let sort: FindOptions<StoreTable>['sort'] | undefined;
 
 		if (orderBy) {
@@ -95,14 +104,11 @@ export class StoreRepositoryService implements StoreRepository {
 			});
 		}
 
-		const storesCursor = this.storeRepository.find(
-			{},
-			{
-				skip: offset,
-				limit,
-				sort,
-			},
-		);
+		const storesCursor = this.storeRepository.find(filters, {
+			skip: offset,
+			limit,
+			sort,
+		});
 		const stores = await storesCursor.toArray();
 
 		return stores.map((store) => {

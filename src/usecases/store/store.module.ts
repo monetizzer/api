@@ -6,6 +6,7 @@ import { DocumentRepositoryModule } from 'src/repositories/mongodb/document/docu
 import { AccountRepositoryModule } from 'src/repositories/mongodb/account/account-repository.module';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
+import { SaleRepositoryModule } from 'src/repositories/mongodb/sale/sale-repository.module';
 
 @Module({
 	controllers: [StoreController],
@@ -13,6 +14,7 @@ import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 		StoreRepositoryModule,
 		DocumentRepositoryModule,
 		AccountRepositoryModule,
+		SaleRepositoryModule,
 	],
 	providers: [StoreService, S3Adapter, UtilsAdapter],
 })

@@ -116,4 +116,12 @@ export class StoreController {
 	) {
 		return this.storeService.getNew(query);
 	}
+
+	@Get('/best-sellers')
+	async getBestSellers(
+		@Query()
+		query: PaginatedDto,
+	) {
+		return this.storeService.getBestSellers(query);
+	}
 }
