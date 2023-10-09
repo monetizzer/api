@@ -138,14 +138,6 @@ export interface ReviewInput {
 	message?: string;
 }
 
-export interface StatusInput {
-	accountId: string;
-}
-
-export interface StatusOutput {
-	status: DocumentStatusEnum;
-}
-
 export interface GetImageInput {
 	accountId: string;
 	name: string;
@@ -159,8 +151,6 @@ export interface DocumentUseCase {
 	getToReview: (i: Paginated) => Promise<PaginatedItems<DocumentEntity>>;
 
 	review: (i: ReviewInput) => Promise<void>;
-
-	status: (i: StatusInput) => Promise<StatusOutput>;
 
 	getImage: (i: GetImageInput) => Promise<Readable>;
 }

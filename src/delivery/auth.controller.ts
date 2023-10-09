@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Post,
+	UseGuards,
+} from '@nestjs/common';
 import { AccountService } from 'src/usecases/account/account.service';
 import {
 	AcceptTermsDto,
@@ -21,6 +29,7 @@ export class AuthController {
 		return this.accountService.createFromDiscordOauth(body);
 	}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('/auth/magic-link/gen-email')
 	sendMagicLink(
 		@Body()
@@ -30,13 +39,14 @@ export class AuthController {
 	}
 
 	@Post('/auth/magic-link')
-	createFromMagicLink(
+	exchangeMagicLinkCode(
 		@Body()
 		body: CreateFromMagicLinkDto,
 	) {
-		return this.accountService.createFromMagicLink(body);
+		return this.accountService.exchangeMagicLinkCode(body);
 	}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('/terms/accept')
 	@UseGuards(AuthGuard(['USER']))
 	acceptTerms(
@@ -52,7 +62,7 @@ export class AuthController {
 	}
 
 	@Get('/accounts/iam')
-	@UseGuards(AuthGuard(['USER']))
+	@UseGuards(AuthGuard(['USER', 'BOT']))
 	iam(
 		@AccountId()
 		accountId: string,

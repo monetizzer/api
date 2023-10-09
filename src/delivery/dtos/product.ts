@@ -68,9 +68,8 @@ export class GetOneToReviewDto {
 }
 
 export class GetApprovedStoreProductsDto extends PaginatedDto {
-	@IsOptional()
 	@IsID()
-	storeId?: string;
+	storeId: string;
 
 	@IsOptional()
 	@IsEnum(ProductTypeEnum)

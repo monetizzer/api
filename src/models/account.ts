@@ -132,7 +132,7 @@ export interface SendMagicLinkInput {
 	email: string;
 }
 
-export interface CreateFromMagicLinkInput {
+export interface ExchangeMagicLinkCodeInput {
 	accountId: string;
 	code: string;
 }
@@ -166,7 +166,7 @@ export interface AccountUseCase {
 
 	sendMagicLink: (i: SendMagicLinkInput) => Promise<void>;
 
-	createFromMagicLink: (i: CreateFromMagicLinkInput) => Promise<AuthOutput>;
+	exchangeMagicLinkCode: (i: ExchangeMagicLinkCodeInput) => Promise<AuthOutput>;
 
 	acceptTerms: (i: AcceptInput) => Promise<void>;
 

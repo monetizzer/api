@@ -4,6 +4,8 @@ import {
 	Controller,
 	FileTypeValidator,
 	Get,
+	HttpCode,
+	HttpStatus,
 	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
@@ -63,8 +65,9 @@ export class ProductController {
 		});
 	}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Patch('/ready')
-	@UseGuards(AuthGuard(['USER']))
+	@UseGuards(AuthGuard(['USER', 'BOT']))
 	markAsReady(
 		@Body()
 		body: MarkAsReadyDto,
@@ -77,6 +80,7 @@ export class ProductController {
 		});
 	}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('/review')
 	@UseGuards(AdminGuard)
 	review(
@@ -130,7 +134,7 @@ export class ProductController {
 		@Query()
 		query: GetApprovedStoreProductsDto,
 	) {
-		return this.getApprovedStoreProducts(query);
+		return this.productService.getApprovedStoreProducts(query);
 	}
 
 	@Get('/store')

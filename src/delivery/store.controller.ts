@@ -3,6 +3,8 @@ import {
 	Controller,
 	FileTypeValidator,
 	Get,
+	HttpCode,
+	HttpStatus,
 	MaxFileSizeValidator,
 	ParseFilePipe,
 	Patch,
@@ -23,6 +25,7 @@ import { PaginatedDto } from './dtos';
 export class StoreController {
 	constructor(private readonly storeService: StoreService) {}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('/')
 	@UseGuards(AuthGuard(['USER']))
 	@UseInterceptors(
@@ -66,6 +69,7 @@ export class StoreController {
 		});
 	}
 
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@Patch('/')
 	@UseGuards(AuthGuard(['USER']))
 	@UseInterceptors(
