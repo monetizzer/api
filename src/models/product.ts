@@ -3,6 +3,7 @@ import { MediaTypeEnum } from 'src/types/enums/media-type';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { ProductTypeEnum } from 'src/types/enums/product-type';
 import { Paginated, PaginatedItems } from 'src/types/paginated-items';
+import { OrderBy } from 'src/types/repository';
 
 interface ProductHistoryItem {
 	timestamp: Date;
@@ -68,6 +69,7 @@ export interface GetManyInput {
 	status?: Array<ProductStatusEnum>;
 	limit?: number;
 	offset?: number;
+	orderBy?: OrderBy<ProductEntity>;
 }
 
 export interface ProductRepository {
@@ -104,6 +106,8 @@ export interface CreateProductInput {
 export interface CreateProductOutput {
 	productId: string;
 }
+
+export type GetNewInput = Paginated;
 
 export interface MarkAsReadyInput {
 	accountId: string;
@@ -151,6 +155,8 @@ export interface ProductUseCase {
 	create: (i: CreateProductInput) => Promise<CreateProductOutput>;
 
 	markAsReady: (i: MarkAsReadyInput) => Promise<void>;
+
+	getNew: (i: GetNewInput) => Promise<PaginatedItems<ProductEntity>>;
 
 	getToReview: (i: Paginated) => Promise<PaginatedItems<ProductEntity>>;
 
