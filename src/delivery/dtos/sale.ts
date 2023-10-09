@@ -2,6 +2,7 @@ import {
 	IsArray,
 	IsDateString,
 	IsEnum,
+	IsIn,
 	IsInt,
 	IsOptional,
 	IsString,
@@ -76,6 +77,12 @@ export class StoreSalesDto extends PaginatedDto {
 
 	@IsOptional()
 	@IsString()
-	@IsEnum(SalesStatusEnum)
+	@IsIn([
+		SalesStatusEnum.PAID,
+		SalesStatusEnum.DELIVERED,
+		SalesStatusEnum.CONFIRMED_DELIVERY,
+		SalesStatusEnum.IN_DISPUTE,
+		SalesStatusEnum.REFUNDED,
+	])
 	status?: SalesStatusEnum;
 }
