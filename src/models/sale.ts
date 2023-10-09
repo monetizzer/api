@@ -58,6 +58,7 @@ export interface UpdateStatusInput {
 export interface GetManyInput {
 	clientId?: string;
 	storeId?: string;
+	productId?: string;
 	status?: Array<SalesStatusEnum>;
 	limit?: number;
 	offset?: number;
@@ -136,6 +137,13 @@ export interface ClientSalesInput extends Paginated {
 	status?: SalesStatusEnum;
 }
 
+export interface StoreSalesInput extends Paginated {
+	accountId: string;
+	clientId?: string;
+	productId?: string;
+	status?: SalesStatusEnum;
+}
+
 export interface SaleUseCase {
 	processPixWebhook: (i: ProcessPixWebhookInput) => Promise<void>;
 
@@ -147,4 +155,6 @@ export interface SaleUseCase {
 	updateExpired: () => Promise<void>;
 
 	clientSales: (i: ClientSalesInput) => Promise<PaginatedItems<SaleEntity>>;
+
+	storeSales: (i: StoreSalesInput) => Promise<PaginatedItems<SaleEntity>>;
 }
