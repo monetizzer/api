@@ -12,6 +12,7 @@ import {
 	AcceptTermsDto,
 	CreateFromDiscordOauthDto,
 	CreateFromMagicLinkDto,
+	SendMagicLinkDiscordDto,
 	SendMagicLinkDto,
 } from './dtos/auth';
 import { AuthGuard } from './guards/auth.guard';
@@ -37,6 +38,15 @@ export class AuthController {
 		body: SendMagicLinkDto,
 	) {
 		return this.accountService.sendMagicLink(body);
+	}
+
+	@Post('/auth/magic-link/gen-discord')
+	@UseGuards(AuthGuard(['BOT']))
+	sendMagicLinkDiscord(
+		@Body()
+		body: SendMagicLinkDiscordDto,
+	) {
+		return this.accountService.sendMagicLinkDiscord(body);
 	}
 
 	@Post('/auth/magic-link')
