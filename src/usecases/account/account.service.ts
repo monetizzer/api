@@ -158,11 +158,14 @@ export class AccountService implements AccountUseCase {
 			});
 		}
 
-		const [store, document] = await Promise.all([
+		const [store, document, { refreshToken }] = await Promise.all([
 			this.storeRepository.getByAccountId({
 				accountId: account.accountId,
 			}),
 			this.documentRepository.getByAccountId({
+				accountId: account.accountId,
+			}),
+			this.refreshTokenRepository.create({
 				accountId: account.accountId,
 			}),
 		]);
@@ -177,6 +180,7 @@ export class AccountService implements AccountUseCase {
 		return {
 			accessToken,
 			expiresAt,
+			refreshToken,
 		};
 	}
 
@@ -235,7 +239,7 @@ export class AccountService implements AccountUseCase {
 			throw new NotFoundException('Invalid code');
 		}
 
-		const [user, store, document] = await Promise.all([
+		const [user, store, document, { refreshToken }] = await Promise.all([
 			this.accountRepository.getByAccountId({
 				accountId,
 			}),
@@ -243,6 +247,9 @@ export class AccountService implements AccountUseCase {
 				accountId,
 			}),
 			this.documentRepository.getByAccountId({
+				accountId,
+			}),
+			this.refreshTokenRepository.create({
 				accountId,
 			}),
 		]);
@@ -259,6 +266,7 @@ export class AccountService implements AccountUseCase {
 		});
 
 		return {
+			refreshToken,
 			accessToken,
 			expiresAt,
 		};

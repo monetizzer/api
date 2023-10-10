@@ -127,9 +127,9 @@ export interface AccountRepository {
  */
 
 export interface CompleteAuthOutput {
+	refreshToken: string;
 	accessToken: string;
 	expiresAt: string;
-	// refreshToken: string;
 }
 
 export interface AuthOutput {
