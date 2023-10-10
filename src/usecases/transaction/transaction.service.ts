@@ -83,7 +83,60 @@ export class TransactionService implements TransactionUseCase {
 		};
 	}
 
-	requestWithdraw: (i: RequestWithdrawInput) => Promise<void>;
+	async requestWithdraw({
+		accountId,
+		bankAccount,
+		amount,
+	}: RequestWithdrawInput): Promise<void> {
+		const [completedTransactions, processingTransactions] = await Promise.all([
+			this.transactionRepository.getMany({
+				accountId,
+				status: [TransactionStatusEnum.COMPLETED],
+			}),
+			this.transactionRepository.getMany({
+				accountId,
+				status: [TransactionStatusEnum.PROCESSING],
+				type: TransactionTypeEnum.WITHDRAW,
+			}),
+		]);
+
+		const transactions = [
+			...completedTransactions,
+			...processingTransactions,
+		].sort((a, b) => (a.createdAt.getTime() > b.createdAt.getTime() ? 1 : -1));
+
+		const balance = transactions.reduce((acc, cur) => {
+			if (cur.type === TransactionTypeEnum.INCOME) {
+				return acc + cur.amount;
+			}
+
+			if (cur.type === TransactionTypeEnum.WITHDRAW) {
+				return acc - cur.amount;
+			}
+
+			return acc;
+		}, 0);
+
+		if (amount > balance) {
+			throw new ForbiddenException('Unable to withdraw');
+		}
+
+		await Promise.all([
+			this.transactionRepository.createWithdraw({
+				accountId,
+				amount,
+				bankAccount,
+			}),
+			this.notificationService.sendInternalNotification({
+				templateId: 'NEW_WITHDRAW_REQUESTED',
+				data: {
+					accountId,
+					amount: this.utilsAdapter.formatMoney(amount),
+					bankAccount,
+				},
+			}),
+		]);
+	}
 
 	async withdraw({
 		transactionId,

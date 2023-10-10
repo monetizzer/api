@@ -8,6 +8,7 @@ import {
 	Param,
 	ParseFilePipe,
 	Patch,
+	Post,
 	UploadedFile,
 	UseGuards,
 	UseInterceptors,
@@ -15,7 +16,11 @@ import {
 import { TransactionService } from 'src/usecases/transaction/transaction.service';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
-import { GetPaymentProofImgDto, WithdrawDto } from './dtos/transaction';
+import {
+	GetPaymentProofImgDto,
+	RequestWithdrawDto,
+	WithdrawDto,
+} from './dtos/transaction';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserData } from './decorators/user-data';
 import { UserDataDto } from './dtos';
@@ -23,6 +28,21 @@ import { UserDataDto } from './dtos';
 @Controller('wallet')
 export class TransactionController {
 	constructor(private readonly transactionService: TransactionService) {}
+
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Post('/withdraw')
+	@UseGuards(AuthGuard(['USER']))
+	requestWithdraw(
+		@Body()
+		body: RequestWithdrawDto,
+		@UserData()
+		userData: UserDataDto,
+	) {
+		return this.transactionService.requestWithdraw({
+			...body,
+			accountId: userData.accountId,
+		});
+	}
 
 	@Get('/')
 	@UseGuards(AuthGuard(['USER']))
