@@ -254,6 +254,29 @@ export class NotificationService implements NotificationUseCase {
 				],
 			},
 		},
+
+		NEW_WITHDRAW_REQUESTED: {
+			discord: {
+				channelId: this.discordAdapter.channels.WALLET,
+				mentions: ['@everyone'],
+				title: 'Novo saque solicitado',
+				color: COLORS.primary,
+				fields: [
+					{
+						title: 'AccountId',
+						description: '{{accountId}}',
+					},
+					{
+						title: 'Amount',
+						description: '{{amount}}',
+					},
+					{
+						title: 'BankAccount',
+						description: '{{bankAccount}}',
+					},
+				],
+			},
+		},
 	};
 
 	constructor(

@@ -1,5 +1,14 @@
 import { MediaTypeEnum } from 'src/types/enums/media-type';
 import { IsFileName, IsID } from '../validators/internal';
+import { IsInt, IsString } from 'class-validator';
+
+export class RequestWithdrawDto {
+	@IsInt()
+	amount: number;
+
+	@IsString()
+	bankAccount: string;
+}
 
 export class WithdrawDto {
 	@IsID()

@@ -133,6 +133,7 @@ export class DiscordJSAdapter implements DiscordAdapter {
 	channels: Record<Channels, string> = {
 		DOCUMENTS: '1160958824988024912',
 		PRODUCTS: '1160958806705061899',
+		WALLET: '1161363805004103922',
 	};
 
 	private discordApi: (route: string, init: RequestInit) => Promise<Response>;

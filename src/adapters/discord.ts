@@ -77,7 +77,7 @@ export interface GetAuthenticatedUserDataOutput {
 	bannerUrl?: string;
 }
 
-export type Channels = 'DOCUMENTS' | 'PRODUCTS';
+export type Channels = 'DOCUMENTS' | 'PRODUCTS' | 'WALLET';
 
 export interface DiscordAdapter {
 	channels: Record<Channels, string>;
