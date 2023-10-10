@@ -222,6 +222,7 @@ export class AccountService implements AccountUseCase {
 		});
 
 		return {
+			accountId: account.accountId,
 			code,
 		};
 	}

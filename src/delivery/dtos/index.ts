@@ -1,4 +1,3 @@
-import { Optional } from '@nestjs/common';
 import { Transform } from 'class-transformer';
 import {
 	IsBoolean,
@@ -12,14 +11,14 @@ import { IsID } from '../validators/internal';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
 
 export class PaginatedDto {
-	@Optional()
+	@IsOptional()
 	@IsInt()
 	@Min(1)
 	@Max(100)
 	@Transform(({ value }) => parseFloat(value))
 	page?: number;
 
-	@Optional()
+	@IsOptional()
 	@IsInt()
 	@Min(1)
 	@Max(100)

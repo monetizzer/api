@@ -2,7 +2,6 @@ import { CanActivate, ExecutionContext, Type, mixin } from '@nestjs/common';
 import { verify } from 'jsonwebtoken';
 import { Request } from 'express';
 import { AuthType } from './types';
-import { ID_REGEX } from '../validators/internal';
 
 export const AuthGuard = (types: Array<AuthType>): Type<CanActivate> => {
 	class AuthGuardMixin implements CanActivate {
@@ -51,13 +50,7 @@ export const AuthGuard = (types: Array<AuthType>): Type<CanActivate> => {
 				return false;
 			}
 
-			const accountId = request.query.accountId;
-
-			if (typeof accountId !== 'string') {
-				return false;
-			}
-
-			return ID_REGEX.test(accountId);
+			return true;
 		}
 	}
 
