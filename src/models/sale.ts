@@ -109,6 +109,7 @@ export interface ProcessPixWebhookInput {
 
 export interface CheckoutInput {
 	clientId: string;
+	storeId?: string;
 	productId: string;
 	paymentMethod: PaymentMethodEnum;
 }
@@ -138,7 +139,7 @@ export interface ClientSalesInput extends Paginated {
 }
 
 export interface StoreSalesInput extends Paginated {
-	accountId: string;
+	storeId?: string;
 	clientId?: string;
 	productId?: string;
 	status?: SalesStatusEnum;

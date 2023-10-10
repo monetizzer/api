@@ -18,13 +18,13 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { DocumentService } from 'src/usecases/document/document.service';
-import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
 import { CreateCompleteDto, GetImageDto, ReviewDto } from './dtos/document';
 import { AdminGuard } from './guards/admin.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
-import { PaginatedDto } from './dtos';
+import { PaginatedDto, UserDataDto } from './dtos';
+import { UserData } from './decorators/user-data';
 
 @Controller('documents')
 export class DocumentController {
@@ -48,8 +48,8 @@ export class DocumentController {
 	createComplete(
 		@Body()
 		body: CreateCompleteDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 		@UploadedFiles(
 			new ParseFilePipe({
 				validators: [
@@ -75,7 +75,7 @@ export class DocumentController {
 		}
 
 		return this.documentService.createComplete({
-			accountId,
+			accountId: userData.accountId,
 			documentPicture: documentPicture.buffer,
 			selfieWithDocument: selfieWithDocument.buffer,
 			...body,
@@ -111,9 +111,12 @@ export class DocumentController {
 	review(
 		@Body()
 		body: ReviewDto,
-		@AccountId()
-		reviewerId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
-		return this.documentService.review({ reviewerId, ...body });
+		return this.documentService.review({
+			reviewerId: userData.accountId,
+			...body,
+		});
 	}
 }

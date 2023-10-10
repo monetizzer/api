@@ -55,6 +55,7 @@ export class SaleService implements SaleUseCase {
 
 	async checkout({
 		clientId,
+		storeId,
 		productId,
 		paymentMethod,
 	}: CheckoutInput): Promise<CheckoutOutput> {
@@ -64,6 +65,10 @@ export class SaleService implements SaleUseCase {
 
 		if (!product || product.status !== ProductStatusEnum.APPROVED) {
 			throw new NotFoundException('Product not found');
+		}
+
+		if (product.storeId === storeId) {
+			throw new ForbiddenException('Cannot purchase your own product');
 		}
 
 		if (isPreMadeProduct(product.type)) {
@@ -252,18 +257,14 @@ export class SaleService implements SaleUseCase {
 	}
 
 	async storeSales({
-		accountId,
+		storeId,
 		clientId,
 		productId,
 		status,
 		page,
 		limit: originalLimit,
 	}: StoreSalesInput): Promise<PaginatedItems<SaleEntity>> {
-		const store = await this.storeRepository.getByAccountId({
-			accountId,
-		});
-
-		if (!store) {
+		if (!storeId) {
 			throw new NotFoundException('Store not found');
 		}
 
@@ -273,7 +274,7 @@ export class SaleService implements SaleUseCase {
 		});
 
 		const sales = await this.saleRepository.getMany({
-			storeId: store.storeId,
+			storeId,
 			clientId,
 			productId,
 			status: status

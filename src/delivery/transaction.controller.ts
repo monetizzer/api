@@ -13,12 +13,12 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { TransactionService } from 'src/usecases/transaction/transaction.service';
-import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { GetPaymentProofImgDto, WithdrawDto } from './dtos/transaction';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { IsAdmin } from './decorators/is-admin';
+import { UserData } from './decorators/user-data';
+import { UserDataDto } from './dtos';
 
 @Controller('wallet')
 export class TransactionController {
@@ -27,11 +27,11 @@ export class TransactionController {
 	@Get('/')
 	@UseGuards(AuthGuard(['USER']))
 	wallet(
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.transactionService.wallet({
-			accountId,
+			accountId: userData.accountId,
 		});
 	}
 
@@ -42,8 +42,8 @@ export class TransactionController {
 	withdraw(
 		@Body()
 		body: WithdrawDto,
-		@AccountId()
-		reviewerId: string,
+		@UserData()
+		userData: UserDataDto,
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [new MaxFileSizeValidator({ maxSize: 10_000_000 })],
@@ -54,7 +54,7 @@ export class TransactionController {
 		return this.transactionService.withdraw({
 			...body,
 			image: file.buffer,
-			reviewerId,
+			reviewerId: userData.accountId,
 		});
 	}
 
@@ -63,20 +63,18 @@ export class TransactionController {
 	getPaymentProofImg(
 		@Param()
 		params: GetPaymentProofImgDto,
-		@AccountId()
-		accountId: string,
-		@IsAdmin()
-		isAdmin: boolean,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		const { transactionIdAndExt } = params;
 
 		const [transactionId, ext] = transactionIdAndExt.split('.');
 
 		return this.transactionService.getPaymentProofImg({
-			accountId,
+			accountId: userData.accountId,
 			transactionId,
 			ext,
-			isAdmin,
+			isAdmin: userData.isAdmin,
 		});
 	}
 }

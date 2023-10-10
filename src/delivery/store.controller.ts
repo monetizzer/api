@@ -15,11 +15,11 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { StoreService } from 'src/usecases/store/store.service';
-import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
 import { CreateDto, UpdateDto } from './dtos/store';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { PaginatedDto } from './dtos';
+import { PaginatedDto, UserDataDto } from './dtos';
+import { UserData } from './decorators/user-data';
 
 @Controller('stores')
 export class StoreController {
@@ -43,8 +43,8 @@ export class StoreController {
 	create(
 		@Body()
 		body: CreateDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 		@UploadedFiles(
 			new ParseFilePipe({
 				validators: [
@@ -62,10 +62,10 @@ export class StoreController {
 		const [avatar] = files.avatar || [];
 
 		return this.storeService.create({
-			accountId,
+			...body,
+			accountId: userData.accountId,
 			banner: banner.buffer,
 			avatar: avatar.buffer,
-			...body,
 		});
 	}
 
@@ -87,8 +87,8 @@ export class StoreController {
 	update(
 		@Body()
 		body: UpdateDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 		@UploadedFiles(
 			new ParseFilePipe({
 				validators: [
@@ -106,10 +106,11 @@ export class StoreController {
 		const [avatar] = files.avatar || [];
 
 		return this.storeService.update({
-			accountId,
+			...body,
+			accountId: userData.accountId,
+			storeId: userData.storeId,
 			banner: banner?.buffer,
 			avatar: avatar?.buffer,
-			...body,
 		});
 	}
 

@@ -13,13 +13,12 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { ContentService } from 'src/usecases/content/content.service';
-import { AccountId } from './decorators/account-id';
 import { AuthGuard } from './guards/auth.guard';
 import { CreateDto, GetByProductDto, GetDto } from './dtos/content';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { IsAdmin } from './decorators/is-admin';
 import { Response } from 'express';
-import { PaginatedDto } from './dtos';
+import { PaginatedDto, UserDataDto } from './dtos';
+import { UserData } from './decorators/user-data';
 
 @Controller('contents')
 export class ContentController {
@@ -31,8 +30,8 @@ export class ContentController {
 	create(
 		@Body()
 		body: CreateDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [new MaxFileSizeValidator({ maxSize: 100_000_000 })],
@@ -43,7 +42,7 @@ export class ContentController {
 		return this.contentService.create({
 			...body,
 			media: file.buffer,
-			accountId,
+			storeId: userData.storeId,
 		});
 	}
 
@@ -52,10 +51,8 @@ export class ContentController {
 	async get(
 		@Param()
 		params: GetDto,
-		@AccountId()
-		accountId: string,
-		@IsAdmin()
-		isAdmin: boolean,
+		@UserData()
+		userData: UserDataDto,
 		@Res()
 		res: Response,
 	) {
@@ -66,9 +63,10 @@ export class ContentController {
 		const file = await this.contentService.get({
 			productId,
 			contentId,
-			accountId,
-			isAdmin,
 			ext,
+			accountId: userData.accountId,
+			storeId: userData.storeId,
+			isAdmin: userData.isAdmin,
 		});
 
 		file.pipe(res);

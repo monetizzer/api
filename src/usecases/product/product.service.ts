@@ -60,14 +60,11 @@ export class ProductService implements ProductUseCase {
 
 	async create({
 		storeId,
-		accountId,
 		previewImages,
 		type,
 		...i
 	}: CreateProductInput): Promise<CreateProductOutput> {
-		const store = await this.storeRepository.getByStoreId({ storeId });
-
-		if (!store || store.accountId !== accountId) {
+		if (!storeId) {
 			throw new ForbiddenException('Cannot create products for this store');
 		}
 
@@ -98,18 +95,14 @@ export class ProductService implements ProductUseCase {
 		};
 	}
 
-	async markAsReady({ accountId, productId }: MarkAsReadyInput): Promise<void> {
+	async markAsReady({ storeId, productId }: MarkAsReadyInput): Promise<void> {
 		const product = await this.productRepository.getByProductId({ productId });
 
 		if (!product) {
 			throw new NotFoundException('Product not found');
 		}
 
-		const store = await this.storeRepository.getByStoreId({
-			storeId: product.storeId,
-		});
-
-		if (!store || store.accountId !== accountId) {
+		if (!storeId || product.storeId !== storeId) {
 			throw new ForbiddenException('Cannot edit this product');
 		}
 
@@ -326,27 +319,23 @@ export class ProductService implements ProductUseCase {
 	}
 
 	async getStoreProducts({
-		accountId,
+		storeId,
 		status,
 		type,
 		page,
 		limit: originalLimit,
 	}: GetStoreProductsInput): Promise<PaginatedItems<ProductEntity>> {
+		if (!storeId) {
+			throw new ForbiddenException('Unable to access products');
+		}
+
 		const { offset, limit, paging } = this.utilsAdapter.pagination({
 			page,
 			limit: originalLimit,
 		});
 
-		const store = await this.storeRepository.getByAccountId({
-			accountId,
-		});
-
-		if (!store) {
-			throw new ForbiddenException('Unable to access products');
-		}
-
 		const products = await this.productRepository.getMany({
-			storeId: store.storeId,
+			storeId,
 			type,
 			status: status ? [status] : undefined,
 			limit,
@@ -360,7 +349,7 @@ export class ProductService implements ProductUseCase {
 	}
 
 	async getProduct({
-		accountId,
+		storeId,
 		productId,
 	}: GetProductInput): Promise<ProductEntity> {
 		const product = await this.productRepository.getByProductId({ productId });
@@ -369,12 +358,11 @@ export class ProductService implements ProductUseCase {
 			throw new NotFoundException('Product not found');
 		}
 
-		if (product.status !== ProductStatusEnum.APPROVED) {
-			const store = await this.storeRepository.getByAccountId({ accountId });
-
-			if (store?.accountId !== accountId) {
-				throw new NotFoundException('Product not found');
-			}
+		if (
+			product.status !== ProductStatusEnum.APPROVED &&
+			product.storeId !== storeId
+		) {
+			throw new NotFoundException('Product not found');
 		}
 
 		return product;

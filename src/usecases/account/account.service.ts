@@ -151,8 +151,19 @@ export class AccountService implements AccountUseCase {
 			});
 		}
 
+		const [store, document] = await Promise.all([
+			this.storeRepository.getByAccountId({
+				accountId: account.accountId,
+			}),
+			this.documentRepository.getByAccountId({
+				accountId: account.accountId,
+			}),
+		]);
+
 		const accessToken = this.tokenAdapter.gen({
 			accountId: account.accountId,
+			storeId: store?.storeId,
+			dvs: document?.status,
 			isAdmin: account.isAdmin,
 		});
 
@@ -198,9 +209,17 @@ export class AccountService implements AccountUseCase {
 			throw new NotFoundException('Invalid code');
 		}
 
-		const user = await this.accountRepository.getByAccountId({
-			accountId,
-		});
+		const [user, store, document] = await Promise.all([
+			this.accountRepository.getByAccountId({
+				accountId,
+			}),
+			this.storeRepository.getByAccountId({
+				accountId,
+			}),
+			this.documentRepository.getByAccountId({
+				accountId,
+			}),
+		]);
 
 		if (!user) {
 			throw new NotFoundException('User not found');
@@ -208,6 +227,8 @@ export class AccountService implements AccountUseCase {
 
 		const accessToken = this.tokenAdapter.gen({
 			accountId,
+			storeId: store?.storeId,
+			dvs: document?.status,
 			isAdmin: user.isAdmin,
 		});
 
