@@ -84,6 +84,10 @@ export interface GetByEmailInput {
 	email: string;
 }
 
+export interface GetByDiscordIdInput {
+	discordId: string;
+}
+
 export interface GetManyByDiscordInput {
 	discordId: string;
 	email?: string;
@@ -105,6 +109,10 @@ export interface AccountRepository {
 	getByUsername: (i: GetByUsernameInput) => Promise<AccountEntity | undefined>;
 
 	getByEmail: (i: GetByEmailInput) => Promise<AccountEntity | undefined>;
+
+	getByDiscordId: (
+		i: GetByDiscordIdInput,
+	) => Promise<AccountEntity | undefined>;
 
 	// Get by discord information (id or email)
 	getManyByDiscord: (i: GetManyByDiscordInput) => Promise<Array<AccountEntity>>;
@@ -130,6 +138,14 @@ export interface CreateFromDiscordInput {
 
 export interface SendMagicLinkInput {
 	email: string;
+}
+
+export interface SendMagicLinkDiscordInput {
+	discordId: string;
+}
+
+export interface SendMagicLinkDiscordOutput {
+	code: string;
 }
 
 export interface ExchangeMagicLinkCodeInput {
@@ -165,6 +181,10 @@ export interface AccountUseCase {
 	createFromDiscordOauth: (i: CreateFromDiscordInput) => Promise<AuthOutput>;
 
 	sendMagicLink: (i: SendMagicLinkInput) => Promise<void>;
+
+	sendMagicLinkDiscord: (
+		i: SendMagicLinkDiscordInput,
+	) => Promise<SendMagicLinkDiscordOutput>;
 
 	exchangeMagicLinkCode: (i: ExchangeMagicLinkCodeInput) => Promise<AuthOutput>;
 

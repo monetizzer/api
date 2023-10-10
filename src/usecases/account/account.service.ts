@@ -17,6 +17,8 @@ import {
 	ExchangeMagicLinkCodeInput,
 	IamInput,
 	IamOutput,
+	SendMagicLinkDiscordInput,
+	SendMagicLinkDiscordOutput,
 	SendMagicLinkInput,
 } from 'src/models/account';
 import { DiscordJSAdapter } from 'src/adapters/implementations/discordjs.service';
@@ -194,6 +196,24 @@ export class AccountService implements AccountUseCase {
 				code,
 			},
 		});
+	}
+
+	async sendMagicLinkDiscord({
+		discordId,
+	}: SendMagicLinkDiscordInput): Promise<SendMagicLinkDiscordOutput> {
+		const account = await this.accountRepository.getByDiscordId({ discordId });
+
+		if (!account) {
+			throw new NotFoundException('Account not found');
+		}
+
+		const { code } = await this.magicLinkCodeRepository.upsert({
+			accountId: account.accountId,
+		});
+
+		return {
+			code,
+		};
 	}
 
 	async exchangeMagicLinkCode({

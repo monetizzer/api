@@ -11,6 +11,7 @@ import {
 	UpdateTermsInput,
 	UpdateUsernameInput,
 	GetByUsernameInput,
+	GetByDiscordIdInput,
 } from 'src/models/account';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { Filter } from 'mongodb';
@@ -115,6 +116,23 @@ export class AccountRepositoryService implements AccountRepository {
 	}: GetByEmailInput): Promise<undefined | AccountEntity> {
 		const account = await this.accountRepository.findOne({
 			email,
+		});
+
+		if (!account) return;
+
+		const { _id, ...accountData } = account;
+
+		return {
+			...accountData,
+			accountId: _id,
+		};
+	}
+
+	async getByDiscordId({
+		discordId,
+	}: GetByDiscordIdInput): Promise<undefined | AccountEntity> {
+		const account = await this.accountRepository.findOne({
+			discordId,
 		});
 
 		if (!account) return;
