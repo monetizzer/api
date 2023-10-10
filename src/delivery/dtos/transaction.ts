@@ -3,9 +3,6 @@ import { IsFileName, IsID } from '../validators/internal';
 import { IsInt, IsString } from 'class-validator';
 
 export class RequestWithdrawDto {
-	@IsID()
-	transactionId: string;
-
 	@IsInt()
 	amount: number;
 
