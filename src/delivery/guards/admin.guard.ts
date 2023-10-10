@@ -1,9 +1,4 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	Injectable,
-	UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { verify } from 'jsonwebtoken';
 import { TokenPayload } from 'src/adapters/token';
 
@@ -12,10 +7,10 @@ export class AdminGuard implements CanActivate {
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const request = context.switchToHttp().getRequest();
 
-		const token = request.cookies?.['access-token'];
+		const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
-		if (!token) {
-			throw new UnauthorizedException();
+		if (type !== 'Bearer' || !token) {
+			return false;
 		}
 
 		try {
@@ -23,7 +18,7 @@ export class AdminGuard implements CanActivate {
 
 			return Boolean(payload.admin);
 		} catch {
-			throw new UnauthorizedException();
+			return false;
 		}
 	}
 }
