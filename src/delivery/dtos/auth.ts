@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsSemVer, IsString } from 'class-validator';
+import {
+	IsEmail,
+	IsNotEmpty,
+	IsOptional,
+	IsSemVer,
+	IsString,
+} from 'class-validator';
 import { IsDiscordCode } from '../validators/discord';
 import { IsID, IsSecretCode } from '../validators/internal';
 
@@ -37,4 +43,16 @@ export class AcceptTermsDto {
 export class RefreshTokenDto {
 	@IsSecretCode()
 	refreshToken: string;
+}
+
+export class IamUserDataDto {
+	@IsOptional()
+	@IsID()
+	accountId?: string;
+}
+
+export class IamDto {
+	@IsOptional()
+	@IsString()
+	discordId?: string;
 }

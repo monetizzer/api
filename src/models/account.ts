@@ -159,7 +159,8 @@ export interface ExchangeMagicLinkCodeInput {
 }
 
 export interface IamInput {
-	accountId: string;
+	accountId?: string;
+	discordId?: string;
 }
 
 export interface AcceptInput {
