@@ -126,10 +126,15 @@ export interface AccountRepository {
  *
  */
 
+export interface CompleteAuthOutput {
+	accessToken: string;
+	expiresAt: string;
+	// refreshToken: string;
+}
+
 export interface AuthOutput {
 	accessToken: string;
-	// refreshToken: string; We will not use this for now
-	// expiresAt: string;
+	expiresAt: string;
 }
 
 export interface CreateFromDiscordInput {
@@ -162,6 +167,10 @@ export interface AcceptInput {
 	semVer: string;
 }
 
+export interface RefreshTokenInput {
+	refreshToken: string;
+}
+
 export interface IamOutput {
 	accountId: string;
 	isAdmin: boolean;
@@ -178,7 +187,9 @@ export interface IamOutput {
 }
 
 export interface AccountUseCase {
-	createFromDiscordOauth: (i: CreateFromDiscordInput) => Promise<AuthOutput>;
+	createFromDiscordOauth: (
+		i: CreateFromDiscordInput,
+	) => Promise<CompleteAuthOutput>;
 
 	sendMagicLink: (i: SendMagicLinkInput) => Promise<void>;
 
@@ -186,9 +197,13 @@ export interface AccountUseCase {
 		i: SendMagicLinkDiscordInput,
 	) => Promise<SendMagicLinkDiscordOutput>;
 
-	exchangeMagicLinkCode: (i: ExchangeMagicLinkCodeInput) => Promise<AuthOutput>;
+	exchangeMagicLinkCode: (
+		i: ExchangeMagicLinkCodeInput,
+	) => Promise<CompleteAuthOutput>;
 
 	acceptTerms: (i: AcceptInput) => Promise<void>;
+
+	refreshToken: (i: RefreshTokenInput) => Promise<AuthOutput>;
 
 	iam: (i: IamInput) => Promise<IamOutput>;
 }

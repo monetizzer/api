@@ -12,6 +12,7 @@ import {
 	AcceptTermsDto,
 	CreateFromDiscordOauthDto,
 	CreateFromMagicLinkDto,
+	RefreshTokenDto,
 	SendMagicLinkDiscordDto,
 	SendMagicLinkDto,
 } from './dtos/auth';
@@ -70,6 +71,15 @@ export class AuthController {
 			...body,
 			accountId: userData.accountId,
 		});
+	}
+
+	@Post('/auth/refresh-token')
+	@UseGuards(AuthGuard(['USER']))
+	refreshToken(
+		@Body()
+		body: RefreshTokenDto,
+	) {
+		return this.accountService.refreshToken(body);
 	}
 
 	@Get('/accounts/iam')
