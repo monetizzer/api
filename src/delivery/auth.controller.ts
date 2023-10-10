@@ -36,7 +36,7 @@ export class AuthController {
 	}
 
 	@HttpCode(HttpStatus.NO_CONTENT)
-	@Post('/auth/magic-link/gen-email')
+	@Post('/auth/magic-link/email')
 	sendMagicLink(
 		@Body()
 		body: SendMagicLinkDto,
@@ -44,7 +44,7 @@ export class AuthController {
 		return this.accountService.sendMagicLink(body);
 	}
 
-	@Post('/auth/magic-link/gen-discord')
+	@Post('/auth/magic-link/discord')
 	@UseGuards(AuthGuard(['BOT']))
 	sendMagicLinkDiscord(
 		@Body()
@@ -77,7 +77,6 @@ export class AuthController {
 	}
 
 	@Post('/auth/refresh-token')
-	@UseGuards(AuthGuard(['USER']))
 	refreshToken(
 		@Body()
 		body: RefreshTokenDto,

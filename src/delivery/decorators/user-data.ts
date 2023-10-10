@@ -10,7 +10,7 @@ export const UserData = createParamDecorator(
 
 		const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
-		if (type === 'USER' && token) {
+		if (type === 'Bearer' && token) {
 			const payload = decode(token) as TokenPayload;
 
 			if (!payload) return {};
@@ -23,7 +23,7 @@ export const UserData = createParamDecorator(
 			};
 		}
 
-		if (type === 'BOT' && typeof request.headers['account-id'] === 'string') {
+		if (type === 'Bot' && typeof request.headers['account-id'] === 'string') {
 			return {
 				accountId: request.headers['account-id'],
 				storeId: request.headers['store-id'],

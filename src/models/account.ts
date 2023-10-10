@@ -150,6 +150,7 @@ export interface SendMagicLinkDiscordInput {
 }
 
 export interface SendMagicLinkDiscordOutput {
+	accountId: string;
 	code: string;
 }
 

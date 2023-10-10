@@ -26,9 +26,11 @@ export class MagicLinkCodeRepositoryService implements MagicLinkCodeRepository {
 				_id: accountId,
 			},
 			{
-				_id: accountId,
-				code: this.secretAdapter.gen(),
-				createdAt: new Date(),
+				$set: {
+					_id: accountId,
+					code: this.secretAdapter.gen(),
+					createdAt: new Date(),
+				},
 			},
 			{
 				upsert: true,
