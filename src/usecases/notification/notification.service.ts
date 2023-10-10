@@ -25,10 +25,11 @@ interface BuildMessageInput {
 
 // Temporary
 const COLORS = {
-	primary: '',
-	secondary: '',
-	success: '',
-	error: '',
+	primary: '#803b7e',
+	secondary: '#ae4c7c',
+	tertiary: '#f9daf4',
+	success: '#28a745',
+	error: '#c40233',
 };
 
 @Injectable()
