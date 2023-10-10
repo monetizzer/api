@@ -94,7 +94,6 @@ export interface ProductRepository {
  */
 
 export interface CreateProductInput {
-	accountId: string;
 	storeId: string;
 	type: ProductTypeEnum;
 	name: string;
@@ -113,7 +112,7 @@ export type GetNewInput = Paginated;
 export type GetBestSellersInput = Paginated;
 
 export interface MarkAsReadyInput {
-	accountId: string;
+	storeId?: string;
 	productId: string;
 }
 
@@ -144,13 +143,13 @@ export interface GetApprovedStoreProductsInput extends Paginated {
 }
 
 export interface GetStoreProductsInput extends Paginated {
-	accountId: string;
+	storeId?: string;
 	status?: ProductStatusEnum;
 	type?: ProductTypeEnum;
 }
 
 export interface GetProductInput {
-	accountId?: string;
+	storeId?: string;
 	productId: string;
 }
 

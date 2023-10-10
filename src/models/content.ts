@@ -51,7 +51,7 @@ export interface ContentRepository {
  */
 
 export interface CreateContentInput {
-	accountId: string;
+	storeId?: string;
 	productId: string;
 	type: MediaTypeEnum;
 	media: Buffer;
@@ -65,6 +65,7 @@ export interface CreateContentOutput {
 
 export interface GetInput {
 	accountId: string;
+	storeId?: string;
 	isAdmin: boolean;
 	productId: string;
 	contentId: string;

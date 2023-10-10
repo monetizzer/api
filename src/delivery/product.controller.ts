@@ -18,7 +18,6 @@ import {
 } from '@nestjs/common';
 import { ProductService } from 'src/usecases/product/product.service';
 import { AuthGuard } from './guards/auth.guard';
-import { AccountId } from './decorators/account-id';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import {
 	CreateDto,
@@ -30,7 +29,8 @@ import {
 	GetProductDto,
 } from './dtos/product';
 import { AdminGuard } from './guards/admin.guard';
-import { PaginatedDto } from './dtos';
+import { PaginatedDto, UserDataDto } from './dtos';
+import { UserData } from './decorators/user-data';
 
 @Controller('products')
 export class ProductController {
@@ -42,8 +42,8 @@ export class ProductController {
 	create(
 		@Body()
 		body: CreateDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 		@UploadedFiles(
 			new ParseFilePipe({
 				validators: [
@@ -60,7 +60,7 @@ export class ProductController {
 
 		return this.productService.create({
 			...body,
-			accountId,
+			storeId: userData.storeId,
 			previewImages: files.map((f) => f.buffer),
 		});
 	}
@@ -71,12 +71,12 @@ export class ProductController {
 	markAsReady(
 		@Body()
 		body: MarkAsReadyDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		UserData: UserDataDto,
 	) {
 		return this.productService.markAsReady({
 			...body,
-			accountId,
+			storeId: UserData.storeId,
 		});
 	}
 
@@ -86,12 +86,12 @@ export class ProductController {
 	review(
 		@Body()
 		body: ReviewDto,
-		@AccountId()
-		reviewerId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.productService.review({
 			...body,
-			reviewerId,
+			reviewerId: userData.accountId,
 		});
 	}
 
@@ -141,12 +141,12 @@ export class ProductController {
 	getStoreProducts(
 		@Query()
 		query: GetStoreProductsDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.productService.getStoreProducts({
 			...query,
-			accountId,
+			storeId: userData.storeId,
 		});
 	}
 
@@ -154,12 +154,12 @@ export class ProductController {
 	getProduct(
 		@Param()
 		params: GetProductDto,
-		@AccountId()
-		accountId?: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.productService.getProduct({
 			...params,
-			accountId,
+			storeId: userData.storeId,
 		});
 	}
 }

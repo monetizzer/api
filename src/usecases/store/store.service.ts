@@ -108,18 +108,13 @@ export class StoreService implements StoreUseCase {
 
 	async update({
 		accountId,
+		storeId,
 		username,
 		avatar,
 		banner,
 		...i
 	}: UpdateStoreInput): Promise<void> {
-		const userStore = await this.storeRepository.getByAccountId({ accountId });
-
-		if (
-			!userStore ||
-			userStore.accountId !== accountId ||
-			userStore.storeId !== i.storeId
-		) {
+		if (!storeId) {
 			throw new BadRequestException('Invalid store');
 		}
 
@@ -140,6 +135,7 @@ export class StoreService implements StoreUseCase {
 			}),
 			this.storeRepository.update({
 				...i,
+				storeId,
 				username,
 				bannerUrl: banner
 					? `${process.env['PUBLIC_FILES_URL']}/stores/banners/${accountId}.jpeg`

@@ -27,6 +27,7 @@ import { PaginatedItems } from 'src/types/paginated-items';
 
 interface ValidateCanGetContentInput {
 	accountId: string;
+	storeId?: string;
 	isAdmin: boolean;
 	product: ProductEntity;
 }
@@ -48,17 +49,13 @@ export class ContentService implements ContentUseCase {
 	) {}
 
 	async create({
-		accountId,
+		storeId,
 		productId,
 		type,
 		media,
 		ext,
 	}: CreateContentInput): Promise<CreateContentOutput> {
-		const store = await this.storeRepository.getByAccountId({
-			accountId,
-		});
-
-		if (!store) {
+		if (!storeId) {
 			throw new ForbiddenException('Cannot create a content without a store');
 		}
 
@@ -66,7 +63,7 @@ export class ContentService implements ContentUseCase {
 			productId,
 		});
 
-		if (!product) {
+		if (!product || product.storeId !== storeId) {
 			throw new NotFoundException('Product not found');
 		}
 
@@ -80,13 +77,13 @@ export class ContentService implements ContentUseCase {
 
 		const path = await this.fileAdapter.save({
 			folder: process.env['PRIVATE_BUCKET_NAME'],
-			filePath: `/contents/${product.storeId}/${product.productId}/${contentId}.${ext}`,
+			filePath: `/contents/${storeId}/${product.productId}/${contentId}.${ext}`,
 			file: media,
 		});
 
 		await this.contentRepository.create({
 			contentId,
-			storeId: product.storeId,
+			storeId,
 			productId,
 			type,
 			mediaUrl: `${process.env['API_URL']}${path}`,
@@ -100,6 +97,7 @@ export class ContentService implements ContentUseCase {
 
 	async get({
 		accountId,
+		storeId,
 		isAdmin,
 		productId,
 		contentId,
@@ -115,6 +113,7 @@ export class ContentService implements ContentUseCase {
 
 		await this.validateCanGetContent({
 			accountId,
+			storeId,
 			isAdmin,
 			product,
 		});
@@ -134,6 +133,9 @@ export class ContentService implements ContentUseCase {
 		page,
 		limit: originalLimit,
 	}: GetByProductInput): Promise<PaginatedItems<ContentEntity>> {
+		// This route doesn't have any validation because the `get`
+		// route already validates if the user can get the images
+
 		const { offset, limit, paging } = this.utilsAdapter.pagination({
 			page,
 			limit: originalLimit,
@@ -156,13 +158,12 @@ export class ContentService implements ContentUseCase {
 	async validateCanGetContent({
 		isAdmin,
 		accountId,
+		storeId,
 		product,
 	}: ValidateCanGetContentInput) {
 		if (isAdmin) return;
 
-		const store = await this.storeRepository.getByAccountId({ accountId });
-
-		if (store?.storeId === product.storeId) return;
+		if (storeId === product.storeId) return;
 
 		if (isPreMadeProduct(product.type)) {
 			const hasBoughtPreMadeProduct =

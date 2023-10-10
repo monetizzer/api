@@ -14,9 +14,6 @@ import { PaginatedDto } from '.';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 
 export class CreateDto {
-	@IsID()
-	storeId: string;
-
 	@IsEnum(ProductTypeEnum)
 	type: ProductTypeEnum;
 

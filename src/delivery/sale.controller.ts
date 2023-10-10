@@ -10,7 +10,6 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { SaleService } from 'src/usecases/sale/sale.service';
-import { AccountId } from './decorators/account-id';
 import {
 	CheckoutDto,
 	ClientSalesDto,
@@ -18,8 +17,9 @@ import {
 	ProcessPixWebhookDto,
 	StoreSalesDto,
 } from './dtos/sale';
-import { IsAdmin } from './decorators/is-admin';
 import { AuthGuard } from './guards/auth.guard';
+import { UserData } from './decorators/user-data';
+import { UserDataDto } from './dtos';
 
 @Controller('sales')
 export class SaleController {
@@ -45,29 +45,28 @@ export class SaleController {
 	checkout(
 		@Body()
 		body: CheckoutDto,
-		@AccountId()
-		clientId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.saleService.checkout({
 			...body,
-			clientId,
+			clientId: userData.accountId,
+			storeId: userData.storeId,
 		});
 	}
 
 	@Get('/:saleId')
 	@UseGuards(AuthGuard(['USER', 'BOT']))
 	get(
-		@IsAdmin()
-		isAdmin: boolean,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 		@Param()
 		params: GetDto,
 	) {
 		return this.saleService.get({
 			...params,
-			isAdmin,
-			accountId,
+			isAdmin: userData.isAdmin,
+			accountId: userData.accountId,
 		});
 	}
 
@@ -76,12 +75,12 @@ export class SaleController {
 	clientSales(
 		@Query()
 		query: ClientSalesDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.saleService.clientSales({
 			...query,
-			accountId,
+			accountId: userData.accountId,
 		});
 	}
 
@@ -90,12 +89,12 @@ export class SaleController {
 	storeSales(
 		@Query()
 		query: StoreSalesDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.saleService.storeSales({
 			...query,
-			accountId,
+			storeId: userData.storeId,
 		});
 	}
 }

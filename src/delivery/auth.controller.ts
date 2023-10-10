@@ -15,7 +15,8 @@ import {
 	SendMagicLinkDto,
 } from './dtos/auth';
 import { AuthGuard } from './guards/auth.guard';
-import { AccountId } from './decorators/account-id';
+import { UserData } from './decorators/user-data';
+import { UserDataDto } from './dtos';
 
 @Controller('')
 export class AuthController {
@@ -52,23 +53,23 @@ export class AuthController {
 	acceptTerms(
 		@Body()
 		body: AcceptTermsDto,
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.accountService.acceptTerms({
 			...body,
-			accountId,
+			accountId: userData.accountId,
 		});
 	}
 
 	@Get('/accounts/iam')
 	@UseGuards(AuthGuard(['USER', 'BOT']))
 	iam(
-		@AccountId()
-		accountId: string,
+		@UserData()
+		userData: UserDataDto,
 	) {
 		return this.accountService.iam({
-			accountId,
+			accountId: userData.accountId,
 		});
 	}
 }

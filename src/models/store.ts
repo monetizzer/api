@@ -97,7 +97,7 @@ export interface CreateStoreInput {
 }
 
 export interface UpdateStoreInput {
-	storeId: string;
+	storeId?: string;
 	accountId: string;
 	username?: string;
 	name?: string;
