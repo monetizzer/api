@@ -13,10 +13,12 @@ import {
 	AccountEntity,
 	AccountUseCase,
 	AuthOutput,
+	CompleteAuthOutput,
 	CreateFromDiscordInput,
 	ExchangeMagicLinkCodeInput,
 	IamInput,
 	IamOutput,
+	RefreshTokenInput,
 	SendMagicLinkDiscordInput,
 	SendMagicLinkDiscordOutput,
 	SendMagicLinkInput,
@@ -31,6 +33,7 @@ import { PlatformEnum } from 'src/types/enums/platform';
 import { DocumentRepositoryService } from 'src/repositories/mongodb/document/document-repository.service';
 import { DocumentStatusEnum } from 'src/types/enums/document-status';
 import { NotificationService } from '../notification/notification.service';
+import { RefreshTokenRepositoryService } from 'src/repositories/mongodb/refresh-token/refresh-token-repository.service';
 
 @Injectable()
 export class AccountService implements AccountUseCase {
@@ -53,6 +56,8 @@ export class AccountService implements AccountUseCase {
 		private readonly storeRepository: StoreRepositoryService,
 		@Inject(DocumentRepositoryService)
 		private readonly documentRepository: DocumentRepositoryService,
+		@Inject(RefreshTokenRepositoryService)
+		private readonly refreshTokenRepository: RefreshTokenRepositoryService,
 		@Inject(NotificationService)
 		private readonly notificationUsecase: NotificationService,
 		private readonly discordAdapter: DiscordJSAdapter,
@@ -62,7 +67,7 @@ export class AccountService implements AccountUseCase {
 
 	async createFromDiscordOauth({
 		code,
-	}: CreateFromDiscordInput): Promise<AuthOutput> {
+	}: CreateFromDiscordInput): Promise<CompleteAuthOutput> {
 		const { scopes, ...discordTokens } = await this.discordAdapter
 			.exchangeCode(code)
 			.catch(() => {
@@ -162,7 +167,7 @@ export class AccountService implements AccountUseCase {
 			}),
 		]);
 
-		const accessToken = this.tokenAdapter.gen({
+		const { accessToken, expiresAt } = this.tokenAdapter.gen({
 			accountId: account.accountId,
 			storeId: store?.storeId,
 			dvs: document?.status,
@@ -171,6 +176,7 @@ export class AccountService implements AccountUseCase {
 
 		return {
 			accessToken,
+			expiresAt,
 		};
 	}
 
@@ -219,7 +225,7 @@ export class AccountService implements AccountUseCase {
 	async exchangeMagicLinkCode({
 		accountId,
 		code,
-	}: ExchangeMagicLinkCodeInput): Promise<AuthOutput> {
+	}: ExchangeMagicLinkCodeInput): Promise<CompleteAuthOutput> {
 		const magicLinkCode = await this.magicLinkCodeRepository.get({
 			accountId,
 			code,
@@ -245,7 +251,7 @@ export class AccountService implements AccountUseCase {
 			throw new NotFoundException('User not found');
 		}
 
-		const accessToken = this.tokenAdapter.gen({
+		const { accessToken, expiresAt } = this.tokenAdapter.gen({
 			accountId,
 			storeId: store?.storeId,
 			dvs: document?.status,
@@ -254,6 +260,7 @@ export class AccountService implements AccountUseCase {
 
 		return {
 			accessToken,
+			expiresAt,
 		};
 	}
 
@@ -289,6 +296,44 @@ export class AccountService implements AccountUseCase {
 				semVer,
 			},
 		});
+	}
+
+	async refreshToken({ refreshToken }: RefreshTokenInput): Promise<AuthOutput> {
+		const refreshTokenData = await this.refreshTokenRepository.get({
+			refreshToken,
+		});
+
+		if (!refreshTokenData) {
+			throw new NotFoundException('Refresh token not found');
+		}
+
+		const [user, store, document] = await Promise.all([
+			this.accountRepository.getByAccountId({
+				accountId: refreshTokenData.accountId,
+			}),
+			this.storeRepository.getByAccountId({
+				accountId: refreshTokenData.accountId,
+			}),
+			this.documentRepository.getByAccountId({
+				accountId: refreshTokenData.accountId,
+			}),
+		]);
+
+		if (!user) {
+			throw new NotFoundException('User not found');
+		}
+
+		const { accessToken, expiresAt } = this.tokenAdapter.gen({
+			accountId: refreshTokenData.accountId,
+			storeId: store?.storeId,
+			dvs: document?.status,
+			isAdmin: user.isAdmin,
+		});
+
+		return {
+			accessToken,
+			expiresAt,
+		};
 	}
 
 	async iam(i: IamInput): Promise<IamOutput> {

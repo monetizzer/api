@@ -10,6 +10,7 @@ import { SemVerAdapter } from 'src/adapters/implementations/semver.service';
 import { StoreRepositoryModule } from 'src/repositories/mongodb/store/store-repository.module';
 import { DocumentRepositoryModule } from 'src/repositories/mongodb/document/document-repository.module';
 import { NotificationModule } from '../notification/notification.module';
+import { RefreshTokenRepositoryModule } from 'src/repositories/mongodb/refresh-token/refresh-token-repository.module';
 
 @Module({
 	controllers: [AuthController],
@@ -19,6 +20,7 @@ import { NotificationModule } from '../notification/notification.module';
 		TermsRepositoryModule,
 		StoreRepositoryModule,
 		DocumentRepositoryModule,
+		RefreshTokenRepositoryModule,
 		NotificationModule,
 	],
 	providers: [AccountService, DiscordJSAdapter, JWTAdapter, SemVerAdapter],

@@ -35,11 +35,11 @@ export function IsID(validationOptions: ValidationOptions = {}) {
 	};
 }
 
-export function IsMagicLinkCode(validationOptions: ValidationOptions = {}) {
+export function IsSecretCode(validationOptions: ValidationOptions = {}) {
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	return function (object: Object, propertyName: string) {
 		registerDecorator({
-			name: 'isMagicLinkCode',
+			name: 'isSecretCode',
 			target: object.constructor,
 			propertyName: propertyName,
 			constraints: [],

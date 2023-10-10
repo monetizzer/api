@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { GenInput, TokenAdapter } from '../token';
+import { GenInput, GenOutput, TokenAdapter } from '../token';
 import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class JWTAdapter implements TokenAdapter {
-	gen({ accountId, storeId, dvs, isAdmin }: GenInput): string {
-		return sign(
+	gen({ accountId, storeId, dvs, isAdmin }: GenInput): GenOutput {
+		const accessToken = sign(
 			{
 				sub: accountId,
 				storeId,
@@ -14,5 +14,10 @@ export class JWTAdapter implements TokenAdapter {
 			},
 			process.env['JWT_SECRET'],
 		);
+
+		return {
+			accessToken,
+			expiresAt: '',
+		};
 	}
 }

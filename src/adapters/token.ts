@@ -21,6 +21,11 @@ export interface GenInput {
 	isAdmin: boolean;
 }
 
+export interface GenOutput {
+	accessToken: string;
+	expiresAt: string; // ISO date
+}
+
 export interface TokenAdapter {
-	gen: (i: GenInput) => string;
+	gen: (i: GenInput) => GenOutput;
 }
