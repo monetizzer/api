@@ -344,16 +344,34 @@ export class AccountService implements AccountUseCase {
 		};
 	}
 
-	async iam(i: IamInput): Promise<IamOutput> {
-		const [account, store, document] = await Promise.all([
-			this.accountRepository.getByAccountId(i),
-			this.storeRepository.getByAccountId(i),
-			this.documentRepository.getByAccountId(i),
-		]);
+	async iam({ accountId, discordId }: IamInput): Promise<IamOutput> {
+		if ((accountId && discordId) || (!accountId && !discordId)) {
+			throw new BadRequestException(
+				'Only one of "accountId" or "discordId" must be present',
+			);
+		}
+
+		let account: AccountEntity;
+
+		if (accountId) {
+			account = await this.accountRepository.getByAccountId({ accountId });
+		}
+		if (discordId) {
+			account = await this.accountRepository.getByDiscordId({ discordId });
+		}
 
 		if (!account) {
 			throw new UnauthorizedException('User not found');
 		}
+
+		const [store, document] = await Promise.all([
+			this.storeRepository.getByAccountId({
+				accountId: account.accountId,
+			}),
+			this.documentRepository.getByAccountId({
+				accountId: account.accountId,
+			}),
+		]);
 
 		return {
 			accountId: account.accountId,

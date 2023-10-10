@@ -5,6 +5,7 @@ import {
 	HttpCode,
 	HttpStatus,
 	Post,
+	Query,
 	UseGuards,
 } from '@nestjs/common';
 import { AccountService } from 'src/usecases/account/account.service';
@@ -12,6 +13,8 @@ import {
 	AcceptTermsDto,
 	CreateFromDiscordOauthDto,
 	CreateFromMagicLinkDto,
+	IamDto,
+	IamUserDataDto,
 	RefreshTokenDto,
 	SendMagicLinkDiscordDto,
 	SendMagicLinkDto,
@@ -86,9 +89,12 @@ export class AuthController {
 	@UseGuards(AuthGuard(['USER', 'BOT']))
 	iam(
 		@UserData()
-		userData: UserDataDto,
+		userData: IamUserDataDto,
+		@Query()
+		query: IamDto,
 	) {
 		return this.accountService.iam({
+			discordId: query.discordId,
 			accountId: userData.accountId,
 		});
 	}
