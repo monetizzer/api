@@ -59,6 +59,7 @@ export class ProductService implements ProductUseCase {
 	) {}
 
 	async create({
+		authorId,
 		storeId,
 		previewImages,
 		type,
@@ -82,6 +83,7 @@ export class ProductService implements ProductUseCase {
 
 		const { productId } = await this.productRepository.create({
 			...i,
+			authorId,
 			storeId,
 			type,
 			previewImagesUrls: previewImagesUrls.map(

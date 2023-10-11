@@ -40,6 +40,7 @@ export interface ProductEntity {
  */
 
 export interface CreateInput {
+	authorId: string | 'SYSTEM';
 	storeId: string;
 	type: ProductTypeEnum;
 	name: string;
@@ -105,6 +106,7 @@ export interface ProductRepository {
  */
 
 export interface CreateProductInput {
+	authorId: string | 'SYSTEM';
 	storeId: string;
 	type: ProductTypeEnum;
 	name: string;

@@ -28,7 +28,7 @@ export class ProductRepositoryService implements ProductRepository {
 		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
-	async create(i: CreateInput): Promise<CreateOutput> {
+	async create({ authorId, ...i }: CreateInput): Promise<CreateOutput> {
 		const productId = this.idAdapter.gen();
 
 		await this.productRepository.insertOne({
@@ -39,7 +39,7 @@ export class ProductRepositoryService implements ProductRepository {
 				{
 					timestamp: new Date(),
 					status: ProductStatusEnum.IN_PREPARATION,
-					authorId: 'SYSTEM',
+					authorId,
 				},
 			],
 			createdAt: new Date(),
