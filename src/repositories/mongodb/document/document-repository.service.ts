@@ -99,7 +99,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 		accountId,
 		status,
 		message,
-		reviewerId,
+		authorId,
 	}: UpdateStatusInput): Promise<void> {
 		await this.documentRepository.updateOne(
 			{
@@ -114,7 +114,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 						timestamp: new Date(),
 						status,
 						message,
-						reviewerId,
+						authorId,
 					}),
 				},
 			},
@@ -152,6 +152,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 				$addToSet: {
 					history: {
 						timestamp: new Date(),
+						authorId: 'SYSTEM',
 						status,
 						type,
 						documentNumber,

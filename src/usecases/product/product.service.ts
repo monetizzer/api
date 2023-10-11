@@ -144,7 +144,7 @@ export class ProductService implements ProductUseCase {
 		productId,
 		approve,
 		message,
-		reviewerId,
+		authorId,
 		markedContentIds,
 	}: ReviewInput): Promise<void> {
 		if (!approve && !message) {
@@ -179,7 +179,7 @@ export class ProductService implements ProductUseCase {
 			this.productRepository.updateStatus({
 				productId,
 				status,
-				reviewerId,
+				authorId,
 				message,
 				markedContentIds,
 			}),
@@ -192,7 +192,7 @@ export class ProductService implements ProductUseCase {
 				templateId: approve ? 'NEW_PRODUCT_APPROVED' : 'NEW_PRODUCT_REPROVED',
 				data: {
 					productId,
-					reviewerId,
+					authorId,
 					markedContentIds: markedContentIds.join(','),
 				},
 			}),

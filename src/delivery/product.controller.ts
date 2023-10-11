@@ -92,7 +92,7 @@ export class ProductController {
 	) {
 		return this.productService.review({
 			...body,
-			reviewerId: userData.accountId,
+			authorId: userData.accountId,
 		});
 	}
 

@@ -39,6 +39,7 @@ export class ProductRepositoryService implements ProductRepository {
 				{
 					timestamp: new Date(),
 					status: ProductStatusEnum.IN_PREPARATION,
+					authorId: 'SYSTEM',
 				},
 			],
 			createdAt: new Date(),
@@ -53,7 +54,7 @@ export class ProductRepositoryService implements ProductRepository {
 		productId,
 		status,
 		message,
-		reviewerId,
+		authorId,
 		markedContentIds,
 	}: UpdateStatusInput): Promise<void> {
 		await this.productRepository.updateOne(
@@ -69,7 +70,7 @@ export class ProductRepositoryService implements ProductRepository {
 						timestamp: new Date(),
 						status,
 						message,
-						reviewerId,
+						authorId,
 						markedContentIds,
 					}),
 				},

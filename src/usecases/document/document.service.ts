@@ -159,7 +159,7 @@ export class DocumentService implements DocumentUseCase {
 
 	async review({
 		accountId,
-		reviewerId,
+		authorId,
 		approve,
 		message,
 	}: ReviewInput): Promise<void> {
@@ -200,14 +200,14 @@ export class DocumentService implements DocumentUseCase {
 			this.documentRepository.updateStatus({
 				accountId,
 				status,
-				reviewerId,
+				authorId,
 				message,
 			}),
 			this.notificationUsecase.sendInternalNotification({
 				templateId: approve ? 'NEW_DOCUMENT_APPROVED' : 'NEW_DOCUMENT_REPROVED',
 				data: {
 					accountId,
-					reviewerId,
+					authorId,
 					message,
 				},
 			}),
