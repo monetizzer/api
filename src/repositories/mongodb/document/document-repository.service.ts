@@ -152,7 +152,7 @@ export class DocumentRepositoryService implements DocumentRepository {
 				$addToSet: {
 					history: {
 						timestamp: new Date(),
-						authorId: 'SYSTEM',
+						accountId: 'SYSTEM',
 						status,
 						type,
 						documentNumber,
