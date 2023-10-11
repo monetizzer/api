@@ -59,7 +59,7 @@ export interface UpdateStatusInput {
 	status: ProductStatusEnum;
 	message?: string;
 	markedContentIds?: Array<string>;
-	authorId?: string | 'SYSTEM';
+	authorId: string | 'SYSTEM';
 }
 
 export interface MarkAsReadyForReviewInput {
