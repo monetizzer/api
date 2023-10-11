@@ -56,7 +56,7 @@ export interface UpdateStatusInput {
 	accountId: string;
 	status: DocumentStatusEnum;
 	message?: string;
-	authorId?: string | 'SYSTEM';
+	authorId: string | 'SYSTEM';
 }
 
 export interface UpsertCompleteInput {
