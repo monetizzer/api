@@ -13,6 +13,8 @@ interface ProductHistoryItem {
 	reviewerId?: string;
 }
 
+export type ProductMediasCount = Partial<Record<MediaTypeEnum, number>>;
+
 export interface ProductEntity {
 	productId: string;
 	storeId: string;
@@ -25,6 +27,7 @@ export interface ProductEntity {
 	price: number; // Int, multiplied by 100 ($1 = 100, $0.30 = 30)
 	previewImagesUrls: Array<string>;
 	deliveryMethod: DeliveryMethodEnum;
+	mediasCount?: ProductMediasCount;
 	createdAt: Date;
 }
 
@@ -59,6 +62,12 @@ export interface UpdateStatusInput {
 	reviewerId?: string;
 }
 
+export interface MarkAsReadyForReviewInput {
+	productId: string;
+	authorId: string;
+	mediasCount: ProductMediasCount;
+}
+
 export interface GetByProductIdInput {
 	productId: string;
 }
@@ -77,6 +86,8 @@ export interface ProductRepository {
 	create: (i: CreateInput) => Promise<CreateOutput>;
 
 	updateStatus: (i: UpdateStatusInput) => Promise<void>;
+
+	markAsReadyForReview: (i: MarkAsReadyForReviewInput) => Promise<void>;
 
 	getByProductId: (
 		i: GetByProductIdInput,
@@ -112,6 +123,7 @@ export type GetNewInput = Paginated;
 export type GetBestSellersInput = Paginated;
 
 export interface MarkAsReadyInput {
+	accountId: string;
 	storeId?: string;
 	productId: string;
 }

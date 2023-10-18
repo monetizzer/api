@@ -88,7 +88,7 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 							  }
 							: {}),
 					},
-					$push: {
+					$addToSet: {
 						history: {
 							timestamp: new Date(),
 							status,
@@ -111,7 +111,7 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 				$set: {
 					status,
 				},
-				$push: {
+				$addToSet: {
 					history: {
 						timestamp: new Date(),
 						status,
@@ -159,7 +159,7 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 			],
 			{
 				projection: {
-					amount: 1,
+					amount: true,
 				},
 			},
 		);
@@ -189,7 +189,7 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 			],
 			{
 				projection: {
-					amount: 1,
+					amount: true,
 				},
 			},
 		);
@@ -217,7 +217,7 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 				$set: {
 					status: TransactionStatusEnum.REFUND_PROCESSING,
 				},
-				$push: {
+				$addToSet: {
 					history: {
 						timestamp: new Date(),
 						status: TransactionStatusEnum.REFUND_PROCESSING,
@@ -258,7 +258,7 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 				$set: {
 					status,
 				},
-				$push: {
+				$addToSet: {
 					history: {
 						timestamp: new Date(),
 						status,

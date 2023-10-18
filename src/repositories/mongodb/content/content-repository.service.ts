@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository, Repository } from '..';
-import { CreateInput, GetManyInput } from 'src/models/content';
+import {
+	CreateInput,
+	GetManyInput,
+	GetMediasCountInput,
+} from 'src/models/content';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { Filter } from 'mongodb';
 import { ContentEntity, ContentRepository } from 'src/models/content';
+import { ProductMediasCount } from 'src/models/product';
 
 interface ContentTable extends Omit<ContentEntity, 'contentId'> {
 	_id: string;
@@ -50,5 +55,33 @@ export class ContentRepositoryService implements ContentRepository {
 				contentId: _id,
 			};
 		});
+	}
+
+	async getMediasCount({
+		productId,
+	}: GetMediasCountInput): Promise<ProductMediasCount> {
+		const contentsCursor = this.contentRepository.find(
+			{
+				productId,
+			},
+			{
+				projection: {
+					type: true,
+				},
+			},
+		);
+		const contents = await contentsCursor.toArray();
+
+		return contents.reduce((acc, cur) => {
+			const { type } = cur;
+
+			if (!acc[type]) {
+				acc[type] = 0;
+			}
+
+			acc[type]++;
+
+			return acc;
+		}, {} as ProductMediasCount);
 	}
 }

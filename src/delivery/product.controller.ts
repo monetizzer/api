@@ -77,6 +77,7 @@ export class ProductController {
 		return this.productService.markAsReady({
 			...body,
 			storeId: UserData.storeId,
+			accountId: UserData.accountId,
 		});
 	}
 
