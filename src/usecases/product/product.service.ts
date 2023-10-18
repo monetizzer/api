@@ -95,7 +95,11 @@ export class ProductService implements ProductUseCase {
 		};
 	}
 
-	async markAsReady({ storeId, productId }: MarkAsReadyInput): Promise<void> {
+	async markAsReady({
+		accountId,
+		storeId,
+		productId,
+	}: MarkAsReadyInput): Promise<void> {
 		const product = await this.productRepository.getByProductId({ productId });
 
 		if (!product) {
@@ -117,10 +121,15 @@ export class ProductService implements ProductUseCase {
 			);
 		}
 
+		const mediasCount = await this.contentRepository.getMediasCount({
+			productId,
+		});
+
 		await Promise.all([
-			this.productRepository.updateStatus({
+			this.productRepository.markAsReadyForReview({
 				productId,
-				status: ProductStatusEnum.VALIDATING,
+				authorId: accountId,
+				mediasCount,
 			}),
 			this.notificationUsecase.sendInternalNotification({
 				templateId: 'NEW_PRODUCT_TO_REVIEW',

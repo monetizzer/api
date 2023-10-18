@@ -1,6 +1,7 @@
 import { MediaTypeEnum } from 'src/types/enums/media-type';
 import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 import { Readable } from 'stream';
+import { ProductMediasCount } from './product';
 
 export interface ContentEntity {
 	contentId: string;
@@ -36,10 +37,16 @@ export interface GetManyInput {
 	offset?: number;
 }
 
+export interface GetMediasCountInput {
+	productId: string;
+}
+
 export interface ContentRepository {
 	create: (i: CreateInput) => Promise<void>;
 
 	getMany: (i: GetManyInput) => Promise<Array<ContentEntity>>;
+
+	getMediasCount: (i: GetMediasCountInput) => Promise<ProductMediasCount>;
 }
 
 /**

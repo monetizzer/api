@@ -75,7 +75,7 @@ export class WithdrawRepositoryService extends TransactionWithdrawRepository {
 						status,
 						proofOfPaymentUrl,
 					},
-					$push: {
+					$addToSet: {
 						history: {
 							timestamp: new Date(),
 							status,
@@ -98,7 +98,7 @@ export class WithdrawRepositoryService extends TransactionWithdrawRepository {
 				$set: {
 					status,
 				},
-				$push: {
+				$addToSet: {
 					history: {
 						timestamp: new Date(),
 						status,
@@ -172,7 +172,7 @@ export class WithdrawRepositoryService extends TransactionWithdrawRepository {
 			},
 			{
 				projection: {
-					amount: 1,
+					amount: true,
 				},
 			},
 		);

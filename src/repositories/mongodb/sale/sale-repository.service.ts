@@ -62,7 +62,7 @@ export class SaleRepositoryService implements SaleRepository {
 				$set: {
 					status,
 				},
-				$push: {
+				$addToSet: {
 					history: this.utilsAdapter.cleanObj({
 						timestamp: new Date(),
 						status,
@@ -81,7 +81,7 @@ export class SaleRepositoryService implements SaleRepository {
 				$set: {
 					status: SalesStatusEnum.CONFIRMED_DELIVERY,
 				},
-				$push: {
+				$addToSet: {
 					history: {
 						$each: [
 							{
@@ -200,7 +200,7 @@ export class SaleRepositoryService implements SaleRepository {
 				$set: {
 					status: SalesStatusEnum.EXPIRED,
 				},
-				$push: {
+				$addToSet: {
 					history: this.utilsAdapter.cleanObj({
 						timestamp: new Date(),
 						status: SalesStatusEnum.EXPIRED,

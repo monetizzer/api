@@ -5,6 +5,7 @@ import {
 	CreateOutput,
 	GetByProductIdInput,
 	GetManyInput,
+	MarkAsReadyForReviewInput,
 	ProductEntity,
 	ProductRepository,
 	UpdateStatusInput,
@@ -71,6 +72,31 @@ export class ProductRepositoryService implements ProductRepository {
 						reviewerId,
 						markedContentIds,
 					}),
+				},
+			},
+		);
+	}
+
+	async markAsReadyForReview({
+		productId,
+		authorId,
+		mediasCount,
+	}: MarkAsReadyForReviewInput): Promise<void> {
+		await this.productRepository.updateOne(
+			{
+				_id: productId,
+			},
+			{
+				$set: {
+					status: ProductStatusEnum.VALIDATING,
+					mediasCount,
+				},
+				$addToSet: {
+					history: {
+						timestamp: new Date(),
+						status: ProductStatusEnum.VALIDATING,
+						reviewerId: authorId,
+					},
 				},
 			},
 		);
