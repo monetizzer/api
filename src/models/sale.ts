@@ -55,6 +55,10 @@ export interface UpdateStatusInput {
 	status: SalesStatusEnum;
 }
 
+export interface CompletePreMadeInput {
+	saleId: string;
+}
+
 export interface GetManyInput {
 	clientId?: string;
 	storeId?: string;
@@ -76,6 +80,11 @@ export interface SaleRepository {
 	) => Promise<boolean>;
 
 	updateStatus: (i: UpdateStatusInput) => Promise<void>;
+
+	// Update the status of a sale that has only pre-made products to complete
+	// adding all statuses necessary to the history.
+	// It's a more complex version of updateStatus
+	completePreMade: (i: CompletePreMadeInput) => Promise<void>;
 
 	// Update the status of all expired sales to EXPIRED
 	updateExpired: () => Promise<void>;

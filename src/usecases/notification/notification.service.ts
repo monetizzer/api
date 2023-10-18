@@ -127,6 +127,23 @@ export class NotificationService implements NotificationUseCase {
 			},
 		},
 
+		SALE_DELIVERED: {
+			title: 'Conteúdo entregue!',
+			email: {
+				html: 'O conteúdo do pedido #{{saleId}} já está disponivel! Entre em nossa plataforma para acessa-los.',
+			},
+			discord: {
+				description:
+					'O conteúdo do pedido __#{{saleId}}__ já está disponivel! Clique no botão abaixo para acessa-los.',
+				color: COLORS.success,
+				link: {
+					url: `${process.env['FRONTEND_URL']}/conteudo/{{productId}}/midias`,
+					text: 'Acessar conteúdos',
+					emoji: '🔥',
+				},
+			},
+		},
+
 		WITHDRAW_COMPLETED: {
 			title: 'Saque realizado com sucesso!',
 			email: {

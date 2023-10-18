@@ -1,56 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository, Repository } from '..';
 import {
-	CompleteIncomeInput,
 	CompleteWithdrawInput,
-	CreateIncomeInput,
 	CreateOutput,
 	CreateWithdrawInput,
+	GetBalanceInput,
 	GetByTransactionIdInput,
-	GetManyInput,
-	TransactionEntity,
-	TransactionRepository,
+	GetManyWithdrawInput,
+	TransactionWithdrawEntity,
+	TransactionWithdrawRepository,
 } from 'src/models/transaction';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { TransactionTypeEnum } from 'src/types/enums/transaction-type';
 import { TransactionStatusEnum } from 'src/types/enums/transaction-status';
-import { Filter, MatchKeysAndValues } from 'mongodb';
+import { Filter } from 'mongodb';
 
-interface TransactionTable extends Omit<TransactionEntity, 'transactionId'> {
+interface TransactionTable
+	extends Omit<TransactionWithdrawEntity, 'transactionId'> {
 	_id: string;
 }
 
 @Injectable()
-export class TransactionRepositoryService implements TransactionRepository {
+export class WithdrawRepositoryService extends TransactionWithdrawRepository {
 	constructor(
 		@InjectRepository('transactions')
 		private readonly transactionRepository: Repository<TransactionTable>,
 		private readonly idAdapter: UIDAdapter,
-	) {}
-
-	async createIncome({
-		accountId,
-		amount,
-		saleId,
-	}: CreateIncomeInput): Promise<CreateOutput> {
-		const transactionId = this.idAdapter.gen();
-
-		await this.transactionRepository.insertOne({
-			accountId,
-			saleId,
-			amount,
-			type: TransactionTypeEnum.INCOME,
-			status: TransactionStatusEnum.PROCESSING,
-			createdAt: new Date(),
-			_id: transactionId,
-		});
-
-		return {
-			transactionId,
-		};
+	) {
+		super();
 	}
 
-	async createWithdraw({
+	async create({
 		accountId,
 		amount,
 		bankAccount,
@@ -58,13 +38,20 @@ export class TransactionRepositoryService implements TransactionRepository {
 		const transactionId = this.idAdapter.gen();
 
 		await this.transactionRepository.insertOne({
+			_id: transactionId,
 			accountId,
 			bankAccount,
 			amount,
 			type: TransactionTypeEnum.WITHDRAW,
 			status: TransactionStatusEnum.PROCESSING,
+			history: [
+				{
+					timestamp: new Date(),
+					status: TransactionStatusEnum.PROCESSING,
+					authorId: accountId,
+				},
+			],
 			createdAt: new Date(),
-			_id: transactionId,
 		});
 
 		return {
@@ -72,76 +59,60 @@ export class TransactionRepositoryService implements TransactionRepository {
 		};
 	}
 
-	async completeIncome({
-		transactionId,
-		...i
-	}: CompleteIncomeInput): Promise<void> {
-		let data: MatchKeysAndValues<TransactionTable> = {};
-
-		if (i.status === TransactionStatusEnum.COMPLETED) {
-			const { status, paymentId } = i;
-
-			data = {
-				status,
-				paymentId,
-			};
-		} else {
-			const { status, message, reviewerId } = i;
-
-			data = {
-				status,
-				message,
-				reviewerId,
-			};
-		}
-
-		await this.transactionRepository.updateOne(
-			{
-				_id: transactionId,
-			},
-			{
-				$set: data,
-			},
-		);
-	}
-
-	async completeWithdraw({
+	async complete({
 		transactionId,
 		...i
 	}: CompleteWithdrawInput): Promise<void> {
-		let data: MatchKeysAndValues<TransactionTable> = {};
-
 		if (i.status === TransactionStatusEnum.COMPLETED) {
-			const { status, proofOfPaymentUrl, reviewerId } = i;
+			const { status, proofOfPaymentUrl, authorId } = i;
 
-			data = {
-				status,
-				proofOfPaymentUrl,
-				reviewerId,
-			};
-		} else {
-			const { status, message, reviewerId } = i;
+			await this.transactionRepository.updateOne(
+				{
+					_id: transactionId,
+				},
+				{
+					$set: {
+						status,
+						proofOfPaymentUrl,
+					},
+					$push: {
+						history: {
+							timestamp: new Date(),
+							status,
+							authorId,
+						},
+					},
+				},
+			);
 
-			data = {
-				status,
-				message,
-				reviewerId,
-			};
+			return;
 		}
+
+		const { status, message, authorId } = i;
 
 		await this.transactionRepository.updateOne(
 			{
 				_id: transactionId,
 			},
 			{
-				$set: data,
+				$set: {
+					status,
+				},
+				$push: {
+					history: {
+						timestamp: new Date(),
+						status,
+						authorId,
+						message,
+					},
+				},
 			},
 		);
 	}
 
 	async getByTransactionId({
 		transactionId,
-	}: GetByTransactionIdInput): Promise<TransactionEntity> {
+	}: GetByTransactionIdInput): Promise<TransactionWithdrawEntity> {
 		const transaction = await this.transactionRepository.findOne({
 			_id: transactionId,
 		});
@@ -158,28 +129,20 @@ export class TransactionRepositoryService implements TransactionRepository {
 
 	async getMany({
 		accountId,
-		saleId,
 		status,
-		type,
-	}: GetManyInput): Promise<TransactionEntity[]> {
-		const filters: Filter<TransactionTable> = {};
+	}: GetManyWithdrawInput): Promise<TransactionWithdrawEntity[]> {
+		const filters: Filter<TransactionTable> = {
+			type: TransactionTypeEnum.WITHDRAW,
+		};
 
 		if (accountId) {
 			filters.accountId = accountId;
-		}
-
-		if (saleId) {
-			filters.saleId = saleId;
 		}
 
 		if (status) {
 			filters.status = {
 				$in: status,
 			};
-		}
-
-		if (type) {
-			filters.type = type;
 		}
 
 		const transactionsCursor = this.transactionRepository.find(filters);
@@ -193,5 +156,30 @@ export class TransactionRepositoryService implements TransactionRepository {
 				transactionId: _id,
 			};
 		});
+	}
+
+	async getTotal({ accountId }: GetBalanceInput): Promise<number> {
+		const transactionsCursor = this.transactionRepository.find(
+			{
+				accountId: accountId,
+				status: {
+					$in: [
+						TransactionStatusEnum.COMPLETED,
+						TransactionStatusEnum.PROCESSING,
+					],
+				},
+				type: TransactionTypeEnum.WITHDRAW,
+			},
+			{
+				projection: {
+					amount: 1,
+				},
+			},
+		);
+		const transactions = await transactionsCursor.toArray();
+
+		return transactions.reduce((acc, cur) => {
+			return acc + cur.amount;
+		}, 0);
 	}
 }

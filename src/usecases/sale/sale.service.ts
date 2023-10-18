@@ -18,11 +18,9 @@ import {
 	ClientSalesInput,
 	StoreSalesInput,
 } from 'src/models/sale';
-import { TransactionEntity } from 'src/models/transaction';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { SaleRepositoryService } from 'src/repositories/mongodb/sale/sale-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
-import { TransactionRepositoryService } from 'src/repositories/mongodb/transaction/transaction-repository.service';
 import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { isPreMadeProduct } from 'src/types/enums/product-type';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
@@ -30,6 +28,9 @@ import { TransactionStatusEnum } from 'src/types/enums/transaction-status';
 import { NotificationService } from '../notification/notification.service';
 import { PaginatedItems } from 'src/types/paginated-items';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
+import { IncomeRepositoryService } from 'src/repositories/mongodb/transaction/income-repository.service';
+import { PaymentProviderEnum } from 'src/types/enums/payment-provider';
+import { TransactionIncomeEntity } from 'src/models/transaction';
 
 interface ValidateCanGetSaleInput {
 	accountId: string;
@@ -42,8 +43,8 @@ export class SaleService implements SaleUseCase {
 	constructor(
 		@Inject(SaleRepositoryService)
 		private readonly saleRepository: SaleRepositoryService,
-		@Inject(TransactionRepositoryService)
-		private readonly transactionRepository: TransactionRepositoryService,
+		@Inject(IncomeRepositoryService)
+		private readonly transactionRepository: IncomeRepositoryService,
 		@Inject(ProductRepositoryService)
 		private readonly productRepository: ProductRepositoryService,
 		@Inject(StoreRepositoryService)
@@ -101,10 +102,12 @@ export class SaleService implements SaleUseCase {
 				saleId,
 				value: product.price,
 			}),
-			this.transactionRepository.createIncome({
+			this.transactionRepository.create({
 				saleId,
 				accountId: storeAccountId,
 				amount: product.price,
+				paymentMethod,
+				provider: PaymentProviderEnum.GERENCIANET,
 			}),
 		]);
 
@@ -118,7 +121,9 @@ export class SaleService implements SaleUseCase {
 		paymentId,
 		amount,
 	}: ProcessPixWebhookInput): Promise<void> {
-		const transactions = await this.transactionRepository.getMany({ saleId });
+		const transactions = await this.transactionRepository.getManyBySaleId({
+			saleId,
+		});
 
 		if (transactions.length <= 0) {
 			await this.paymentAdapter.refund({ saleId });
@@ -135,9 +140,9 @@ export class SaleService implements SaleUseCase {
 			return;
 		}
 
-		const completedTransactions: Array<TransactionEntity> = [];
-		const processingTransactions: Array<TransactionEntity> = [];
-		const failedTransactions: Array<TransactionEntity> = [];
+		const completedTransactions: Array<TransactionIncomeEntity> = [];
+		const processingTransactions: Array<TransactionIncomeEntity> = [];
+		const failedTransactions: Array<TransactionIncomeEntity> = [];
 
 		for (const transaction of transactions) {
 			if (transaction.status === TransactionStatusEnum.COMPLETED) {
@@ -186,20 +191,23 @@ export class SaleService implements SaleUseCase {
 		}
 
 		await Promise.all([
-			this.transactionRepository.completeIncome({
+			this.transactionRepository.complete({
 				transactionId: processingWithSameAmount.transactionId,
 				status: TransactionStatusEnum.COMPLETED,
 				paymentId,
+				setSaleAsDelivered: true, // TODO Temporary, only for pre made products!
 			}),
-			this.saleRepository.updateStatus({
+			// TODO Temporary, only for pre made products!
+			this.saleRepository.completePreMade({
 				saleId,
-				status: SalesStatusEnum.PAID,
 			}),
 			this.notificationUsecase.sendNotification({
 				accountId: sale.clientId,
-				templateId: 'SALE_PAID',
+				// templateId: 'SALE_PAID',
+				templateId: 'SALE_DELIVERED', // TODO Temporary, only for pre made products!
 				data: {
 					saleId,
+					productId: sale.productId,
 				},
 			}),
 		]);

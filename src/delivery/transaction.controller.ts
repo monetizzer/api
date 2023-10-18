@@ -74,7 +74,7 @@ export class TransactionController {
 		return this.transactionService.withdraw({
 			...body,
 			image: file.buffer,
-			reviewerId: userData.accountId,
+			authorId: userData.accountId,
 		});
 	}
 

@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { S3Adapter } from 'src/adapters/implementations/s3.service';
 import {
+	BalanceInput,
 	GetPaymentProofImgInput,
 	RequestWithdrawInput,
 	TransactionUseCase,
@@ -14,72 +15,45 @@ import {
 	WalletOutput,
 	WithdrawInput,
 } from 'src/models/transaction';
-import { TransactionRepositoryService } from 'src/repositories/mongodb/transaction/transaction-repository.service';
 import {
 	TransactionStatusEnum,
 	canChangeStatus,
 } from 'src/types/enums/transaction-status';
-import { TransactionTypeEnum } from 'src/types/enums/transaction-type';
 import { NotificationService } from '../notification/notification.service';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 import { Readable } from 'node:stream';
+import { IncomeRepositoryService } from 'src/repositories/mongodb/transaction/income-repository.service';
+import { WithdrawRepositoryService } from 'src/repositories/mongodb/transaction/withdraw-repository.service';
 
 @Injectable()
-export class TransactionService implements TransactionUseCase {
+export class TransactionService extends TransactionUseCase {
 	constructor(
-		@Inject(TransactionRepositoryService)
-		private readonly transactionRepository: TransactionRepositoryService,
+		@Inject(IncomeRepositoryService)
+		private readonly incomeRepository: IncomeRepositoryService,
+		@Inject(WithdrawRepositoryService)
+		private readonly withdrawRepository: WithdrawRepositoryService,
 		private readonly notificationService: NotificationService,
 		private readonly fileAdapter: S3Adapter,
 		private readonly utilsAdapter: UtilsAdapter,
-	) {}
+	) {
+		super();
+	}
 
 	async wallet({ accountId }: WalletInput): Promise<WalletOutput> {
-		const [
-			completedTransactions,
-			processingTransactions,
-			processingIncomeTransactions,
-		] = await Promise.all([
-			this.transactionRepository.getMany({
-				accountId,
-				status: [TransactionStatusEnum.COMPLETED],
-			}),
-			this.transactionRepository.getMany({
-				accountId,
-				status: [TransactionStatusEnum.PROCESSING],
-				type: TransactionTypeEnum.WITHDRAW,
-			}),
-			this.transactionRepository.getMany({
-				accountId,
-				status: [TransactionStatusEnum.PROCESSING],
-				type: TransactionTypeEnum.INCOME,
-			}),
+		const [totalAvailable, total, totalWithdrawn] = await Promise.all([
+			this.incomeRepository.getTotalAvailable({ accountId }),
+			this.incomeRepository.getTotal({ accountId }),
+			this.withdrawRepository.getTotal({ accountId }),
 		]);
 
-		const transactions = [
-			...completedTransactions,
-			...processingTransactions,
-		].sort((a, b) => (a.createdAt.getTime() > b.createdAt.getTime() ? 1 : -1));
-
-		const balance = transactions.reduce((acc, cur) => {
-			if (cur.type === TransactionTypeEnum.INCOME) {
-				return acc + cur.amount;
-			}
-
-			if (cur.type === TransactionTypeEnum.WITHDRAW) {
-				return acc - cur.amount;
-			}
-
-			return acc;
-		}, 0);
-
-		const pending = processingIncomeTransactions.reduce((acc, cur) => {
-			return acc + cur.amount;
-		}, 0);
+		const availableToWithdraw = totalAvailable - totalWithdrawn;
+		const pendingAndAvailableToWithdraw = total - totalAvailable;
 
 		return {
-			pending,
-			balance,
+			balance: availableToWithdraw,
+			pending: pendingAndAvailableToWithdraw - availableToWithdraw,
+			totalRevenue: total,
+			totalWithdrawn: totalWithdrawn,
 		};
 	}
 
@@ -88,41 +62,14 @@ export class TransactionService implements TransactionUseCase {
 		bankAccount,
 		amount,
 	}: RequestWithdrawInput): Promise<void> {
-		const [completedTransactions, processingTransactions] = await Promise.all([
-			this.transactionRepository.getMany({
-				accountId,
-				status: [TransactionStatusEnum.COMPLETED],
-			}),
-			this.transactionRepository.getMany({
-				accountId,
-				status: [TransactionStatusEnum.PROCESSING],
-				type: TransactionTypeEnum.WITHDRAW,
-			}),
-		]);
-
-		const transactions = [
-			...completedTransactions,
-			...processingTransactions,
-		].sort((a, b) => (a.createdAt.getTime() > b.createdAt.getTime() ? 1 : -1));
-
-		const balance = transactions.reduce((acc, cur) => {
-			if (cur.type === TransactionTypeEnum.INCOME) {
-				return acc + cur.amount;
-			}
-
-			if (cur.type === TransactionTypeEnum.WITHDRAW) {
-				return acc - cur.amount;
-			}
-
-			return acc;
-		}, 0);
+		const balance = await this.balance({ accountId });
 
 		if (amount > balance) {
 			throw new ForbiddenException('Unable to withdraw');
 		}
 
 		await Promise.all([
-			this.transactionRepository.createWithdraw({
+			this.withdrawRepository.create({
 				accountId,
 				amount,
 				bankAccount,
@@ -140,10 +87,10 @@ export class TransactionService implements TransactionUseCase {
 
 	async withdraw({
 		transactionId,
-		reviewerId,
+		authorId,
 		image,
 	}: WithdrawInput): Promise<void> {
-		const transaction = await this.transactionRepository.getByTransactionId({
+		const transaction = await this.withdrawRepository.getByTransactionId({
 			transactionId,
 		});
 
@@ -153,6 +100,7 @@ export class TransactionService implements TransactionUseCase {
 
 		if (
 			!canChangeStatus({
+				type: transaction.type,
 				oldStatus: transaction.status,
 				newStatus: TransactionStatusEnum.COMPLETED,
 			})
@@ -170,11 +118,11 @@ export class TransactionService implements TransactionUseCase {
 				filePath: path as any,
 				file: image,
 			}),
-			this.transactionRepository.completeWithdraw({
+			this.withdrawRepository.complete({
 				transactionId,
 				status: TransactionStatusEnum.COMPLETED,
 				proofOfPaymentUrl: `${process.env['API_URL']}/wallet${path}`,
-				reviewerId,
+				authorId,
 			}),
 			this.notificationService.sendNotification({
 				accountId: transaction.accountId,
@@ -193,7 +141,7 @@ export class TransactionService implements TransactionUseCase {
 		isAdmin,
 	}: GetPaymentProofImgInput): Promise<Readable> {
 		if (!isAdmin) {
-			const transaction = await this.transactionRepository.getByTransactionId({
+			const transaction = await this.withdrawRepository.getByTransactionId({
 				transactionId,
 			});
 
@@ -210,5 +158,14 @@ export class TransactionService implements TransactionUseCase {
 			folder: process.env['PRIVATE_BUCKET_NAME'],
 			filePath: `/payment-proof/${transactionId}.${ext}`,
 		});
+	}
+
+	protected async balance({ accountId }: BalanceInput): Promise<number> {
+		const [totalAvailable, totalWithdrawn] = await Promise.all([
+			this.incomeRepository.getTotalAvailable({ accountId }),
+			this.withdrawRepository.getTotal({ accountId }),
+		]);
+
+		return totalAvailable - totalWithdrawn;
 	}
 }
