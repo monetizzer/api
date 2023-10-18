@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository, Repository } from '..';
 import {
+	CompletePreMadeInput,
 	CreateInput,
 	CreateOutput,
 	GetBySaleIdInput,
@@ -15,6 +16,7 @@ import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 import { SalesStatusEnum } from 'src/types/enums/sale-status';
 import { PaymentMethodEnum } from 'src/types/enums/payment-method';
 import { Filter } from 'mongodb';
+import { DateAdapter } from 'src/adapters/implementations/date.service';
 
 interface SaleTable extends Omit<SaleEntity, 'saleId'> {
 	_id: string;
@@ -27,6 +29,7 @@ export class SaleRepositoryService implements SaleRepository {
 		private readonly saleRepository: Repository<SaleTable>,
 		private readonly idAdapter: UIDAdapter,
 		private readonly utilsAdapter: UtilsAdapter,
+		private readonly dateAdapter: DateAdapter,
 	) {}
 
 	async create(i: CreateInput): Promise<CreateOutput> {
@@ -64,6 +67,37 @@ export class SaleRepositoryService implements SaleRepository {
 						timestamp: new Date(),
 						status,
 					}),
+				},
+			},
+		);
+	}
+
+	async completePreMade({ saleId }: CompletePreMadeInput): Promise<void> {
+		await this.saleRepository.updateOne(
+			{
+				_id: saleId,
+			},
+			{
+				$set: {
+					status: SalesStatusEnum.CONFIRMED_DELIVERY,
+				},
+				$push: {
+					history: {
+						$each: [
+							{
+								timestamp: this.dateAdapter.todayPlus(1, 'seconds'),
+								status: SalesStatusEnum.PAID,
+							},
+							{
+								timestamp: this.dateAdapter.todayPlus(2, 'seconds'),
+								status: SalesStatusEnum.DELIVERED,
+							},
+							{
+								timestamp: this.dateAdapter.todayPlus(3, 'seconds'),
+								status: SalesStatusEnum.CONFIRMED_DELIVERY,
+							},
+						],
+					},
 				},
 			},
 		);
