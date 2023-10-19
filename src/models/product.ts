@@ -4,6 +4,7 @@ import { ProductStatusEnum } from 'src/types/enums/product-status';
 import { ProductTypeEnum } from 'src/types/enums/product-type';
 import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 import { OrderBy } from 'src/types/repository';
+import { StoreEntity } from './store';
 
 interface ProductHistoryItem {
 	timestamp: Date;
@@ -165,6 +166,10 @@ export interface GetStoreProductsInput extends Paginated {
 export interface GetProductInput {
 	storeId?: string;
 	productId: string;
+}
+
+export interface GetProductOutput extends ProductEntity {
+	store: StoreEntity;
 }
 
 export interface ProductUseCase {
