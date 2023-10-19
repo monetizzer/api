@@ -96,7 +96,7 @@ export class ProductRepositoryService implements ProductRepository {
 					history: {
 						timestamp: new Date(),
 						status: ProductStatusEnum.VALIDATING,
-						reviewerId: authorId,
+						authorId: authorId,
 					},
 				},
 			},

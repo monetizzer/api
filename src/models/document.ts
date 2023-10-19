@@ -56,7 +56,7 @@ export interface UpdateStatusInput {
 	accountId: string;
 	status: DocumentStatusEnum;
 	message?: string;
-	authorId: string | 'SYSTEM';
+	authorId: string;
 }
 
 export interface UpsertCompleteInput {
@@ -133,7 +133,7 @@ export interface CreateCompleteInput {
 
 export interface ReviewInput {
 	accountId: string;
-	authorId: string | 'SYSTEM';
+	authorId: string;
 	approve: boolean;
 	message?: string;
 }

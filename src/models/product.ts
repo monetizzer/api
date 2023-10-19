@@ -40,7 +40,7 @@ export interface ProductEntity {
  */
 
 export interface CreateInput {
-	authorId: string | 'SYSTEM';
+	authorId: string;
 	storeId: string;
 	type: ProductTypeEnum;
 	name: string;
@@ -60,7 +60,7 @@ export interface UpdateStatusInput {
 	status: ProductStatusEnum;
 	message?: string;
 	markedContentIds?: Array<string>;
-	authorId: string | 'SYSTEM';
+	authorId: string;
 }
 
 export interface MarkAsReadyForReviewInput {
@@ -106,7 +106,7 @@ export interface ProductRepository {
  */
 
 export interface CreateProductInput {
-	authorId: string | 'SYSTEM';
+	authorId: string;
 	storeId: string;
 	type: ProductTypeEnum;
 	name: string;
@@ -145,7 +145,7 @@ export interface GetOneToReviewOutput {
 
 export interface ReviewInput {
 	productId: string;
-	authorId: string | 'SYSTEM';
+	authorId: string;
 	approve: boolean;
 	message?: string;
 	markedContentIds?: Array<string>;
