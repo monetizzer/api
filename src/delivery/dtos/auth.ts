@@ -4,10 +4,10 @@ import {
 	IsOptional,
 	IsSemVer,
 	IsString,
-	IsUrl,
 } from 'class-validator';
 import { IsDiscordCode } from '../validators/discord';
 import { IsID, IsSecretCode } from '../validators/internal';
+import { IsURL } from '../validators/miscellaneous';
 
 export class CreateFromDiscordOauthDto {
 	@IsNotEmpty()
@@ -15,7 +15,7 @@ export class CreateFromDiscordOauthDto {
 	code: string;
 
 	@IsNotEmpty()
-	@IsUrl()
+	@IsURL({ acceptLocalhost: process.env['NODE_ENV'] !== 'production' })
 	origin: string;
 }
 

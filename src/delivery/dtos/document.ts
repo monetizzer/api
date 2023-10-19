@@ -8,7 +8,7 @@ import {
 	MaxLength,
 } from 'class-validator';
 import { DocumentTypeEnum } from 'src/types/enums/document-type';
-import { IsDateYYYYMMDD } from '../validators/date';
+import { IsDateYYYYMMDD } from '../validators/miscellaneous';
 import { IsFileName, IsID } from '../validators/internal';
 import { Transform } from 'class-transformer';
 import { MediaTypeEnum } from 'src/types/enums/media-type';
