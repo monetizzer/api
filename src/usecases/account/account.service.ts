@@ -67,9 +67,10 @@ export class AccountService implements AccountUseCase {
 
 	async createFromDiscordOauth({
 		code,
+		origin,
 	}: CreateFromDiscordInput): Promise<CompleteAuthOutput> {
 		const { scopes, ...discordTokens } = await this.discordAdapter
-			.exchangeCode(code)
+			.exchangeCode({ code, origin })
 			.catch(() => {
 				throw new BadRequestException('Invalid code');
 			});

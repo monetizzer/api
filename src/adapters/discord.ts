@@ -57,6 +57,11 @@ export interface SendMessageInput {
 	components?: Array<Array<Component>>;
 }
 
+export interface ExchangeCodeInput {
+	code: string;
+	origin: string;
+}
+
 export interface ExchangeCodeOutput {
 	scopes: Array<string>;
 	accessToken: string;
@@ -84,7 +89,7 @@ export interface DiscordAdapter {
 
 	sendMessage: (i: SendMessageInput) => Promise<void>;
 
-	exchangeCode: (code: string) => Promise<ExchangeCodeOutput>;
+	exchangeCode: (i: ExchangeCodeInput) => Promise<ExchangeCodeOutput>;
 
 	getUserData: (discordId: string) => Promise<GetUserDataOutput>;
 

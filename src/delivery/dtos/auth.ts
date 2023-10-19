@@ -4,6 +4,7 @@ import {
 	IsOptional,
 	IsSemVer,
 	IsString,
+	IsUrl,
 } from 'class-validator';
 import { IsDiscordCode } from '../validators/discord';
 import { IsID, IsSecretCode } from '../validators/internal';
@@ -12,6 +13,10 @@ export class CreateFromDiscordOauthDto {
 	@IsNotEmpty()
 	@IsDiscordCode()
 	code: string;
+
+	@IsNotEmpty()
+	@IsUrl()
+	origin: string;
 }
 
 export class SendMagicLinkDto {
