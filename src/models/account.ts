@@ -139,6 +139,7 @@ export interface AuthOutput {
 
 export interface CreateFromDiscordInput {
 	code: string;
+	origin: string;
 }
 
 export interface SendMagicLinkInput {

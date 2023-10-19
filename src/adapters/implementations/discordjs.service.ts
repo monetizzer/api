@@ -4,6 +4,7 @@ import type {
 	Channels,
 	DiscordAdapter,
 	Embed,
+	ExchangeCodeInput,
 	SendMessageInput,
 } from '../discord.js';
 import { Injectable } from '@nestjs/common';
@@ -175,13 +176,13 @@ export class DiscordJSAdapter implements DiscordAdapter {
 		});
 	}
 
-	public async exchangeCode(code: string) {
+	public async exchangeCode({ code, origin }: ExchangeCodeInput) {
 		const body = new URLSearchParams();
 		body.append('client_id', process.env['DISCORD_BOT_CLIENT_ID']!);
 		body.append('client_secret', process.env['DISCORD_BOT_CLIENT_SECRET']!);
 		body.append('grant_type', 'authorization_code');
 		body.append('code', code);
-		body.append('redirect_uri', process.env['DISCORD_REDIRECT_URI']!);
+		body.append('redirect_uri', origin);
 
 		const result = await this.discordApi('/oauth2/token', {
 			method: 'POST',
