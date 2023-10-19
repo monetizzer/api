@@ -21,6 +21,7 @@ import {
 	GetProductInput,
 	GetNewInput,
 	GetBestSellersInput,
+	GetProductOutput,
 } from 'src/models/product';
 import { ProductRepositoryService } from 'src/repositories/mongodb/product/product-repository.service';
 import { StoreRepositoryService } from 'src/repositories/mongodb/store/store-repository.service';
@@ -362,10 +363,13 @@ export class ProductService implements ProductUseCase {
 	async getProduct({
 		storeId,
 		productId,
-	}: GetProductInput): Promise<ProductEntity> {
-		const product = await this.productRepository.getByProductId({ productId });
+	}: GetProductInput): Promise<GetProductOutput> {
+		const [product, store] = await Promise.all([
+			this.productRepository.getByProductId({ productId }),
+			this.storeRepository.getByStoreId({ storeId }),
+		]);
 
-		if (!product) {
+		if (!product || !store) {
 			throw new NotFoundException('Product not found');
 		}
 
@@ -376,7 +380,10 @@ export class ProductService implements ProductUseCase {
 			throw new NotFoundException('Product not found');
 		}
 
-		return product;
+		return {
+			...product,
+			store,
+		};
 	}
 
 	// Private
