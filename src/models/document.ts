@@ -6,10 +6,10 @@ import { Paginated, PaginatedItems } from 'src/types/paginated-items';
 interface DocumentHistoryItem {
 	timestamp: Date;
 	status: DocumentStatusEnum;
+	authorId: string | 'SYSTEM';
 	type?: DocumentTypeEnum;
 	documentNumber?: string;
 	message?: string;
-	reviewerId?: string;
 }
 
 interface DocumentAddress {
@@ -56,7 +56,7 @@ export interface UpdateStatusInput {
 	accountId: string;
 	status: DocumentStatusEnum;
 	message?: string;
-	reviewerId?: string;
+	authorId: string;
 }
 
 export interface UpsertCompleteInput {
@@ -133,7 +133,7 @@ export interface CreateCompleteInput {
 
 export interface ReviewInput {
 	accountId: string;
-	reviewerId: string;
+	authorId: string;
 	approve: boolean;
 	message?: string;
 }

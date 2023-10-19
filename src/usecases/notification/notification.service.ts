@@ -183,8 +183,8 @@ export class NotificationService implements NotificationUseCase {
 						description: '{{accountId}}',
 					},
 					{
-						title: 'ReviewerId',
-						description: '{{reviewerId}}',
+						title: 'AuthorId',
+						description: '{{authorId}}',
 					},
 				],
 			},
@@ -203,8 +203,8 @@ export class NotificationService implements NotificationUseCase {
 						description: '{{accountId}}',
 					},
 					{
-						title: 'ReviewerId',
-						description: '{{reviewerId}}',
+						title: 'AuthorId',
+						description: '{{authorId}}',
 					},
 				],
 			},
@@ -222,8 +222,8 @@ export class NotificationService implements NotificationUseCase {
 				},
 				fields: [
 					{
-						title: 'ProductId',
-						description: '{{productId}}',
+						title: 'AuthorId',
+						description: '{{authorId}}',
 					},
 				],
 			},
@@ -241,8 +241,8 @@ export class NotificationService implements NotificationUseCase {
 						description: '{{productId}}',
 					},
 					{
-						title: 'ReviewerId',
-						description: '{{reviewerId}}',
+						title: 'AuthorId',
+						description: '{{authorId}}',
 					},
 				],
 			},
@@ -261,8 +261,8 @@ export class NotificationService implements NotificationUseCase {
 						description: '{{productId}}',
 					},
 					{
-						title: 'ReviewerId',
-						description: '{{reviewerId}}',
+						title: 'AuthorId',
+						description: '{{authorId}}',
 					},
 					{
 						title: 'MarkedContentIds',

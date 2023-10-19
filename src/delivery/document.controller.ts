@@ -115,7 +115,7 @@ export class DocumentController {
 		userData: UserDataDto,
 	) {
 		return this.documentService.review({
-			reviewerId: userData.accountId,
+			authorId: userData.accountId,
 			...body,
 		});
 	}

@@ -28,7 +28,7 @@ export class ProductRepositoryService implements ProductRepository {
 		private readonly utilsAdapter: UtilsAdapter,
 	) {}
 
-	async create(i: CreateInput): Promise<CreateOutput> {
+	async create({ authorId, ...i }: CreateInput): Promise<CreateOutput> {
 		const productId = this.idAdapter.gen();
 
 		await this.productRepository.insertOne({
@@ -39,6 +39,7 @@ export class ProductRepositoryService implements ProductRepository {
 				{
 					timestamp: new Date(),
 					status: ProductStatusEnum.IN_PREPARATION,
+					authorId,
 				},
 			],
 			createdAt: new Date(),
@@ -53,7 +54,7 @@ export class ProductRepositoryService implements ProductRepository {
 		productId,
 		status,
 		message,
-		reviewerId,
+		authorId,
 		markedContentIds,
 	}: UpdateStatusInput): Promise<void> {
 		await this.productRepository.updateOne(
@@ -69,7 +70,7 @@ export class ProductRepositoryService implements ProductRepository {
 						timestamp: new Date(),
 						status,
 						message,
-						reviewerId,
+						authorId,
 						markedContentIds,
 					}),
 				},
@@ -95,7 +96,7 @@ export class ProductRepositoryService implements ProductRepository {
 					history: {
 						timestamp: new Date(),
 						status: ProductStatusEnum.VALIDATING,
-						reviewerId: authorId,
+						authorId: authorId,
 					},
 				},
 			},

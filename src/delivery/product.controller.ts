@@ -60,6 +60,7 @@ export class ProductController {
 
 		return this.productService.create({
 			...body,
+			authorId: userData.accountId,
 			storeId: userData.storeId,
 			previewImages: files.map((f) => f.buffer),
 		});
@@ -92,7 +93,7 @@ export class ProductController {
 	) {
 		return this.productService.review({
 			...body,
-			reviewerId: userData.accountId,
+			authorId: userData.accountId,
 		});
 	}
 

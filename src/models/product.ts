@@ -8,9 +8,9 @@ import { OrderBy } from 'src/types/repository';
 interface ProductHistoryItem {
 	timestamp: Date;
 	status: ProductStatusEnum;
+	authorId: string | 'SYSTEM';
 	message?: string;
 	markedContentIds?: Array<string>;
-	reviewerId?: string;
 }
 
 export type ProductMediasCount = Partial<Record<MediaTypeEnum, number>>;
@@ -40,6 +40,7 @@ export interface ProductEntity {
  */
 
 export interface CreateInput {
+	authorId: string;
 	storeId: string;
 	type: ProductTypeEnum;
 	name: string;
@@ -59,7 +60,7 @@ export interface UpdateStatusInput {
 	status: ProductStatusEnum;
 	message?: string;
 	markedContentIds?: Array<string>;
-	reviewerId?: string;
+	authorId: string;
 }
 
 export interface MarkAsReadyForReviewInput {
@@ -105,6 +106,7 @@ export interface ProductRepository {
  */
 
 export interface CreateProductInput {
+	authorId: string;
 	storeId: string;
 	type: ProductTypeEnum;
 	name: string;
@@ -143,7 +145,7 @@ export interface GetOneToReviewOutput {
 
 export interface ReviewInput {
 	productId: string;
-	reviewerId: string;
+	authorId: string;
 	approve: boolean;
 	message?: string;
 	markedContentIds?: Array<string>;
