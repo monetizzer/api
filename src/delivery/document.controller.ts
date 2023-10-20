@@ -105,6 +105,17 @@ export class DocumentController {
 		file.pipe(res);
 	}
 
+	@Get('/me')
+	@UseGuards(AuthGuard(['USER']))
+	async getByAccountId(
+		@UserData()
+		userData: UserDataDto,
+	) {
+		return this.documentService.getDocumentByAccountId({
+			accountId: userData.accountId,
+		});
+	}
+
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Post('review')
 	@UseGuards(AdminGuard)

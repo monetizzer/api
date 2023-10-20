@@ -12,6 +12,7 @@ import {
 	CreateCompleteInput,
 	DocumentEntity,
 	DocumentUseCase,
+	GetByAccountIdInput,
 	GetImageInput,
 	ReviewInput,
 } from 'src/models/document';
@@ -155,6 +156,14 @@ export class DocumentService implements DocumentUseCase {
 			paging,
 			data: documents,
 		};
+	}
+
+	async getDocumentByAccountId({
+		accountId,
+	}: GetByAccountIdInput): Promise<DocumentEntity> {
+		return await this.documentRepository.getByAccountId({
+			accountId,
+		});
 	}
 
 	async review({
