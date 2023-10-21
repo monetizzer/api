@@ -26,7 +26,7 @@ export class DateAdapter implements DateAdapterType {
 		return new Date(birthDate).getTime() <= eighteenYearsAgo.getTime();
 	}
 
-	todayPlus(amount: number, type: DateType): Date {
+	nowPlus(amount: number, type: DateType): Date {
 		const today = new Date().getTime();
 
 		switch (type) {
@@ -46,5 +46,9 @@ export class DateAdapter implements DateAdapterType {
 				throw new Error('Unsupported date type');
 			}
 		}
+	}
+
+	minutesToSeconds(amount: number): number {
+		return amount * 60;
 	}
 }

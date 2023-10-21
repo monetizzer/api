@@ -7,6 +7,7 @@ import {
 } from '../payment';
 import fetch from 'node-fetch';
 import { Agent } from 'https';
+import { DateAdapter } from './date.service';
 
 interface ApiCredentialsResponse {
 	access_token: string;
@@ -44,18 +45,17 @@ interface ApiQrCodeResponse {
 export class GerencianetAdapter implements PaymentAdapter {
 	private httpsAgent: Agent;
 
-	private readonly pixExpirationInSeconds = 900; // 15 min
-
 	private readonly credentials: {
 		accessToken: string;
 		expiresAt: number;
 	};
 
-	constructor() {}
+	constructor(private readonly dateAdapter: DateAdapter) {}
 
 	async genPix({
 		saleId,
 		value: valueNumber,
+		expirationInMinutes,
 	}: GenPixInput): Promise<GenPixOutput> {
 		const fetcher = await this.getFetcher();
 
@@ -65,7 +65,7 @@ export class GerencianetAdapter implements PaymentAdapter {
 			method: 'PUT',
 			body: JSON.stringify({
 				calendario: {
-					expiracao: this.pixExpirationInSeconds,
+					expiracao: this.dateAdapter.minutesToSeconds(expirationInMinutes),
 				},
 				valor: {
 					original: value,

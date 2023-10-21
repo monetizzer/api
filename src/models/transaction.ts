@@ -25,6 +25,8 @@ export interface TransactionIncomeEntity extends BaseTransactionEntity {
 	type: TransactionTypeEnum.INCOME;
 	paymentMethod: PaymentMethodEnum;
 	provider: PaymentProviderEnum;
+	pixCode: string;
+	pixExpiresAt: Date;
 	saleId: string;
 	saleDeliveredAt?: Date;
 	paymentId?: string;
@@ -50,6 +52,8 @@ export interface CreateIncomeInput {
 	accountId: string;
 	amount: number;
 	saleId: string;
+	pixCode: string;
+	pixExpiresAt: Date;
 	paymentMethod: PaymentMethodEnum;
 	provider: PaymentProviderEnum;
 }

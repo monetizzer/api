@@ -1,6 +1,7 @@
 export interface GenPixInput {
 	saleId: string;
 	value: number;
+	expirationInMinutes: number;
 }
 
 export interface GenPixOutput {
