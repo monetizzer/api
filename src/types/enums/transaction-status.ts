@@ -6,6 +6,7 @@ export enum TransactionStatusEnum {
 	'FAILED' = 'FAILED',
 
 	// Exclusive for type=INCOME
+	'EXPIRED' = 'EXPIRED',
 	'REFUND_PROCESSING' = 'REFUND_PROCESSING',
 	'REFUND_COMPLETED' = 'REFUND_COMPLETED',
 	'REFUND_FAILED' = 'REFUND_FAILED',

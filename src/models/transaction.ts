@@ -130,6 +130,10 @@ export interface SetSaleAsDeliveredInput {
 	saleId: string;
 }
 
+export interface UpdateExpiredInput {
+	expirationInMinutes: number;
+}
+
 export abstract class TransactionIncomeRepository {
 	abstract create(i: CreateIncomeInput): Promise<CreateOutput>;
 
@@ -154,6 +158,8 @@ export abstract class TransactionIncomeRepository {
 	abstract completeRefund(i: CompleteRefundInput): Promise<void>;
 
 	abstract setSaleAsDelivered(i: SetSaleAsDeliveredInput): Promise<void>;
+
+	abstract updateExpired(i: UpdateExpiredInput): Promise<void>;
 }
 
 export abstract class TransactionWithdrawRepository {

@@ -11,6 +11,7 @@ import {
 	SetSaleAsDeliveredInput,
 	TransactionIncomeEntity,
 	TransactionIncomeRepository,
+	UpdateExpiredInput,
 } from 'src/models/transaction';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
 import { TransactionTypeEnum } from 'src/types/enums/transaction-type';
@@ -283,6 +284,34 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 			{
 				$set: {
 					saleDeliveredAt: new Date(),
+				},
+			},
+		);
+	}
+
+	async updateExpired({
+		expirationInMinutes,
+	}: UpdateExpiredInput): Promise<void> {
+		const timeLimit = this.dateAdapter.nowPlus(-expirationInMinutes, 'minutes');
+
+		await this.transactionRepository.updateMany(
+			{
+				status: TransactionStatusEnum.PROCESSING,
+				paymentMethod: PaymentMethodEnum.PIX,
+				createdAt: {
+					$lt: timeLimit,
+				},
+			},
+			{
+				$set: {
+					status: TransactionStatusEnum.EXPIRED,
+				},
+				$addToSet: {
+					history: {
+						timestamp: new Date(),
+						status: TransactionStatusEnum.EXPIRED,
+						authorId: 'SYSTEM',
+					},
 				},
 			},
 		);
