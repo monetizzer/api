@@ -12,8 +12,9 @@ import {
 	CreateCompleteInput,
 	DocumentEntity,
 	DocumentUseCase,
-	GetByAccountIdInput,
 	GetImageInput,
+	GetOwnDocumentInput,
+	GetToReviewInput,
 	ReviewInput,
 } from 'src/models/document';
 import { DocumentRepositoryService } from 'src/repositories/mongodb/document/document-repository.service';
@@ -23,7 +24,7 @@ import {
 } from 'src/types/enums/document-status';
 import { NotificationService } from '../notification/notification.service';
 import { DateAdapter } from 'src/adapters/implementations/date.service';
-import { Paginated, PaginatedItems } from 'src/types/paginated-items';
+import { PaginatedItems } from 'src/types/paginated-items';
 import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 
 interface ValidateIfIsOfLegalAgeInput {
@@ -143,7 +144,23 @@ export class DocumentService implements DocumentUseCase {
 		]);
 	}
 
-	async getToReview(i: Paginated): Promise<PaginatedItems<DocumentEntity>> {
+	async getOwnDocument({
+		accountId,
+	}: GetOwnDocumentInput): Promise<DocumentEntity> {
+		const document = await this.documentRepository.getByAccountId({
+			accountId,
+		});
+
+		if (!document) {
+			throw new NotFoundException('Document not found');
+		}
+
+		return document;
+	}
+
+	async getToReview(
+		i: GetToReviewInput,
+	): Promise<PaginatedItems<DocumentEntity>> {
 		const { offset, limit, paging } = this.utilsAdapter.pagination(i);
 
 		const documents = await this.documentRepository.getMany({
@@ -156,14 +173,6 @@ export class DocumentService implements DocumentUseCase {
 			paging,
 			data: documents,
 		};
-	}
-
-	getDocumentByAccountId({
-		accountId,
-	}: GetByAccountIdInput): Promise<DocumentEntity> {
-		return this.documentRepository.getByAccountId({
-			accountId,
-		});
 	}
 
 	async review({

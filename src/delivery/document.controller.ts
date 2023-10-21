@@ -107,11 +107,11 @@ export class DocumentController {
 
 	@Get('/me')
 	@UseGuards(AuthGuard(['USER']))
-	async getByAccountId(
+	getOwnDocument(
 		@UserData()
 		userData: UserDataDto,
 	) {
-		return this.documentService.getDocumentByAccountId({
+		return this.documentService.getOwnDocument({
 			accountId: userData.accountId,
 		});
 	}
