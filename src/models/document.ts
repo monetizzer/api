@@ -131,6 +131,12 @@ export interface CreateCompleteInput {
 	selfieWithDocument: Buffer;
 }
 
+export interface GetOwnDocumentInput {
+	accountId: string;
+}
+
+export type GetToReviewInput = Paginated;
+
 export interface ReviewInput {
 	accountId: string;
 	authorId: string;
@@ -148,7 +154,9 @@ export interface DocumentUseCase {
 
 	createComplete: (i: CreateCompleteInput) => Promise<void>;
 
-	getToReview: (i: Paginated) => Promise<PaginatedItems<DocumentEntity>>;
+	getOwnDocument: (i: GetOwnDocumentInput) => Promise<DocumentEntity>;
+
+	getToReview: (i: GetToReviewInput) => Promise<PaginatedItems<DocumentEntity>>;
 
 	review: (i: ReviewInput) => Promise<void>;
 
