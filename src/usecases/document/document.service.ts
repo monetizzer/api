@@ -158,10 +158,10 @@ export class DocumentService implements DocumentUseCase {
 		};
 	}
 
-	async getDocumentByAccountId({
+	getDocumentByAccountId({
 		accountId,
 	}: GetByAccountIdInput): Promise<DocumentEntity> {
-		return await this.documentRepository.getByAccountId({
+		return this.documentRepository.getByAccountId({
 			accountId,
 		});
 	}
