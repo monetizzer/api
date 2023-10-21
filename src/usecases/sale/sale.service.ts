@@ -31,6 +31,7 @@ import { UtilsAdapter } from 'src/adapters/implementations/utils.service';
 import { IncomeRepositoryService } from 'src/repositories/mongodb/transaction/income-repository.service';
 import { PaymentProviderEnum } from 'src/types/enums/payment-provider';
 import { TransactionIncomeEntity } from 'src/models/transaction';
+import { DateAdapter } from 'src/adapters/implementations/date.service';
 
 interface ValidateCanGetSaleInput {
 	accountId: string;
@@ -40,6 +41,8 @@ interface ValidateCanGetSaleInput {
 
 @Injectable()
 export class SaleService implements SaleUseCase {
+	private readonly saleExpirationInMinutes = 60; // 1h
+
 	constructor(
 		@Inject(SaleRepositoryService)
 		private readonly saleRepository: SaleRepositoryService,
@@ -52,6 +55,7 @@ export class SaleService implements SaleUseCase {
 		private readonly notificationUsecase: NotificationService,
 		private readonly paymentAdapter: GerencianetAdapter,
 		private readonly utilsAdapter: UtilsAdapter,
+		private readonly dateAdapter: DateAdapter,
 	) {}
 
 	async checkout({
@@ -97,19 +101,24 @@ export class SaleService implements SaleUseCase {
 			}),
 		]);
 
-		const [pix] = await Promise.all([
-			this.paymentAdapter.genPix({
-				saleId,
-				value: product.price,
-			}),
-			this.transactionRepository.create({
-				saleId,
-				accountId: storeAccountId,
-				amount: product.price,
-				paymentMethod,
-				provider: PaymentProviderEnum.GERENCIANET,
-			}),
-		]);
+		const pix = await this.paymentAdapter.genPix({
+			saleId,
+			value: product.price,
+			expirationInMinutes: this.saleExpirationInMinutes,
+		});
+
+		await this.transactionRepository.create({
+			saleId,
+			accountId: storeAccountId,
+			amount: product.price,
+			paymentMethod,
+			provider: PaymentProviderEnum.GERENCIANET,
+			pixCode: pix.code,
+			pixExpiresAt: this.dateAdapter.nowPlus(
+				this.saleExpirationInMinutes,
+				'minutes',
+			),
+		});
 
 		return {
 			pix,
@@ -222,12 +231,15 @@ export class SaleService implements SaleUseCase {
 			sale,
 		});
 
-		const [product, store] = await Promise.all([
+		const [product, store, transactions] = await Promise.all([
 			this.productRepository.getByProductId({
 				productId: sale.productId,
 			}),
 			this.storeRepository.getByStoreId({
 				storeId: sale.storeId,
+			}),
+			this.transactionRepository.getManyBySaleId({
+				saleId,
 			}),
 		]);
 
@@ -235,6 +247,7 @@ export class SaleService implements SaleUseCase {
 			...sale,
 			product,
 			store,
+			transaction: transactions[0]!,
 		};
 	}
 
@@ -304,9 +317,11 @@ export class SaleService implements SaleUseCase {
 		};
 	}
 
-	@Cron(CronExpression.EVERY_30_MINUTES)
+	@Cron(CronExpression.EVERY_10_MINUTES)
 	async updateExpired(): Promise<void> {
-		await this.saleRepository.updateExpired();
+		await this.saleRepository.updateExpired({
+			expirationInMinutes: this.saleExpirationInMinutes,
+		});
 	}
 
 	// Private

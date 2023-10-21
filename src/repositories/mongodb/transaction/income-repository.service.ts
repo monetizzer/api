@@ -42,6 +42,8 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 		saleId,
 		paymentMethod,
 		provider,
+		pixCode,
+		pixExpiresAt,
 	}: CreateIncomeInput): Promise<CreateOutput> {
 		const transactionId = this.idAdapter.gen();
 
@@ -52,6 +54,8 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 			amount,
 			paymentMethod,
 			provider,
+			pixCode,
+			pixExpiresAt,
 			type: TransactionTypeEnum.INCOME,
 			status: TransactionStatusEnum.PROCESSING,
 			history: [
@@ -151,7 +155,7 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 					status: TransactionStatusEnum.COMPLETED,
 					type: TransactionTypeEnum.INCOME,
 					saleDeliveredAt: {
-						$lte: this.dateAdapter.todayPlus(this.warrantyDays, 'days'),
+						$lte: this.dateAdapter.nowPlus(this.warrantyDays, 'days'),
 					},
 					paymentMethod: PaymentMethodEnum.PIX,
 					// paidAt: {$exists: true} Unnecessary, since status=COMPLETED and pix are immediately available to withdraw
@@ -181,7 +185,7 @@ export class IncomeRepositoryService extends TransactionIncomeRepository {
 					status: TransactionStatusEnum.COMPLETED,
 					type: TransactionTypeEnum.INCOME,
 					saleDeliveredAt: {
-						$gt: this.dateAdapter.todayPlus(-this.warrantyDays, 'days'),
+						$gt: this.dateAdapter.nowPlus(-this.warrantyDays, 'days'),
 					},
 					paymentMethod: PaymentMethodEnum.PIX,
 					// paidAt: {$exists: true} Unnecessary, since status=COMPLETED and pix are immediately available to withdraw

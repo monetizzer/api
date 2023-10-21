@@ -9,6 +9,7 @@ import {
 	HasBoughtPreMadeProductInput,
 	SaleEntity,
 	SaleRepository,
+	UpdateExpiredInput,
 	UpdateStatusInput,
 } from 'src/models/sale';
 import { UIDAdapter } from 'src/adapters/implementations/uid.service';
@@ -85,15 +86,15 @@ export class SaleRepositoryService implements SaleRepository {
 					history: {
 						$each: [
 							{
-								timestamp: this.dateAdapter.todayPlus(1, 'seconds'),
+								timestamp: this.dateAdapter.nowPlus(1, 'seconds'),
 								status: SalesStatusEnum.PAID,
 							},
 							{
-								timestamp: this.dateAdapter.todayPlus(2, 'seconds'),
+								timestamp: this.dateAdapter.nowPlus(2, 'seconds'),
 								status: SalesStatusEnum.DELIVERED,
 							},
 							{
-								timestamp: this.dateAdapter.todayPlus(3, 'seconds'),
+								timestamp: this.dateAdapter.nowPlus(3, 'seconds'),
 								status: SalesStatusEnum.CONFIRMED_DELIVERY,
 							},
 						],
@@ -185,15 +186,17 @@ export class SaleRepositoryService implements SaleRepository {
 		return Boolean(sale);
 	}
 
-	async updateExpired(): Promise<void> {
-		const timeLimit = new Date().getTime() - 16 * 60 * 1000;
+	async updateExpired({
+		expirationInMinutes,
+	}: UpdateExpiredInput): Promise<void> {
+		const timeLimit = this.dateAdapter.nowPlus(-expirationInMinutes, 'minutes');
 
 		await this.saleRepository.updateMany(
 			{
 				status: SalesStatusEnum.PENDING,
 				paymentMethod: PaymentMethodEnum.PIX,
 				createdAt: {
-					$lte: new Date(timeLimit),
+					$lt: timeLimit,
 				},
 			},
 			{
@@ -201,10 +204,10 @@ export class SaleRepositoryService implements SaleRepository {
 					status: SalesStatusEnum.EXPIRED,
 				},
 				$addToSet: {
-					history: this.utilsAdapter.cleanObj({
+					history: {
 						timestamp: new Date(),
 						status: SalesStatusEnum.EXPIRED,
-					}),
+					},
 				},
 			},
 		);

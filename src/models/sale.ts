@@ -3,6 +3,7 @@ import { SalesStatusEnum } from 'src/types/enums/sale-status';
 import { ProductEntity } from './product';
 import { StoreEntity } from './store';
 import { Paginated, PaginatedItems } from 'src/types/paginated-items';
+import { TransactionIncomeEntity } from './transaction';
 
 interface SaleHistoryItem {
 	timestamp: Date;
@@ -68,6 +69,10 @@ export interface GetManyInput {
 	offset?: number;
 }
 
+export interface UpdateExpiredInput {
+	expirationInMinutes: number;
+}
+
 export interface SaleRepository {
 	create: (i: CreateInput) => Promise<CreateOutput>;
 
@@ -87,7 +92,7 @@ export interface SaleRepository {
 	completePreMade: (i: CompletePreMadeInput) => Promise<void>;
 
 	// Update the status of all expired sales to EXPIRED
-	updateExpired: () => Promise<void>;
+	updateExpired: (i: UpdateExpiredInput) => Promise<void>;
 }
 
 /**
@@ -139,6 +144,7 @@ export interface GetInput {
 export interface GetOutput extends SaleEntity {
 	product: ProductEntity;
 	store: StoreEntity;
+	transaction: TransactionIncomeEntity;
 }
 
 export interface ClientSalesInput extends Paginated {
