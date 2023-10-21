@@ -319,9 +319,14 @@ export class SaleService implements SaleUseCase {
 
 	@Cron(CronExpression.EVERY_10_MINUTES)
 	async updateExpired(): Promise<void> {
-		await this.saleRepository.updateExpired({
-			expirationInMinutes: this.saleExpirationInMinutes,
-		});
+		await Promise.all([
+			this.saleRepository.updateExpired({
+				expirationInMinutes: this.saleExpirationInMinutes,
+			}),
+			this.transactionRepository.updateExpired({
+				expirationInMinutes: this.saleExpirationInMinutes,
+			}),
+		]);
 	}
 
 	// Private
