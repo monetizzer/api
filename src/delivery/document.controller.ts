@@ -2,12 +2,10 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
-	FileTypeValidator,
 	Get,
 	Header,
 	HttpCode,
 	HttpStatus,
-	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
 	Post,
@@ -25,6 +23,10 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { PaginatedDto, UserDataDto } from './dtos';
 import { UserData } from './decorators/user-data';
+import {
+	FileSizeValidationPipe,
+	FileTypeValidationPipe,
+} from './validators/files';
 
 @Controller('documents')
 export class DocumentController {
@@ -53,8 +55,8 @@ export class DocumentController {
 		@UploadedFiles(
 			new ParseFilePipe({
 				validators: [
-					new MaxFileSizeValidator({ maxSize: 10_000_000 }),
-					new FileTypeValidator({ fileType: /^image\// }),
+					new FileSizeValidationPipe({ maxSize: 10_000_000 }),
+					new FileTypeValidationPipe({ regex: /^image\// }),
 				],
 			}),
 		)

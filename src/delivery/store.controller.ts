@@ -1,11 +1,9 @@
 import {
 	Body,
 	Controller,
-	FileTypeValidator,
 	Get,
 	HttpCode,
 	HttpStatus,
-	MaxFileSizeValidator,
 	ParseFilePipe,
 	Patch,
 	Post,
@@ -20,6 +18,10 @@ import { CreateDto, UpdateDto } from './dtos/store';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { PaginatedDto, UserDataDto } from './dtos';
 import { UserData } from './decorators/user-data';
+import {
+	FileSizeValidationPipe,
+	FileTypeValidationPipe,
+} from './validators/files';
 
 @Controller('stores')
 export class StoreController {
@@ -48,8 +50,8 @@ export class StoreController {
 		@UploadedFiles(
 			new ParseFilePipe({
 				validators: [
-					new MaxFileSizeValidator({ maxSize: 10_000_000 }),
-					new FileTypeValidator({ fileType: /^image\// }),
+					new FileSizeValidationPipe({ maxSize: 10_000_000 }),
+					new FileTypeValidationPipe({ regex: /^image\// }),
 				],
 			}),
 		)
@@ -92,8 +94,8 @@ export class StoreController {
 		@UploadedFiles(
 			new ParseFilePipe({
 				validators: [
-					new MaxFileSizeValidator({ maxSize: 10_000_000 }),
-					new FileTypeValidator({ fileType: /^image\// }),
+					new FileSizeValidationPipe({ maxSize: 10_000_000 }),
+					new FileTypeValidationPipe({ regex: /^image\// }),
 				],
 			}),
 		)
