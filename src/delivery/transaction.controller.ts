@@ -4,7 +4,6 @@ import {
 	Get,
 	HttpCode,
 	HttpStatus,
-	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
 	Patch,
@@ -24,6 +23,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserData } from './decorators/user-data';
 import { UserDataDto } from './dtos';
+import { FileSizeValidationPipe } from './validators/files';
 
 @Controller('wallet')
 export class TransactionController {
@@ -66,7 +66,7 @@ export class TransactionController {
 		userData: UserDataDto,
 		@UploadedFile(
 			new ParseFilePipe({
-				validators: [new MaxFileSizeValidator({ maxSize: 10_000_000 })],
+				validators: [new FileSizeValidationPipe({ maxSize: 10_000_000 })],
 			}),
 		)
 		file: Express.Multer.File,

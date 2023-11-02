@@ -2,11 +2,9 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
-	FileTypeValidator,
 	Get,
 	HttpCode,
 	HttpStatus,
-	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
 	Patch,
@@ -31,6 +29,10 @@ import {
 import { AdminGuard } from './guards/admin.guard';
 import { PaginatedDto, UserDataDto } from './dtos';
 import { UserData } from './decorators/user-data';
+import {
+	FileSizeValidationPipe,
+	FileTypeValidationPipe,
+} from './validators/files';
 
 @Controller('products')
 export class ProductController {
@@ -47,8 +49,8 @@ export class ProductController {
 		@UploadedFiles(
 			new ParseFilePipe({
 				validators: [
-					new MaxFileSizeValidator({ maxSize: 10_000_000 }),
-					new FileTypeValidator({ fileType: /^image\// }),
+					new FileSizeValidationPipe({ maxSize: 10_000_000 }),
+					new FileTypeValidationPipe({ regex: /^image\// }),
 				],
 			}),
 		)

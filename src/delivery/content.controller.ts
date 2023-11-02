@@ -2,7 +2,6 @@ import {
 	Body,
 	Controller,
 	Get,
-	MaxFileSizeValidator,
 	Param,
 	ParseFilePipe,
 	Post,
@@ -19,6 +18,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { PaginatedDto, UserDataDto } from './dtos';
 import { UserData } from './decorators/user-data';
+import { FileSizeValidationPipe } from './validators/files';
 
 @Controller('contents')
 export class ContentController {
@@ -34,7 +34,7 @@ export class ContentController {
 		userData: UserDataDto,
 		@UploadedFile(
 			new ParseFilePipe({
-				validators: [new MaxFileSizeValidator({ maxSize: 100_000_000 })],
+				validators: [new FileSizeValidationPipe({ maxSize: 100_000_000 })],
 			}),
 		)
 		file: Express.Multer.File,
